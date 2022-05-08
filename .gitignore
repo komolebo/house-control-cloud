@@ -1,5 +1,13 @@
+# env file with sensitive data
+.env.sample
+
 # idea
 .idea
+
+#                                   #
+# below is default git ignore       #
+# pattern for Node projects         #
+#                                   #
 
 # Logs
 logs
