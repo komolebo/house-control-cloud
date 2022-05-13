@@ -4,9 +4,10 @@ import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants/index1';
 import { databaseConfig } from './database.config';
 import {User} from "../../modules/users/user.entity";
 import * as path from 'path';
-import * as fs from 'fs';
 import { generateMigration } from "sequelize-typescript-model-migration";
 import * as process from "process";
+import {Device} from "../../modules/devices/device.entity";
+import {Role} from "../../modules/devices/role.entity";
 
 
 function getRealPathFromGenFiles(js_path: string) : string {
@@ -32,14 +33,14 @@ export const databaseProviders = [{
                 config = databaseConfig.development;
         }
         const sequelize: Sequelize = new Sequelize(config);
-        sequelize.addModels([User]);
+        sequelize.addModels([User, Device, Role]);
 
         const cur_dir = getRealPathFromGenFiles(__dirname);
 
         await generateMigration(sequelize, {
             outDir: path.join(cur_dir, "./migrations"),
             snapshotDir: path.join(cur_dir, "./snapshots"),
-            migrationName: "init-migration",
+            migrationName: "migration_2--add-device-role-models",
         });
 
         // });

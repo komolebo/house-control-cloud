@@ -58,8 +58,9 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-# Migration
+## Migration
 # name migration file after model changes in database.providers.ts
+# compile/run once to create migration file
 # in backend/src/core/database run "npx sequelize db:migrate --to 00000001-my-migration-file.js"
 
 ## Support

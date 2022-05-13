@@ -1,4 +1,6 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import {Table, Column, Model, DataType, BelongsToMany} from 'sequelize-typescript';
+import {Role} from "../devices/role.entity";
+import {Device} from "../devices/device.entity";
 
 
 @Table
@@ -26,5 +28,8 @@ export class User extends Model<User> {
         type: DataType.STRING,
         allowNull: true
     })
-    phone: string
+    phone: string;
+
+    // @BelongsToMany(() => Device, () => Role)
+    // users: User[]
 }
