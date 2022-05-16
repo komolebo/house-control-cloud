@@ -1,9 +1,9 @@
 import {Table, Column, Model, DataType, ForeignKey} from 'sequelize-typescript';
-import {User} from "../users/user.entity";
-import {Device} from "./device.entity";
+import {Users} from "../users/user.entity";
+import {Devices} from "./device.entity";
 
-@Table
-export class Role extends Model<Role> {
+@Table({tableName: 'roles'})
+export class Roles extends Model<Roles> {
     @Column({
         type: DataType.ENUM('OWNER', 'CHILD', 'GUEST'),
         allowNull: false,
@@ -11,17 +11,17 @@ export class Role extends Model<Role> {
     })
     role: string;
 
-    // @ForeignKey(() => User)
+    @ForeignKey(() => Users)
     @Column({
         type: DataType.INTEGER,
         allowNull: false,
     })
-    user_id: number;
+    userId: number;
 
-    // @ForeignKey(() => Device)
+    @ForeignKey(() => Devices)
     @Column({
         type: DataType.INTEGER,
         allowNull: false
     })
-    device_id: number;
+    deviceId: number;
 }

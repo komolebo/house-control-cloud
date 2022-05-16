@@ -1,10 +1,10 @@
 import {Table, Column, Model, DataType, BelongsToMany} from 'sequelize-typescript';
-import {Role} from "../devices/role.entity";
-import {Device} from "../devices/device.entity";
+import {Roles} from "../devices/role.entity";
+import {Devices} from "../devices/device.entity";
 
 
-@Table
-export class User extends Model<User> {
+@Table({tableName: 'users'})
+export class Users extends Model<Users> {
     @Column({
         type: DataType.STRING,
         allowNull: false,
@@ -30,6 +30,6 @@ export class User extends Model<User> {
     })
     phone: string;
 
-    // @BelongsToMany(() => Device, () => Role)
-    // users: User[]
+    @BelongsToMany(() => Devices, () => Roles)
+    users: Users[]
 }
