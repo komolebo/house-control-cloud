@@ -1,6 +1,6 @@
 import {IsNotEmpty} from "class-validator";
 
-export class Create_deviceDto {
+export class CreateDevice_Dto {
     @IsNotEmpty()
     readonly name: string;
 
@@ -12,3 +12,4 @@ export class Create_deviceDto {
 
     readonly version: string;
 }
+
