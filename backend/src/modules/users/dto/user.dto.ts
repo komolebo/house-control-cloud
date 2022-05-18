@@ -15,3 +15,9 @@ export class UserDto {
     @IsPhoneNumber()
     readonly phone: string;
 }
+
+export class UserPwdDto {
+    @IsNotEmpty()
+    @MinLength(6)
+    readonly password: string;
+}

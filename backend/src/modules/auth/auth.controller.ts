@@ -1,7 +1,7 @@
-import { Controller, Body, Post, UseGuards, Request } from '@nestjs/common';
+import {Controller, Body, Post, UseGuards, Request, Put, Param} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { UserDto } from '../users/dto/user.dto';
+import {UserDto, UserPwdDto} from '../users/dto/user.dto';
 import {DoesUserExist} from "../../core/guards/doesUserExist.guard";
 
 @Controller('auth')
@@ -18,5 +18,11 @@ export class AuthController {
     @Post('signup')
     async signUp(@Body() user: UserDto) {
         return await this.authService.create(user);
+    }
+
+    @Post('pwd/:id')
+    async updateUserPwd(@Param('id') userId: number,
+                        @Body() passDto: UserPwdDto) {
+        return await this.authService.updatePwd(userId, passDto);
     }
 }

@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import {createEvalAwarePartialHost} from "ts-node/dist/repl";
+import {UserPwdDto} from "../users/dto/user.dto";
+import {Users} from "../users/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -48,6 +51,15 @@ export class AuthService {
 
         // return the user and the token
         return { user: result, token };
+    }
+
+    public async updatePwd(userId: number, pass: UserPwdDto) {
+        const user : Users = await this.userService.findOneById(userId);
+        const hash_pass: string = await this.hashPassword(pass.password);
+
+        await user.setDataValue('password', hash_pass);
+        await user.save();
+        return user;
     }
 
     private async generateToken(user) {

@@ -6,4 +6,9 @@ export class Create_deviceDto {
 
     @IsNotEmpty()
     readonly hex: string;
+
+    @IsNotEmpty()
+    readonly ip: string;
+
+    readonly version: string;
 }

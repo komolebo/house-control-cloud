@@ -2,7 +2,6 @@ import {Table, Column, Model, DataType, BelongsToMany} from 'sequelize-typescrip
 import {Users} from "../users/user.entity";
 import {Roles} from "./role.entity";
 
-
 @Table({tableName: 'devices'})
 export class Devices extends Model<Devices> {
     @Column({
@@ -25,11 +24,13 @@ export class Devices extends Model<Devices> {
 
     @Column({
         type: DataType.DATE,
+        defaultValue: DataType.NOW
     })
     last_connected: string;
 
     @Column({
-        type: DataType.BOOLEAN
+        type: DataType.BOOLEAN,
+        defaultValue: true
     })
     active: boolean;
 

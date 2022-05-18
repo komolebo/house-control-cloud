@@ -31,5 +31,5 @@ export class Users extends Model<Users> {
     phone: string;
 
     @BelongsToMany(() => Devices, () => Roles)
-    users: Users[]
+    devices: Devices[]
 }
