@@ -1,11 +1,9 @@
-import {Injectable, Inject, HttpException, HttpStatus} from '@nestjs/common';
+import {Injectable, Inject} from '@nestjs/common';
 import { Users } from './user.entity';
 import { UserDto } from './dto/user.dto';
 import { USER_REPOSITORY } from '../../core/constants/index1';
-import {isNumber} from "class-validator";
 import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
-import {AuthService} from "../auth/auth.service";
 
 @Injectable()
 export class UsersService {

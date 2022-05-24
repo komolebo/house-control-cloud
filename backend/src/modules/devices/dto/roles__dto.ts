@@ -11,3 +11,5 @@ export enum RoleValues {
 export class BindDevice_Dto {
     readonly role: RoleValues;
 }
+
+type RoleValue = RoleValues.Owner | RoleValues.Guest | RoleValues.Child;

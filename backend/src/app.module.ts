@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import {SequelizeModule} from "@nestjs/sequelize";
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
       UsersModule,
       AuthModule,
       DevicesModule,
+      NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

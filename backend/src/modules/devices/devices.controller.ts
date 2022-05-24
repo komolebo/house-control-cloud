@@ -4,7 +4,7 @@ import {UserDto} from "../users/dto/user.dto";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto} from "./dto/roles__dto";
 
-@Controller('devices')
+@Controller('api/devices')
 export class DevicesController {
     constructor(private devicesService: DevicesService) {}
 

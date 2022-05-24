@@ -1,13 +1,14 @@
-import {Table, Column, Model, DataType, ForeignKey} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, ForeignKey, Default} from 'sequelize-typescript';
 import {Users} from "../users/user.entity";
 import {Devices} from "./device.entity";
+import {RoleValues} from "./dto/roles__dto";
 
 @Table({tableName: 'roles'})
 export class Roles extends Model<Roles> {
+    @Default(RoleValues.Default)
     @Column({
-        type: DataType.ENUM('OWNER', 'CHILD', 'GUEST'),
+        type: DataType.ENUM({values: Object.keys(RoleValues)}),
         allowNull: false,
-        defaultValue: "GUEST"
     })
     role: string;
 
