@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"cd backend && npm run start:dev\" \"cd frontend && npm start\" ",
+    "dev2": "cd frontend && npm start\" ",
     "debug": "concurrently \"cd backend && npm run start:debug\" \"cd frontend && npm start\" "
   },
   "repository": {
