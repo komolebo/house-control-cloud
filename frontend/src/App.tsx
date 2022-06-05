@@ -1,10 +1,19 @@
 import React from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import LoginPage from "./components/LoginPage";
+import {publicRoutes} from "./routes";
+import NavBar from "./components/NavBar";
 
-function App() {
+const App = () => {
   return (
-    <div>
-      My start
-    </div>
+      <BrowserRouter>
+          {/*<NavBar/>*/}
+          <Routes>
+              {publicRoutes.map(({path, Component}) =>
+                  <Route path={path} element={Component}/>
+              )}
+          </Routes>
+      </BrowserRouter>
   );
 }
 
