@@ -1,0 +1,29 @@
+.main-label {
+    padding-bottom: 20px;
+    color: dimgray;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.pre-label {
+    display: block;
+    color: dimgray;
+    font: .8rem 'Fira Sans', Arial;
+    /*font-family: Arial, sans-serif;*/
+    padding-bottom: 5px;
+}
+
+.free-label {
+    display: block;
+    color: dimgray;
+    font: .9rem 'Fira Sans', sans-serif;
+    padding: 20px 0;
+}
+
+.point {
+    cursor: pointer;
+}
+
+.link {
+
+}

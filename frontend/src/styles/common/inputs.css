@@ -1,0 +1,10 @@
+.input-box {
+    width: 98%;
+    height: 30px;
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+    color: darkslateblue;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 0 10px;
+}

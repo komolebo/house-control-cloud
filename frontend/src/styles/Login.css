@@ -1,0 +1,26 @@
+.login-page {
+    padding: 25px 35px 25px 40px;
+    /*background-color: rgba(236, 241, 248, 0.86);*/
+    width: 400px;
+    margin: auto;
+    border-left: 2px solid gainsboro;
+    border-right: 2px solid gainsboro;
+}
+
+.stickRight {
+    padding: 10px 5px;
+    width: 100%;
+    text-align: right;
+}
+
+.stickCntr {
+    padding: 10px 5px;
+    width: 100%;
+    text-align: center;
+}
+
+.delimiter {
+    color: #003163;
+    border-bottom: 1px solid;
+    margin-top: 50px;
+}
