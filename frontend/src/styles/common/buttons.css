@@ -1,5 +1,5 @@
 .wide-btn {
-    width: 100%;
+    width: 98%;
     height: 40px;
     background-color: #82b9e8;
     color: white;
@@ -7,10 +7,18 @@
     cursor: pointer;
     border: #82b9e8;
     font-weight: bold;
+    margin: 0 10px;
 }
 
 .wide-btn:hover {
     outline-color: transparent;
     outline-style: solid;
-    box-shadow: 0 0 0 2px #82b9e8;
+    box-shadow: 0 0 0 2px #2990ff;
+}
+
+.wide-btn:active {
+    outline-color: transparent;
+    outline-style: solid;
+    box-shadow: 0 0 0 2px #2990ff;
+    background-color: #61aafc;
 }

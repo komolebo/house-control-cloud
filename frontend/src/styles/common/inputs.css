@@ -3,8 +3,19 @@
     height: 30px;
     display: block;
     font: 1rem 'Fira Sans', sans-serif;
-    color: darkslateblue;
     border-radius: 5px;
     border-width: 1px;
     padding: 0 10px;
 }
+
+.input-box-error {
+    border: 2px solid #ff0000;
+}
+
+.input-box:focus {
+    color: #001c53;
+    outline: none !important;
+    border: 2px solid #82b9e8;
+    /*box-shadow: 0 0 5px #719ECE;*/
+}
+

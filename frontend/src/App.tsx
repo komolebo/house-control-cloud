@@ -1,8 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import LoginPage from "./components/LoginPage";
 import {publicRoutes} from "./routes";
-import NavBar from "./components/NavBar";
 
 const App = () => {
   return (

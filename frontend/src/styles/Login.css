@@ -1,10 +1,11 @@
 .login-page {
-    padding: 25px 35px 25px 40px;
-    /*background-color: rgba(236, 241, 248, 0.86);*/
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 400px;
-    margin: auto;
-    border-left: 2px solid gainsboro;
-    border-right: 2px solid gainsboro;
+    padding: 25px 35px 25px 40px;
+    box-shadow: 0 2px 25px #dce8fd;
 }
 
 .stickRight {
@@ -20,7 +21,29 @@
 }
 
 .delimiter {
-    color: #003163;
+    color: #1065bb;
     border-bottom: 1px solid;
     margin-top: 50px;
+}
+
+.field-icon {
+    float: right;
+    margin-left: -25px;
+    margin-top: -25px;
+    position: relative;
+    z-index: 2;
+}
+
+.pwd-show {
+    background:url(../../public/icons/password-show.svg) left top;
+    height: 22px;
+    width: 22px;
+    background-size: 22px 22px;
+}
+
+.pwd-hide {
+    background: url(../../public/icons/password-hide.svg);
+    height: 22px;
+    width: 22px;
+    background-size: 22px 22px;
 }
