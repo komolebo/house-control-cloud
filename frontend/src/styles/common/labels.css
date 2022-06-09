@@ -20,6 +20,12 @@
     padding: 20px 0;
 }
 
+.warn-label {
+    display: block;
+    color: #ff0000;
+    font: .9rem 'Fira Sans', sans-serif;
+}
+
 .point {
     cursor: pointer;
 }

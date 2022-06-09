@@ -1,14 +1,56 @@
-import {FC, useState} from "react";
-import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, stickRight} from "../styles/Login.css";
-import {freeLabel, mainLabel, point, preLabel} from "../styles/common/labels.css";
+import {FC, useContext, useState} from "react";
+import {
+    delimiter,
+    fieldIcon,
+    loginPage,
+    pwdHide,
+    pwdShow,
+    stickCntr,
+    stickRight,
+    warnContainer
+} from "../styles/Login.css";
+import {freeLabel, mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {bold, headFont, underline} from "../styles/common/fonts.css";
 import {inputBox} from "../styles/common/inputs.css";
 import {wideBtn} from "../styles/common/buttons.css";
-import {NavLink} from "react-router-dom";
-import {AUTH_PAGE, LOGIN_PAGE} from "../utils/consts";
+import {NavLink, useNavigate} from "react-router-dom";
+import {AUTH_PAGE, HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
+import {UserSettingContext} from "../globals/UserGlobals";
+import {login, register} from "../http/auth";
+
+async function loginUser(credentials: {}) {
+    return fetch('http://192.168.0.109:3000/auth/login/', {
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    })
+        .then(data => data.json())
+}
 
 const LoginPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);
+    const [credentialsValid, setCredentialsValid] = useState(true);
+    let [email, setEmail] = useState("123");
+    let [password, setPassword] = useState("");
+    let {isAuth, setIsAuth} = useContext(UserSettingContext);
+
+    let navigate = useNavigate();
+
+    const signIn = async () => {
+        await login(email, password).then(
+            ({data}) => {
+                console.log(data.user, data.token);
+                setCredentialsValid(true);
+                setIsAuth(true);
+                navigate(HOME_PAGE);
+            }
+        ).catch((data) => {
+            // const data = response['data']['response']['message']
+            // setWarnings(data);
+            // console.log("error: ", response, "data: ", data)
+            setCredentialsValid(false);
+            console.log("error: ", data)
+        });
+    }
 
     return (
         <div className={loginPage}>
@@ -16,12 +58,16 @@ const LoginPage: FC = () => {
 
             <div>
                 <label className={[preLabel, bold].join(' ')}>Email</label>
-                <input className={inputBox} type="text"/>
+                <input className={inputBox} type="text"
+                       onChange={e => setEmail(e.target.value)}
+                />
             </div>
             <br />
             <div>
                 <label className={[preLabel, bold].join(' ')}>Password</label>
-                <input className={inputBox} type={pwdVisible ? "text" : "password"} required/>
+                <input className={inputBox} type={pwdVisible ? "text" : "password"}
+                       onChange={e => setPassword(e.target.value)}
+                       required/>
                 <span className={[fieldIcon, point, pwdVisible ? pwdShow : pwdHide].join(' ')}
                       onClick={() => {SetPwdVisible(!pwdVisible)}}
                 />
@@ -32,7 +78,17 @@ const LoginPage: FC = () => {
                 <label> Remember me? </label>
             </div>
 
-            <button className={wideBtn} >LOGIN</button>
+            {!credentialsValid ? (
+                <div className={[warnLabel].join(' ')}>Wrong email or password:</div>
+            ): <div/>
+            }
+
+            <br/>
+            <button className={wideBtn}
+                    onClick={() => signIn()}
+                >
+                LOGIN
+            </button>
 
             <div>
                 <label className={[stickRight, point, preLabel].join(' ')}>

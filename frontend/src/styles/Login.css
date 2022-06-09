@@ -47,3 +47,7 @@
     width: 22px;
     background-size: 22px 22px;
 }
+
+.warn-container {
+    padding: 20px 0;
+}
