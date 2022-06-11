@@ -1,4 +1,4 @@
-import {FC, useContext, useState} from "react";
+import {FC, useContext, useRef, useState} from "react";
 import {
     delimiter,
     fieldIcon,
@@ -6,34 +6,31 @@ import {
     pwdHide,
     pwdShow,
     stickCntr,
-    stickRight,
-    warnContainer
+    stickRight
 } from "../styles/Login.css";
 import {freeLabel, mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {bold, headFont, underline} from "../styles/common/fonts.css";
 import {inputBox} from "../styles/common/inputs.css";
 import {wideBtn} from "../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
-import {AUTH_PAGE, HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
+import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
 import {UserSettingContext} from "../globals/UserGlobals";
-import {login, register} from "../http/auth";
+import {login} from "../http/auth";
 
 const LoginPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);
-    const [credentialsValid, setCredentialsValid] = useState(true);
     const [credWarning, setCredWarning] = useState<string>("");
-    let [email, setEmail] = useState("");
-    let [password, setPassword] = useState("");
-    let {isAuth, setIsAuth} = useContext(UserSettingContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const {setIsAuth} = useContext(UserSettingContext);
+    const pwdFocusRef = useRef<any>();
+    const navigate = useNavigate();
 
-    let navigate = useNavigate();
-
-    const signIn = async () => {
-        await login(email, password).then(
+    const signIn = () => {
+        login(email, password).then(
             ({data}) => {
                 switch (data.status) {
                     case 401:
-                        setCredentialsValid(false);
                         setCredWarning("Wrong email or password")
                         break;
                     case 202:
@@ -51,12 +48,14 @@ const LoginPage: FC = () => {
                     break;
             }
             console.log("catch: ", response);
-            // const data = response['data']['response']['message']
-            // setWarnings(data);
-            // console.log("error: ", response, "data: ", data)
-            setCredentialsValid(false);
         });
     }
+
+    const handleKeyUp = (e: any, submit: boolean) => {
+        if (e.key === "Enter") {
+            submit ? signIn() : pwdFocusRef.current.focus();
+        }
+    };
 
     return (
         <div className={loginPage}>
@@ -66,6 +65,7 @@ const LoginPage: FC = () => {
                 <label className={[preLabel, bold].join(' ')}>Email</label>
                 <input className={inputBox} type="text"
                        onChange={e => setEmail(e.target.value)}
+                       onKeyUp={e => handleKeyUp(e, false)}
                 />
             </div>
             <br />
@@ -73,6 +73,8 @@ const LoginPage: FC = () => {
                 <label className={[preLabel, bold].join(' ')}>Password</label>
                 <input className={inputBox} type={pwdVisible ? "text" : "password"}
                        onChange={e => setPassword(e.target.value)}
+                       ref={pwdFocusRef}
+                       onKeyUp={e => handleKeyUp(e, true)}
                        required/>
                 <span className={[fieldIcon, point, pwdVisible ? pwdShow : pwdHide].join(' ')}
                       onClick={() => {SetPwdVisible(!pwdVisible)}}
@@ -91,7 +93,7 @@ const LoginPage: FC = () => {
 
             <br/>
             <button className={wideBtn}
-                    onClick={() => signIn()}
+                    onClick={signIn}
                 >
                 LOGIN
             </button>

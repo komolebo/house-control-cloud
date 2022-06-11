@@ -1,8 +1,8 @@
 .login-page {
-    position: fixed;
-    top: 30%;
+    position: absolute;
+    top: 100px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
     width: 400px;
     padding: 25px 35px 25px 40px;
     box-shadow: 0 2px 25px #dce8fd;

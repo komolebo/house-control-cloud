@@ -13,14 +13,11 @@ import {UserSettingContext} from "../globals/UserGlobals";
 
 const AuthPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);
-    const [pwdInvalid, setPwdInvalid] = useState(false);
     const [pwdWarnings, setPwdWarnings] = useState<Array<string>>([]);
-    let [email, setEmail] = useState("");
-    let [password, setPassword] = useState("");
-
-    const {isAuth, setIsAuth} = useContext(UserSettingContext);
-
-    let navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const {setIsAuth} = useContext(UserSettingContext);
+    const navigate = useNavigate();
 
     const signUp = async () => {
         await register(email, password).then(data => {
@@ -66,8 +63,6 @@ const AuthPage: FC = () => {
                 />
             </div>
 
-
-
             {pwdWarnings.length ? (
                 <div className={warnContainer}>
                     <div className={warnLabel}>Please check warnings:</div>
@@ -77,13 +72,8 @@ const AuthPage: FC = () => {
                 </div>
                 ): <div><br/><br/></div>
             }
-            <div>
 
-            </div>
-
-            <button className={wideBtn}
-                    onClick={() => signUp()}
-            >
+            <button className={wideBtn} onClick={() => signUp()}>
                 SIGN UP
             </button>
 
