@@ -47,9 +47,9 @@ export class UsersService {
     async update(userDto: UserDto) {
         await this.findOneByEmail(userDto.email)
             .then(user => {
-                user.setDataValue('name', userDto.name);
+                // user.setDataValue('name', userDto.name);
                 user.setDataValue('email', userDto.email);
-                user.setDataValue('phone', userDto.phone);
+                // user.setDataValue('phone', userDto.phone);
                 user.save();
                 return user;
             })

@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import {createEvalAwarePartialHost} from "ts-node/dist/repl";
-import {UserPwdDto} from "../users/dto/user.dto";
+import {UserDto, UserPwdDto} from "../users/dto/user.dto";
 import {Users} from "../users/user.entity";
 
 @Injectable()
@@ -13,27 +13,30 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) { }
 
-    async validateUser(username: string, pass: string) {
+    async validateUser(email: string, password: string) {
         // find if user exist with this email
-        const user = await this.userService.findOneByEmail(username);
+        return null;
+    }
+
+    public async login(email: string, pass: string) {
+        let user = await this.userService.findOneByEmail(email);
         if (!user) {
-            return null;
+            return new UnauthorizedException({message: 'User not exist'})
         }
 
         // find if user password match
         const match = await this.comparePassword(pass, user.password);
         if (!match) {
-            return null;
+            return new UnauthorizedException({message: 'Wrong password'})
         }
 
-        // tslint:disable-next-line: no-string-literal
-        const { password, ...result } = user['dataValues'];
-        return result;
-    }
+        user = user["dataValues"]
 
-    public async login(user) {
+        // tslint:disable-next-line: no-string-literal
+        const { password, ...result } = user;
         const token = await this.generateToken(user);
-        return { user, token };
+
+        return { user: result, token: token };
     }
 
     public async create(user) {

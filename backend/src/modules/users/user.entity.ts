@@ -7,7 +7,7 @@ import {Devices} from "../devices/device.entity";
 export class Users extends Model<Users> {
     @Column({
         type: DataType.STRING,
-        allowNull: false,
+        allowNull: true,
     })
     name: string;
 
