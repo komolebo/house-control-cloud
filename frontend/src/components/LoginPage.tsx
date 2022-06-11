@@ -18,18 +18,11 @@ import {AUTH_PAGE, HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {UserSettingContext} from "../globals/UserGlobals";
 import {login, register} from "../http/auth";
 
-async function loginUser(credentials: {}) {
-    return fetch('http://192.168.0.109:3000/auth/login/', {
-        method: 'POST',
-        body: JSON.stringify(credentials)
-    })
-        .then(data => data.json())
-}
-
 const LoginPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);
     const [credentialsValid, setCredentialsValid] = useState(true);
-    let [email, setEmail] = useState("123");
+    const [credWarning, setCredWarning] = useState<string>("");
+    let [email, setEmail] = useState("");
     let [password, setPassword] = useState("");
     let {isAuth, setIsAuth} = useContext(UserSettingContext);
 
@@ -38,17 +31,30 @@ const LoginPage: FC = () => {
     const signIn = async () => {
         await login(email, password).then(
             ({data}) => {
-                console.log(data.user, data.token);
-                setCredentialsValid(true);
-                setIsAuth(true);
-                navigate(HOME_PAGE);
+                switch (data.status) {
+                    case 401:
+                        setCredentialsValid(false);
+                        setCredWarning("Wrong email or password")
+                        break;
+                    case 202:
+                        setCredWarning("");
+                        setIsAuth(true);
+                        navigate(HOME_PAGE);
+                        break;
+                }
+                console.log("good: ", data);
             }
-        ).catch((data) => {
+        ).catch(({response}) => {
+            switch (response.status) {
+                case 422:
+                    setCredWarning("Email or password is invalid")
+                    break;
+            }
+            console.log("catch: ", response);
             // const data = response['data']['response']['message']
             // setWarnings(data);
             // console.log("error: ", response, "data: ", data)
             setCredentialsValid(false);
-            console.log("error: ", data)
         });
     }
 
@@ -78,8 +84,8 @@ const LoginPage: FC = () => {
                 <label> Remember me? </label>
             </div>
 
-            {!credentialsValid ? (
-                <div className={[warnLabel].join(' ')}>Wrong email or password:</div>
+            {credWarning.length ? (
+                <div className={[warnLabel].join(' ')}>{credWarning}</div>
             ): <div/>
             }
 
