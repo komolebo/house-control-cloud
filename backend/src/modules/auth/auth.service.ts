@@ -44,7 +44,7 @@ export class AuthService {
         const pass = await this.hashPassword(user.password);
 
         // create the user
-        const newUser = await this.userService.create({ ...user, password: pass });
+        const newUser = await this.userService.create({ ...user, password: pass, name: "" });
 
         // tslint:disable-next-line: no-string-literal
         const { password, ...result } = newUser['dataValues'];
