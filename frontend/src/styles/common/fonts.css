@@ -9,3 +9,18 @@
 .bold {
     font-weight: bold;
 }
+
+.cntr-txt {
+    color: #001c53;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.casual-small {
+    font-family: Verdana, serif;
+    font-size: 14px;
+}
+.casual-mid {
+    font-family: Verdana, serif;
+    font-size: 15px;
+}

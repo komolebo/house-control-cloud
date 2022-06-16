@@ -3,12 +3,13 @@ import {useNavigate} from "react-router-dom";
 import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {bold, headFont, underline} from "../styles/common/fonts.css";
-import {inputBox, inputBoxError} from "../styles/common/inputs.css";
-import {wideBtn} from "../styles/common/buttons.css";
+import {inputBox} from "../styles/common/inputs.css";
+import {btn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
 import {UserSettingContext} from "../globals/UserGlobals";
+import {wide} from "../styles/common/position.css";
 
 
 const AuthPage: FC = () => {
@@ -73,7 +74,7 @@ const AuthPage: FC = () => {
                 ): <div><br/><br/></div>
             }
 
-            <button className={wideBtn} onClick={() => signUp()}>
+            <button className={[wide, btn].join(' ')} onClick={() => signUp()}>
                 SIGN UP
             </button>
 

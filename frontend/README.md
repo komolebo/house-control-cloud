@@ -1,3 +1,6 @@
+# css loader
+npm install --save-dev typings-for-css-modules-loader
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

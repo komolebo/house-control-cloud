@@ -1,4 +1,4 @@
-import {FC, useContext, useRef, useState} from "react";
+import {FC, useRef, useState} from "react";
 import {
     delimiter,
     fieldIcon,
@@ -11,18 +11,19 @@ import {
 import {freeLabel, mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {bold, headFont, underline} from "../styles/common/fonts.css";
 import {inputBox} from "../styles/common/inputs.css";
-import {wideBtn} from "../styles/common/buttons.css";
+import {btn} from "../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
-import {UserSettingContext} from "../globals/UserGlobals";
 import {login} from "../http/auth";
+import {setAuthToken} from "../globals/AuthGlobal";
+import {wide} from "../styles/common/position.css";
 
 const LoginPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);
     const [credWarning, setCredWarning] = useState<string>("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const {setIsAuth} = useContext(UserSettingContext);
+    // const {setIsAuth} = useContext(UserSettingContext);
     const pwdFocusRef = useRef<any>();
     const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ const LoginPage: FC = () => {
                         break;
                     case 202:
                         setCredWarning("");
-                        setIsAuth(true);
+                        setAuthToken(data.token);
                         navigate(HOME_PAGE);
                         break;
                 }
@@ -92,7 +93,7 @@ const LoginPage: FC = () => {
             }
 
             <br/>
-            <button className={wideBtn}
+            <button className={[btn, wide].join(' ')}
                     onClick={signIn}
                 >
                 LOGIN
