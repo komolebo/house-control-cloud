@@ -1,8 +1,9 @@
 #dev-list {
-    display: flex;
-    flex-direction: column;
+    /*display: flex;*/
+    flex-direction: row;
     /*align-items: center;*/
-    /*background-color: aquamarine;*/
+    background-color: aquamarine;
+    max-width: 65%;
 }
 
 #dev-list-head {
@@ -19,4 +20,29 @@
 
 #dev-list-item {
 
+}
+
+#dev-list-item-unselect {
+    color: #2F3542;
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 21px;
+
+    padding: 5px 20px;
+    border: none;
+    text-transform: none;
+}
+#dev-list-item-select {
+    color: #1690E9;
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+
+    padding: 5px 20px;
+    text-transform: none;
+    font-style: normal;
+    border: none;
+    border-bottom: 1px solid;
 }

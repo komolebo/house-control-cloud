@@ -23,3 +23,10 @@ export const publicRoutes: ITableRoute[] = [
         Component: <HomePage/>
     }
 ]
+
+export const privateRoutes: ITableRoute[] = [
+    {
+        path: LOGIN_PAGE,
+        Component: <LoginPage/>
+    },
+]

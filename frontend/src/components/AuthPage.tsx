@@ -2,7 +2,7 @@ import {FC, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
-import {bold, headFont, underline} from "../styles/common/fonts.css";
+import {bold, hFont, underline} from "../styles/common/fonts.css";
 import {inputBox} from "../styles/common/inputs.css";
 import {btn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
@@ -44,7 +44,7 @@ const AuthPage: FC = () => {
 
     return (
         <div className={loginPage}>
-            <p className={[mainLabel, headFont].join(' ')}>SIGN UP</p>
+            <p className={[mainLabel, hFont].join(' ')}>SIGN UP</p>
 
             <div>
                 <label className={[preLabel, bold].join(' ')}>Email</label>

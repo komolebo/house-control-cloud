@@ -9,7 +9,7 @@ import {
     stickRight
 } from "../styles/Login.css";
 import {freeLabel, mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
-import {bold, headFont, underline} from "../styles/common/fonts.css";
+import {bold, hFont, underline} from "../styles/common/fonts.css";
 import {inputBox} from "../styles/common/inputs.css";
 import {btn} from "../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
@@ -60,7 +60,7 @@ const LoginPage: FC = () => {
 
     return (
         <div className={loginPage}>
-            <p className={[mainLabel, headFont].join(' ')}>LOGIN</p>
+            <p className={[mainLabel, hFont].join(' ')}>LOGIN</p>
 
             <div>
                 <label className={[preLabel, bold].join(' ')}>Email</label>

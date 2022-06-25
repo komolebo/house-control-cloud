@@ -3,7 +3,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import {publicRoutes} from "./routes";
 import {UserSettingContext} from "./globals/UserGlobals";
 import {isAuthToken} from "./globals/AuthGlobal";
-import NavBar from "./components/NavBar";
+import {NavBar} from "./components/NavBar";
 
 const App = () => {
     let [isAuth, setIsAuth] = useState(false)

@@ -1,10 +1,43 @@
-.head-font {
-    font-family: Arial, Helvetica, sans-serif;
+.h-font {
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 32px;
+    color: #2F3542;
+}
+.h2-font {
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: #2F3542;
+}
+.h3-font {
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    /* identical to box height */
+
+    color: #2F3542;
+}
+.h4-font {
+    font-family: "Roboto Light", 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: #2F3542;
+}
+
+.help-text {
+    font-family: Robot, 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 16px;
+    align-items: center;
 }
 
 .underline {
     text-decoration: underline;
 }
+
 
 .bold {
     font-weight: bold;

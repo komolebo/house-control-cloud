@@ -1,11 +1,15 @@
 #dev-item {
-    border-top: solid 1px darkblue;
-    padding: 10px 0;
-    max-width: 400px;
-    /*background-color: yellow;*/
+    padding: 30px;
+    width: 49%;
+    background-color: white;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    position: relative;
 }
 
-
+.dev-item-delim {
+    padding: 10px 0 20px 0;
+}
 
 #dev-item-generic-block {
     /*background-color: #82b9e8;*/
@@ -66,24 +70,34 @@
 
 #dev-owner {
     /*background-color: #1065bb;*/
-    flex-wrap: wrap;
-    border-top: solid 1px darkblue;
-    border-bottom: solid 1px darkblue;
-    padding-left: 20px;
+    padding: 30px;
+    width: 49%;
+    background-color: white;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    position: relative;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
 }
+
+
 
 #dev-owner-top {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 20px 0;
 }
 
 #dev-owner-bottom {
+    margin-top: 30px;
     display: flex;
-    flex-direction: column;
-    padding: 20px;
+    flex-direction: row;
 }
 
+#dev-owner-connusr-tab {
+
+}
 #dev-owner-connusr {
     display: flex;
     flex-direction: row;
@@ -91,4 +105,18 @@
 }
 #dev-owner-connusr-prop {
     padding: 5px;
+}
+
+td {
+    padding-top:20px;
+    padding-bottom:20px;
+    padding-right:20px;
+}
+
+tr {
+    border-bottom: 1px solid #D9D9D9;
+    /*background-color: blue;*/
+}
+table {
+    border-collapse: collapse;
 }

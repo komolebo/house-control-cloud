@@ -1,53 +1,131 @@
-import {FC} from "react";
-import DevItem, {IProps, TDevRole} from "./DevItem";
-import {
-    devOwner,
-    devOwnerBottom,
-    devOwnerConnusr,
-    devOwnerConnusrProp,
-    devOwnerContain,
-    devOwnerTop
-} from "../../styles/DeviceItem.css";
-import {btn, rmBtn} from "../../styles/common/buttons.css";
-import {colRed} from "../../styles/common/colors.css"
-import {cntrTxt} from "../../styles/common/position.css";
-import {casualMid, casualSmall, underline} from "../../styles/common/fonts.css";
+import React, {FC} from "react";
+import {IProps, TDevRole} from "./DevItem";
+import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
+import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
+import {Button, Chip} from "@mui/material";
+import logoInvite from "../../assets/invite-users.svg"
 
-const DevItemOwner: FC<IProps> = ({user}: IProps) => {
-    return <div id={devOwnerContain}>
-        <DevItem user={user}/>
+const RoleColor = (role: TDevRole) => {
+    switch (role) {
+        case TDevRole.OWNER:
+            return "error"
+        case TDevRole.GUEST:
+            return "warning";
+        case TDevRole.CHILD:
+            return "info";
+        default:
+            return "default"
+    }
+}
 
-        <div id={devOwner}>
-            <div id={devOwnerTop}>
-                <div className={[casualMid].join(' ')}>Connected users [{user.users.length}]: </div>
-                {user.users.map(conn_user => {
-                    return <div id={devOwnerConnusr}>
-                        <div id={devOwnerConnusrProp} className={casualSmall}>
-                            - {conn_user.name}
-                        </div>
-                        <div id={devOwnerConnusrProp} className={casualSmall}>
-                            [{TDevRole[conn_user.role]}]
-                        </div>
-                        <div id={devOwnerConnusrProp} className={casualSmall}>
-                            user_id={conn_user.id}
-                        </div>
-                        <div className={rmBtn} onClick={() => {console.log("good")}}/>
-                    </div>
+const DevItemOwner: FC<IProps> = ({dev}: IProps) => {
+    return <div id={devOwner}>
+        <div className={h3Font}>Connected users: </div>
+
+
+        <div id={devOwnerTop}>
+            <table>
+                <tr style={{paddingTop: '100px', paddingBottom: '100px'}}>
+                    <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Name</th>
+                    <th id={devOwnerConnusrProp} className={helpText} style={{textAlign: "left"}}>Status</th>
+                    <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>ID</th>
+                    <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
+                </tr>
+
+                {dev.users.map(conn_user => {
+                    const active = conn_user.name !== 'Oleh';
+                    return <tr>
+                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
+                        <td id={devOwnerConnusrProp} className={h4Font}>
+                            <Chip label={TDevRole[conn_user.role]} color={RoleColor(conn_user.role)}  />
+                            {/*<Chip label={TDevRole[conn_user.role]} color="default"  />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="primary" />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="secondary" />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="error" />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="info"  />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="success" />*/}
+                            {/*<Chip label={TDevRole[conn_user.role]} color="warning"  />*/}
+                        </td>
+                        <td id={devOwnerConnusrProp} className={h4Font}>0x{conn_user.id}</td>
+                        <td>
+                            {/*<div className={rmBtn} onClick={() => {console.log("good")}}/>*/}
+                            {active
+                                ? <Button variant={"outlined"}
+                                          color= "error"
+                                          disabled={false}
+                                          sx={{
+                                              height: 24, width: '100%',
+                                              textTransform: 'none', borderRadius: 47,
+                                              fontWeight: 550,
+                                              backgroundColor: '#ffdcd5',
+                                          }}>
+                                    Delete
+                                </Button>
+                                : <Button variant={"outlined"}
+                                          color={"error"}
+                                          disabled={true}
+                                          sx={{
+                                              height: 24, width: '100%',
+                                              textTransform: 'none', borderRadius: 47,
+
+                                              fontWeight: 550
+                                          }}>
+                                    Delete
+                                </Button>
+                            }
+
+                        </td>
+                    </tr>
                 })}
-            </div>
-
-            <div id={devOwnerBottom}>
-                <button className={btn}>
-                    RESET DEVICE
-                </button>
-
-                <div className={[colRed, cntrTxt].join(' ')}>Warning:</div>
-                <div className={[colRed, cntrTxt].join(' ')}>
-                    this will reset all device users
-                </div>
-            </div>
-
+            </table>
         </div>
+
+
+        <div id={devOwnerBottom}>
+            <Button variant={"outlined"} sx={{
+                width: 130,
+                height: 42,
+                borderRadius: 47,
+                textTransform: 'none',
+                marginRight: 2
+            }} endIcon={ <img src={logoInvite}/>}
+            >
+                Invite
+            </Button>
+
+            <Button variant={"outlined"} color={"error"} sx={{
+                width: 140,
+                height: 42,
+                borderRadius: 47,
+                textTransform: 'none'
+            }}>
+                Clear settings
+            </Button>
+        </div>
+        {/*<DevItem user={user}/>*/}
+
+        {/*<div id={devOwner}>*/}
+
+
+        {/*    <div id={devOwnerBottom}>*/}
+        {/*        /!*<button className={btn}>*!/*/}
+        {/*        /!*    RESET DEVICE*!/*/}
+        {/*        /!*</button>*!/*/}
+        {/*        <Box textAlign={'center'}>*/}
+        {/*            <Button variant="outlined" color="error">*/}
+        {/*                RESET DEVICE*/}
+        {/*            </Button>*/}
+        {/*        </Box>*/}
+        {/*        /!*<div className={[colRed, cntrTxt].join(' ')}>Warning:</div>*!/*/}
+        {/*        /!*<div className={[colRed, cntrTxt].join(' ')}>*!/*/}
+        {/*        /!*    this will reset all device users*!/*/}
+        {/*        /!*</div>*!/*/}
+        {/*        <Typography align={"center"} variant="body2" display="c" gutterBottom>*/}
+        {/*            this will reset all device users*/}
+        {/*        </Typography>*/}
+        {/*    </div>*/}
+
+        {/*</div>*/}
     </div>
 }
 

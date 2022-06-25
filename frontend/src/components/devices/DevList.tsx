@@ -1,51 +1,46 @@
-import {FC} from "react";
-import {devList, devListContent, devListHead, devListItem} from "../../styles/DeviceList.css"
-import {cntrTxt} from "../../styles/common/fonts.css";
-import DevItem, {TDevItem, TDevRole, TDevStatus} from "./DevItem";
-import DevItemOwner from "./DevItemOwner";
+import React, {FC, useEffect, useState} from "react";
+import {
+    devListItemSelect,
+    devListItemUnselect
+} from "../../styles/DeviceList.css"
+import {Box, Button} from "@mui/material";
 
-const DevList: FC = () => {
-    const devices: Array<TDevItem>= [
-        {
-            hex: "FF00F213",
-            ip: "192.168.0.1",
-            name: "Sofia Borshaga",
-            users: [
-                {name: "Oleh", id: 0x123213, role: TDevRole.OWNER},
-                {name: "Horse", id: 0x121113, role: TDevRole.GUEST},
-            ],
-            status: TDevStatus.Connected,
-            role: TDevRole.OWNER
-        },
-        {
-            hex: "FF00F213",
-            ip: "192.168.0.1",
-            name: "Netishynka",
-            users: [
-                {name: "Oleh", id: 0x123213, role: TDevRole.OWNER},
-            ],
-            status: TDevStatus.Disconnected,
-            role: TDevRole.CHILD
-        },
-    ]
-
-    return <div id={devList}>
-        <div id={devListHead} className={cntrTxt}>
-            {devices.length ? "YOUR DEVICES:" : "NO DEVICE YET"}
-        </div>
-        <div id={devListContent}>
-
-            <div id={devListItem}>
-                {devices.length ? devices.map(user => {
-                        return user.role === TDevRole.OWNER
-                            ? <DevItemOwner user={user}/>
-                            : <DevItem user={user}/>
-                    })
-                    : <div/>
-                }
-            </div>
-        </div>
-    </div>
+interface IPropDevList {
+    devNames: Array<string>;
+    onSelect: (i: number) => void
 }
+
+const DevList: FC<IPropDevList> = ({devNames, onSelect}) => {
+    const [devices, setDevices] = useState<Array<string>>(devNames)
+    const [selected, setSelected] = useState(0);
+
+    useEffect(() => {
+        setDevices(devNames);
+    }, [devNames]);
+
+    const handleSelect = (i: number) => {
+        setSelected(i);
+        onSelect(i);
+    }
+
+    return <div style={{maxWidth: '80%'}}>
+        {devices.length === 0
+                ? <div>No Devices</div>
+                :
+                <Box sx={{ flexGrow: 1, }}>
+                    {devices.map((device, i) =>
+                        <Button
+                            variant={"outlined"}
+                            key={i}
+                            onClick={ () => handleSelect(i) }
+                            id={i === selected ? devListItemSelect : devListItemUnselect}
+                        >
+                            {device}
+                        </Button>
+                    )}
+                </Box>
+        }
+        </div>
+};
 
 export default DevList;

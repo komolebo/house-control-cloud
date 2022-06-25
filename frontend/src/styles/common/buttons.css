@@ -56,3 +56,15 @@
 .rm-btn:hover {
     box-shadow: 0 0 0 2px #5e0000;
 }
+
+#btn-ico-add-dev {
+    background:url(../../../public/icons/add-device.svg) left top;
+}
+
+.btn-common {
+    text-transform: none;
+    border-radius: 47px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+
+}
