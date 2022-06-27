@@ -26,12 +26,20 @@
 }
 
 .help-text {
-    font-family: Robot, 'Roboto', sans-serif;
+    font-family: Roboto, 'Roboto', sans-serif;
     font-style: normal;
     font-weight: 300;
     font-size: 14px;
     line-height: 16px;
     align-items: center;
+}
+
+.h4-font-blue{
+    font-family: Roboto, 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    color: #1690E9
 }
 
 .underline {

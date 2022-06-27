@@ -40,9 +40,10 @@
     font-weight: 600;
     font-size: 18px;
 
-    padding: 5px 20px;
+    padding: 5px 15px;
     text-transform: none;
     font-style: normal;
     border: none;
-    border-bottom: 1px solid;
+    border-bottom: 2px solid;
+    border-radius: 0;
 }
