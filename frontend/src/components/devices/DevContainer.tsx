@@ -7,6 +7,7 @@ import {btnCommon} from "../../styles/common/buttons.css";
 import logoAddDev from "../../assets/add-device2.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
+import {AddDevPopup} from "../popup/AddDevPopup";
 
 export const DevContainer: FC = () => {
     const [curDev, setCurDev] = useState(0);
@@ -50,6 +51,8 @@ export const DevContainer: FC = () => {
             role: TDevRole.OWNER
         },
     ])
+    const [popAddDev, setPopAddDev] = useState(false);
+
 
     const handleDevInfoChange = (devName: string) => {
         devices[curDev].name = devName;
@@ -71,9 +74,17 @@ export const DevContainer: FC = () => {
                     endIcon={
                         <img src={logoAddDev}/>
                     }
+                    onClick={() => setPopAddDev(true)}
             >
                 Add device
             </Button>
+            {popAddDev
+                ? <AddDevPopup
+                    onclose={() => setPopAddDev(false)}
+                    onact={() => setPopAddDev(false)}
+                />
+                : <div/>
+            }
         </div>
 
         <div className={h2Font}>Device information</div>

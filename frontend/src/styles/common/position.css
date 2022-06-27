@@ -5,3 +5,8 @@
 .cntr-txt {
     text-align: center;
 }
+
+.cntr-content {
+    display: flex;
+    justify-content: center;
+}
