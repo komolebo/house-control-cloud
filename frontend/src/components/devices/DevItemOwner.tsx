@@ -1,9 +1,15 @@
-import React, {FC} from "react";
-import {IProps, TDevRole} from "./DevItem";
+import React, {FC, useState} from "react";
+import {IProps, TDevItem, TDevRole} from "./DevItem";
 import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button, Chip} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
+import {ClearSettingsPopup} from "../popup/ClearSettingsPopup";
+
+interface IDevOwnerProps {
+    devInfo: TDevItem,
+    onDevClrSetting: (id: string) => void
+}
 
 const RoleColor = (role: TDevRole) => {
     switch (role) {
@@ -18,10 +24,15 @@ const RoleColor = (role: TDevRole) => {
     }
 }
 
-const DevItemOwner: FC<IProps> = ({dev}: IProps) => {
+const DevItemOwner: FC<IDevOwnerProps> = ({devInfo, onDevClrSetting}) => {
+    let [popClrSett, setPopClrSet] = useState(false);
+
+    const handleClrSettings = (devInfo: TDevItem) => {
+        onDevClrSetting(devInfo.hex);
+    }
+
     return <div id={devOwner}>
         <div className={h3Font}>Connected users: </div>
-
 
         <div id={devOwnerTop}>
             <table>
@@ -32,7 +43,7 @@ const DevItemOwner: FC<IProps> = ({dev}: IProps) => {
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
                 </tr>
 
-                {dev.users.map(conn_user => {
+                {devInfo.users.map(conn_user => {
                     const active = conn_user.name !== 'Oleh';
                     return <tr>
                         <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
@@ -48,32 +59,27 @@ const DevItemOwner: FC<IProps> = ({dev}: IProps) => {
                         </td>
                         <td id={devOwnerConnusrProp} className={h4Font}>0x{conn_user.id}</td>
                         <td>
-                            {/*<div className={rmBtn} onClick={() => {console.log("good")}}/>*/}
-                            {active
-                                ? <Button variant={"outlined"}
-                                          color= "error"
-                                          disabled={false}
-                                          sx={{
+                            <Button variant={"outlined"}
+                                      color= "error"
+                                      disabled={!active}
+
+                                      sx={active
+                                          ? {
                                               height: 24, width: '100%',
                                               textTransform: 'none', borderRadius: 47,
                                               fontWeight: 550,
                                               backgroundColor: '#ffdcd5',
-                                          }}>
-                                    Delete
-                                </Button>
-                                : <Button variant={"outlined"}
-                                          color={"error"}
-                                          disabled={true}
-                                          sx={{
+                                          }
+                                          : {
                                               height: 24, width: '100%',
                                               textTransform: 'none', borderRadius: 47,
 
                                               fontWeight: 550
-                                          }}>
-                                    Delete
-                                </Button>
-                            }
-
+                                          }
+                                      }
+                            >
+                                Delete
+                            </Button>
                         </td>
                     </tr>
                 })}
@@ -93,39 +99,26 @@ const DevItemOwner: FC<IProps> = ({dev}: IProps) => {
                 Invite
             </Button>
 
-            <Button variant={"outlined"} color={"error"} sx={{
+            <Button variant={"outlined"}
+                    color={"error"}
+                    onClick={() => {setPopClrSet(true)}}
+                    sx={{
                 width: 140,
                 height: 42,
                 borderRadius: 47,
                 textTransform: 'none'
-            }}>
+            }}
+            >
                 Clear settings
             </Button>
         </div>
-        {/*<DevItem user={user}/>*/}
 
-        {/*<div id={devOwner}>*/}
-
-
-        {/*    <div id={devOwnerBottom}>*/}
-        {/*        /!*<button className={btn}>*!/*/}
-        {/*        /!*    RESET DEVICE*!/*/}
-        {/*        /!*</button>*!/*/}
-        {/*        <Box textAlign={'center'}>*/}
-        {/*            <Button variant="outlined" color="error">*/}
-        {/*                RESET DEVICE*/}
-        {/*            </Button>*/}
-        {/*        </Box>*/}
-        {/*        /!*<div className={[colRed, cntrTxt].join(' ')}>Warning:</div>*!/*/}
-        {/*        /!*<div className={[colRed, cntrTxt].join(' ')}>*!/*/}
-        {/*        /!*    this will reset all device users*!/*/}
-        {/*        /!*</div>*!/*/}
-        {/*        <Typography align={"center"} variant="body2" display="c" gutterBottom>*/}
-        {/*            this will reset all device users*/}
-        {/*        </Typography>*/}
-        {/*    </div>*/}
-
-        {/*</div>*/}
+        {popClrSett &&
+            <ClearSettingsPopup onClose={() => setPopClrSet(false)}
+                                onClear={(hex) => handleClrSettings(hex)}
+                                devInfo={devInfo}
+            />
+        }
     </div>
 }
 

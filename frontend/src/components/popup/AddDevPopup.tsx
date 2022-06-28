@@ -5,6 +5,7 @@ import {Box, Button, TextField} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
+import logoBack from "../../assets/arrow-back.svg";
 
 const MIN_CHAR_ID = 8;
 
@@ -51,6 +52,7 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onAction("Finaly requested rights")}
+                    startIcon={<img src={logoBack}/>}
             >
                 Back to Home
             </Button>

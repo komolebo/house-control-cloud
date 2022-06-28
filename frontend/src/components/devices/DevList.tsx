@@ -4,6 +4,7 @@ import {
     devListItemUnselect
 } from "../../styles/DeviceList.css"
 import {Box, Button} from "@mui/material";
+import {h3Font, helpText} from "../../styles/common/fonts.css";
 
 interface IPropDevList {
     devNames: Array<string>;
@@ -25,7 +26,7 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect}) => {
 
     return <div style={{maxWidth: '80%'}}>
         {devices.length === 0
-                ? <div>No Devices</div>
+                ? <div className={h3Font}>No device is connected yet...</div>
                 :
                 <Box sx={{ flexGrow: 1, }}>
                     {devices.map((device, i) =>

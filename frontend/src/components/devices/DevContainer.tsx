@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem, {TDevItem, TDevRole, TDevStatus} from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
@@ -9,9 +9,9 @@ import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {AddDevPopup} from "../popup/AddDevPopup";
 
+
 export const DevContainer: FC = () => {
-    const [curDev, setCurDev] = useState(0);
-    const [devices, setDevices] = useState<Array<TDevItem>>([
+    let [devices, setDevices] = useState<Array<TDevItem>>([
         {
             hex: "FF00F213",
             ip: "192.168.0.1",
@@ -26,7 +26,7 @@ export const DevContainer: FC = () => {
             role: TDevRole.OWNER
         },
         {
-            hex: "FF00F213",
+            hex: "FF00F214",
             ip: "127.0.0.1",
             name: "Netishynka",
             users: [
@@ -36,7 +36,7 @@ export const DevContainer: FC = () => {
             role: TDevRole.CHILD
         },
         {
-            hex: "FF00F213",
+            hex: "FF00F215",
             ip: "174.164.1.1",
             name: "Chicago Bulls board",
             users: [
@@ -51,12 +51,19 @@ export const DevContainer: FC = () => {
             role: TDevRole.OWNER
         },
     ])
-    const [popAddDev, setPopAddDev] = useState(false);
+    let [curDev, setCurDev] = useState(devices.length ? 0 : -1);
+    const [isPopAddDev, setPopAddDev] = useState(false);
 
 
     const handleDevInfoChange = (devName: string) => {
         devices[curDev].name = devName;
         setDevices([...devices]);
+    }
+
+    const clearDevice = (devId: string) => {
+        setCurDev( devices.length - 1 ? 0 : -1);
+
+        setDevices([...devices.filter(dev => {return dev.hex !== devId})])
     }
 
     return <div id={devContainer}>
@@ -78,7 +85,7 @@ export const DevContainer: FC = () => {
             >
                 Add device
             </Button>
-            {popAddDev
+            {isPopAddDev
                 ? <AddDevPopup
                     onclose={() => setPopAddDev(false)}
                     onact={() => setPopAddDev(false)}
@@ -87,14 +94,19 @@ export const DevContainer: FC = () => {
             }
         </div>
 
-        <div className={h2Font}>Device information</div>
+        { curDev >= 0 &&
+        <div>
+            <div className={h2Font}>Device information</div>
+            <div id={devContContent}>
+                <DevItem dev={devices[curDev]} onDevChange={dev_info => {
+                    handleDevInfoChange(dev_info)
+                }}/>
 
-        <div id={devContContent}>
-            <DevItem dev={devices[curDev]} onDevChange={dev_info => { handleDevInfoChange(dev_info)}}/>
-
-            {devices.length && devices[curDev].role === TDevRole.OWNER
-            ? <DevItemOwner dev={devices[curDev]} onDevChange={(info) => {}}/>
-            : <div/>}
+                { devices[curDev].role === TDevRole.OWNER &&
+                    <DevItemOwner devInfo={devices[curDev]} onDevClrSetting={(id) => clearDevice(id)}/>
+                 }
+            </div>
         </div>
+        }
     </div>
 }
