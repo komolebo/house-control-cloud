@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useState} from "react";
 import DevList from "./DevList";
 import DevItem, {TDevItem, TDevRole, TDevStatus} from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
@@ -7,7 +7,8 @@ import {btnCommon} from "../../styles/common/buttons.css";
 import logoAddDev from "../../assets/add-device2.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
-import {AddDevPopup} from "../popup/AddDevPopup";
+import UseModal from "../hooks/useModal";
+import {MODAL_TYPE} from "../popup/ModalProvider";
 
 
 export const DevContainer: FC = () => {
@@ -52,7 +53,7 @@ export const DevContainer: FC = () => {
         },
     ])
     let [curDev, setCurDev] = useState(devices.length ? 0 : -1);
-    const [isPopAddDev, setPopAddDev] = useState(false);
+    const { showModal, hideModal } = UseModal();
 
 
     const handleDevInfoChange = (devName: string) => {
@@ -64,7 +65,9 @@ export const DevContainer: FC = () => {
         setCurDev( devices.length - 1 ? 0 : -1);
 
         setDevices([...devices.filter(dev => {return dev.hex !== devId})])
+        console.log("ClearDevice: ", devId);
     }
+
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -81,17 +84,13 @@ export const DevContainer: FC = () => {
                     endIcon={
                         <img src={logoAddDev}/>
                     }
-                    onClick={() => setPopAddDev(true)}
+                    onClick={() => showModal(MODAL_TYPE.AddDevModal, {
+                        onClose: () => {console.log("Modal onClose")},
+                        onAct: () => {hideModal()}
+                    })}
             >
                 Add device
             </Button>
-            {isPopAddDev
-                ? <AddDevPopup
-                    onclose={() => setPopAddDev(false)}
-                    onact={() => setPopAddDev(false)}
-                />
-                : <div/>
-            }
         </div>
 
         { curDev >= 0 &&

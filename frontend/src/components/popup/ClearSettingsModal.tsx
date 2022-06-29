@@ -1,14 +1,12 @@
 import React, {FC, useState} from "react";
-import {Popup} from "./Popup";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Box, Button, TextField} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
 import {TDevItem} from "../devices/DevItem";
-import {devItemDelim} from "../../styles/DeviceItem.css";
-import logoStart from "../../assets/arrow-start.svg";
 import logoBack from "../../assets/arrow-back.svg";
+import {MODAL_TYPE, useGlobalModalContext} from "./ModalProvider";
 
 enum PageState {
     ClearState,
@@ -93,17 +91,20 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
                     }}
                     onClick={() => onClear()}
             > Clear settings </Button>
+
         </div>
     </div>
 }
 
-export const ClearSettingsPopup: FC<IClrSettingsProp> = ({onClose, onClear, devInfo}) => {
+export const ClearSettingsModal: FC<IClrSettingsProp> = () => {
+    const {modalProps } = useGlobalModalContext();
+    const {onAct, onClose, data} = modalProps;
     let [pageState, setPageState] = useState(PageState.ClearState)
 
     const handleClear = () => {
         // req to DB
         // devInfo.users = [];
-        onClear(devInfo);
+        onAct(data);
         setPageState(PageState.DoneState);
     }
     const handleComplete = () => {
@@ -111,10 +112,10 @@ export const ClearSettingsPopup: FC<IClrSettingsProp> = ({onClose, onClear, devI
         onClose();
     }
 
-    return <Popup onclose={onClose}>
+    return <div>
         {pageState === PageState.ClearState
-            ? <ClrSettingElement devInfo={devInfo} onClear={() => handleClear()}/>
+            ? <ClrSettingElement devInfo={data} onClear={() => handleClear()}/>
             : <DoneElement onDone={() => handleComplete()}/>
         }
-    </Popup>
+    </div>
 }

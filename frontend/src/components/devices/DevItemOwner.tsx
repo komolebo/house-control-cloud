@@ -4,7 +4,8 @@ import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button, Chip} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
-import {ClearSettingsPopup} from "../popup/ClearSettingsPopup";
+import {MODAL_TYPE} from "../popup/ModalProvider";
+import UseModal from "../hooks/useModal";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -25,7 +26,8 @@ const RoleColor = (role: TDevRole) => {
 }
 
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo, onDevClrSetting}) => {
-    let [popClrSett, setPopClrSet] = useState(false);
+    const { showModal, hideModal } = UseModal();
+
 
     const handleClrSettings = (devInfo: TDevItem) => {
         onDevClrSetting(devInfo.hex);
@@ -101,24 +103,21 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo, onDevClrSetting}) => {
 
             <Button variant={"outlined"}
                     color={"error"}
-                    onClick={() => {setPopClrSet(true)}}
                     sx={{
                 width: 140,
                 height: 42,
                 borderRadius: 47,
                 textTransform: 'none'
             }}
+                    onClick={() => showModal(MODAL_TYPE.ClrSettModal, {
+                        onClose: () => {hideModal()},
+                        onAct: () => {handleClrSettings(devInfo)},
+                        data: devInfo
+                    })}
             >
                 Clear settings
             </Button>
         </div>
-
-        {popClrSett &&
-            <ClearSettingsPopup onClose={() => setPopClrSet(false)}
-                                onClear={(hex) => handleClrSettings(hex)}
-                                devInfo={devInfo}
-            />
-        }
     </div>
 }
 

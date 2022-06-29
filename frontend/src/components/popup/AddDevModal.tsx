@@ -1,10 +1,10 @@
 import React, {FC, useState} from "react";
-import {Popup} from "./Popup";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, TextField} from "@mui/material";
-import {btnCommon} from "../../styles/common/buttons.css";
-import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
+import logoDone from "../../assets/done-big.svg";
+import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
 
 const MIN_CHAR_ID = 8;
@@ -122,7 +122,9 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     </div>
 }
 
-export const AddDevPopup: FC<IAddPopupProp> = ({onclose, onact}) => {
+
+export const AddDevModal: FC = () => {
+    const { showModal, hideModal, modalProps} = useGlobalModalContext();
     const [pageMode, setPageMode] = useState(PageMode.ReqState)
 
     const setModeDone = (dev_data: string) => {
@@ -131,13 +133,16 @@ export const AddDevPopup: FC<IAddPopupProp> = ({onclose, onact}) => {
     }
     const complete = (dev_data: string) => {
         setPageMode(PageMode.CompleteState);
-        onact("some data");
+        modalProps.onAct("some data");
     }
 
-    return <Popup onclose={onclose}>
-        { pageMode === PageMode.ReqState
-        ? <FindDevElement onAction={(dev_data) => setModeDone(dev_data)}/>
-        : <DoneElement onAction={() => complete("dummy data")}/>
-        }
-    </Popup>
+    return (
+        <div>
+            { pageMode === PageMode.ReqState
+                ? <FindDevElement onAction={(dev_data) => setModeDone(dev_data)}/>
+                : <DoneElement onAction={() => complete("dummy data")}/>
+            }
+        </div>
+        // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>
+    )
 }

@@ -2,8 +2,6 @@ import React, {FC, useState} from "react";
 import {homePage} from "../styles/Home.css"
 import {hFont, helpText} from "../styles/common/fonts.css";
 import {DevContainer} from "./devices/DevContainer";
-import {Popup} from "./popup/Popup";
-import {AddDevPopup} from "./popup/AddDevPopup";
 
 const HomePage: FC = () => {
     return (
