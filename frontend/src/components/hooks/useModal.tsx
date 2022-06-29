@@ -1,4 +1,4 @@
-import GlobalModalContext from "../popup/ModalProvider";
+import GlobalModalContext from "../modals/ModalProvider";
 import {useContext} from "react";
 
 const UseModal = () => useContext(GlobalModalContext);

@@ -5,6 +5,7 @@ import logoClose from "../../assets/close.svg";
 import {imgHover} from "../../styles/common/buttons.css";
 import {AddDevModal} from "./AddDevModal";
 import {ClearSettingsModal} from "./ClearSettingsModal";
+import {InviteUserModal} from "./InviteUserModal";
 
 export enum MODAL_TYPE {
     AddDevModal,
@@ -32,6 +33,7 @@ type ContextType = {
 const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.AddDevModal]: AddDevModal,
     [MODAL_TYPE.ClrSettModal]: ClearSettingsModal,
+    [MODAL_TYPE.InviteUsrModal]: InviteUserModal,
     [MODAL_TYPE.DefaultModal]: null,
 }
 
@@ -92,7 +94,7 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                     width: "100%", height: "100%",
                 }}
             >
-                {/* popup window style */}
+                {/* modals window style */}
                 <Box
                     sx={{
                         p: 3, position: "absolute", ml: "50%", top: "50%",

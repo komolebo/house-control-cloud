@@ -23,7 +23,8 @@ export enum TDevStatus {
 export enum TDevRole {
     OWNER,
     CHILD,
-    GUEST
+    GUEST,
+    ROLES_NUMBER
 }
 
 export interface TConnectedUser {

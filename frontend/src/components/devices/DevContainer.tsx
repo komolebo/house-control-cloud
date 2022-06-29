@@ -1,6 +1,6 @@
 import React, {FC, useState} from "react";
 import DevList from "./DevList";
-import DevItem, {TDevItem, TDevRole, TDevStatus} from "./DevItem";
+import DevItem, {TConnectedUser, TDevItem, TDevRole, TDevStatus} from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
 import {Button} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
@@ -8,7 +8,8 @@ import logoAddDev from "../../assets/add-device2.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import UseModal from "../hooks/useModal";
-import {MODAL_TYPE} from "../popup/ModalProvider";
+import {MODAL_TYPE} from "../modals/ModalProvider";
+import {userInfo} from "os";
 
 
 export const DevContainer: FC = () => {
@@ -67,7 +68,16 @@ export const DevContainer: FC = () => {
         setDevices([...devices.filter(dev => {return dev.hex !== devId})])
         console.log("ClearDevice: ", devId);
     }
-
+    const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
+        devices.map(dev => {
+            if (dev.hex === devId) {
+                console.log("Pushing info", userInfo)
+                dev.users.push(userInfo)
+            }
+            return dev;
+        })
+        setDevices([...devices]);
+    }
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -103,7 +113,10 @@ export const DevContainer: FC = () => {
                 }}/>
 
                 { devices[curDev].role === TDevRole.OWNER &&
-                    <DevItemOwner devInfo={devices[curDev]} onDevClrSetting={(id) => clearDevice(id)}/>
+                    <DevItemOwner
+                        devInfo={devices[curDev]}
+                        onDevClrSetting={id => clearDevice(id)}
+                        onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}/>
                  }
             </div>
         </div>

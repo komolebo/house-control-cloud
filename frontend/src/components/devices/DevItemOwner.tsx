@@ -1,15 +1,16 @@
 import React, {FC, useState} from "react";
-import {IProps, TDevItem, TDevRole} from "./DevItem";
+import {IProps, TConnectedUser, TDevItem, TDevRole} from "./DevItem";
 import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button, Chip} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
-import {MODAL_TYPE} from "../popup/ModalProvider";
+import {MODAL_TYPE} from "../modals/ModalProvider";
 import UseModal from "../hooks/useModal";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
-    onDevClrSetting: (id: string) => void
+    onDevClrSetting: (id: string) => void,
+    onUsrInvite: (devId: string, userInfo: TConnectedUser) => void
 }
 
 const RoleColor = (role: TDevRole) => {
@@ -25,12 +26,19 @@ const RoleColor = (role: TDevRole) => {
     }
 }
 
-const DevItemOwner: FC<IDevOwnerProps> = ({devInfo, onDevClrSetting}) => {
+const DevItemOwner: FC<IDevOwnerProps> = ({
+                                              devInfo,
+                                              onDevClrSetting,
+                                              onUsrInvite}) => {
     const { showModal, hideModal } = UseModal();
 
 
     const handleClrSettings = (devInfo: TDevItem) => {
         onDevClrSetting(devInfo.hex);
+    }
+    const handleInviteUsr = (userInfo: TConnectedUser) => {
+        console.log("userInfo", userInfo)
+        onUsrInvite(devInfo.hex, userInfo);
     }
 
     return <div id={devOwner}>
@@ -90,13 +98,17 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo, onDevClrSetting}) => {
 
 
         <div id={devOwnerBottom}>
-            <Button variant={"outlined"} sx={{
-                width: 130,
-                height: 42,
-                borderRadius: 47,
+            <Button
+                endIcon={ <img src={logoInvite}/>}
+                onClick={() => showModal(MODAL_TYPE.InviteUsrModal, {
+                    onClose: () => {console.log("Modal onClose")},
+                    onAct: (userInfo) => handleInviteUsr(userInfo)
+                })}
+                variant={"outlined"} sx={{
+                width: 130, height: 42, borderRadius: 47,
                 textTransform: 'none',
                 marginRight: 2
-            }} endIcon={ <img src={logoInvite}/>}
+                }}
             >
                 Invite
             </Button>
