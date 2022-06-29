@@ -10,3 +10,9 @@
     display: flex;
     justify-content: center;
 }
+
+.cntr-v-content {
+    display: flex;
+    align-items: center;
+    /*vertical-align: center;*/
+}

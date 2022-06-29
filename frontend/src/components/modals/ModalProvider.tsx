@@ -6,11 +6,12 @@ import {imgHover} from "../../styles/common/buttons.css";
 import {AddDevModal} from "./AddDevModal";
 import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
+import {UpdUsrAccessModal} from "./UpdUsrAccessModal";
 
 export enum MODAL_TYPE {
     AddDevModal,
     ClrSettModal,
-    RmUsrAccessModal,
+    ModifyUsrAccessModal,
     InviteUsrModal,
     DefaultModal
 }
@@ -34,6 +35,7 @@ const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.AddDevModal]: AddDevModal,
     [MODAL_TYPE.ClrSettModal]: ClearSettingsModal,
     [MODAL_TYPE.InviteUsrModal]: InviteUserModal,
+    [MODAL_TYPE.ModifyUsrAccessModal]: UpdUsrAccessModal,
     [MODAL_TYPE.DefaultModal]: null,
 }
 

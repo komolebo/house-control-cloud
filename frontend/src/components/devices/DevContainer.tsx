@@ -7,9 +7,7 @@ import {btnCommon} from "../../styles/common/buttons.css";
 import logoAddDev from "../../assets/add-device2.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
-import UseModal from "../hooks/useModal";
-import {MODAL_TYPE} from "../modals/ModalProvider";
-import {userInfo} from "os";
+import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 
 
 export const DevContainer: FC = () => {
@@ -54,7 +52,7 @@ export const DevContainer: FC = () => {
         },
     ])
     let [curDev, setCurDev] = useState(devices.length ? 0 : -1);
-    const { showModal, hideModal } = UseModal();
+    const { showModal, hideModal } = useGlobalModalContext();
 
 
     const handleDevInfoChange = (devName: string) => {

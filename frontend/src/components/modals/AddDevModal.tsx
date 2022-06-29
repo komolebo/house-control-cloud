@@ -6,6 +6,7 @@ import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
+import logoAddDev from "../../assets/modal-add-dev.svg";
 
 const MIN_CHAR_ID = 8;
 
@@ -81,9 +82,12 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     }
 
     return <div>
-        <div className={h2Font}>Add device by ID</div>
+        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+            <img src={logoAddDev} id="logo-add-dev" alt={"logo-add-dev"}/>
+            &nbsp;&#160;Add device by ID
+        </div>
 
-        <Box sx={{pt: 2, pb: 2}}>
+        <Box sx={{pt: 4, pb: 0}}>
             <div className={helpText}>
                 Please enter 8-char ID string mentioned on the device's frame:
             </div>

@@ -7,6 +7,7 @@ import {cntrContent} from "../../styles/common/position.css";
 import {TDevItem} from "../devices/DevItem";
 import logoBack from "../../assets/arrow-back.svg";
 import {MODAL_TYPE, useGlobalModalContext} from "./ModalProvider";
+import logoAttention from "../../assets/modal-attention-round.svg";
 
 enum PageState {
     ClearState,
@@ -64,12 +65,13 @@ const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
 
 const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
     return <div>
-        <div className={h2Font}>
-            Clear device settings
+        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+            <img src={logoAttention} id="logo-clr-sett" alt={"logo-clr-sett"}/>
+            &nbsp;&#160;Clear device settings
         </div><br/><br/>
 
         <div className={h4Font}>
-            Resetting '{devInfo.name}' on '{devInfo.ip}'!
+            '{devInfo.name}' on '{devInfo.ip}'
         </div><br/>
 
         <div className={helpText}>

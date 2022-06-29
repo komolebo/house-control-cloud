@@ -4,8 +4,9 @@ import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button, Chip} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
-import {MODAL_TYPE} from "../modals/ModalProvider";
-import UseModal from "../hooks/useModal";
+import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
+import {ColorRoleLabel} from "../elements/ColorRoleLabel";
+import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -13,24 +14,13 @@ interface IDevOwnerProps {
     onUsrInvite: (devId: string, userInfo: TConnectedUser) => void
 }
 
-const RoleColor = (role: TDevRole) => {
-    switch (role) {
-        case TDevRole.OWNER:
-            return "error"
-        case TDevRole.GUEST:
-            return "warning";
-        case TDevRole.CHILD:
-            return "info";
-        default:
-            return "default"
-    }
-}
+
 
 const DevItemOwner: FC<IDevOwnerProps> = ({
                                               devInfo,
                                               onDevClrSetting,
                                               onUsrInvite}) => {
-    const { showModal, hideModal } = UseModal();
+    const { showModal, hideModal } = useGlobalModalContext();
 
 
     const handleClrSettings = (devInfo: TDevItem) => {
@@ -58,7 +48,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                     return <tr>
                         <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
-                            <Chip label={TDevRole[conn_user.role]} color={RoleColor(conn_user.role)}  />
+                            <ColorRoleLabel role={conn_user.role}/>
                             {/*<Chip label={TDevRole[conn_user.role]} color="default"  />*/}
                             {/*<Chip label={TDevRole[conn_user.role]} color="primary" />*/}
                             {/*<Chip label={TDevRole[conn_user.role]} color="secondary" />*/}
@@ -70,25 +60,31 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                         <td id={devOwnerConnusrProp} className={h4Font}>0x{conn_user.id}</td>
                         <td>
                             <Button variant={"outlined"}
-                                      color= "error"
-                                      disabled={!active}
+                                    color= "info"
+                                    disabled={!active}
+                                    onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
+                                        onClose: () => {console.log("Modal onClose")},
+                                        onAct: () => {},
+                                        data: {usrInfo: conn_user, devInfo: devInfo}
+                                    })}
 
-                                      sx={active
-                                          ? {
-                                              height: 24, width: '100%',
-                                              textTransform: 'none', borderRadius: 47,
-                                              fontWeight: 550,
-                                              backgroundColor: '#ffdcd5',
-                                          }
-                                          : {
-                                              height: 24, width: '100%',
-                                              textTransform: 'none', borderRadius: 47,
+                                    sx={active
+                                        ? {
+                                          height: 24, width: '100%',
+                                          textTransform: 'none', borderRadius: 47,
+                                          // fontWeight: 550,
+                                          // backgroundColor: '#ffdcd5',
+                                          background: "rgba(22, 144, 233, 0.2)"
+                                        }
+                                        : {
+                                          height: 24, width: '100%',
+                                          textTransform: 'none', borderRadius: 47,
 
-                                              fontWeight: 550
-                                          }
-                                      }
+                                          // fontWeight: 550
+                                        }
+                                    }
                             >
-                                Delete
+                                Modify
                             </Button>
                         </td>
                     </tr>

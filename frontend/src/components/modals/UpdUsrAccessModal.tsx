@@ -1,20 +1,30 @@
 import React, {FC, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
-import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
-import {cntrContent} from "../../styles/common/position.css";
+import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
-import {TConnectedUser, TDevRole} from "../devices/DevItem";
-import logoInviteUsr from "../../assets/modal-invite-bag.svg";
+import {TConnectedUser, TDevItem, TDevRole} from "../devices/DevItem";
+import logoUpdateAccess from "../../assets/modal-update-access.svg";
+import {devItemDelim} from "../../styles/DeviceItem.css";
+import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 
 interface IInvitElemProp {
-    onAction: (dev_data: TConnectedUser) => void
+    onAction: (dev_data: TConnectedUser) => void,
+    devInfo: TDevItem,
+    usrInfo: TConnectedUser
 }
-interface IDoneProp {
+interface IUpdAccessDoneProp {
     onAction: () => void,
-    usrInfo: TConnectedUser | null
+    usrInfo: TConnectedUser
+}
+
+enum PageMode{
+    ReqState,
+    DoneState,
+    CompleteState
 }
 
 const MIN_CHAR_ID = 6;
@@ -25,21 +35,19 @@ const checkUser = (name: string): Boolean => {
     return name === "12345678"
 }
 
-const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
-    const ROLE = usrInfo?.role ? TDevRole[usrInfo?.role] : "INVALID ROLE";
-    const NAME = usrInfo?.name ? usrInfo.name : "INVALID NAME";
-
+const DoneElement: FC<IUpdAccessDoneProp> = ({onAction, usrInfo}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
             <img src={logoDone}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
-            User invited
+            Access modified
         </div><br/>
 
         <div className={[helpText, cntrContent].join(' ')}>
-            User '{NAME}' can now access with rights '{ROLE}'
+            User '{usrInfo.name}' has now access rights:&nbsp;
+            <ColorRoleLabel role={usrInfo.role}/>
         </div><br/><br/>
 
         <div className={cntrContent}>
@@ -58,60 +66,40 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
     </Box>
 }
 
-const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
-    const [userId, setUserId] = useState("");
-    const [warning, setWarning] = useState("");
+const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) => {
     const [role, setRole] = useState<number>(DEFAULT_ROLE);
 
-    const handleInputChange = (e: any) => {
-        const re = /^[0-9\b,A-F]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setUserId(e.target.value)
-        }
-    }
-
     const handleSelectChange = (e: SelectChangeEvent) => {
-        const re = /^[0-9\b,A-F]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setRole(Number(e.target.value));
-        }
+        setRole(Number(e.target.value));
     };
 
     const handleReqAccess = () => {
-        if (checkUser(userId)) {
-            onAction({
-                name: "New user", role: role, id: Number(userId)
-            });
-        }
-        else {
-            setWarning("User ID not found")
-        }
+        usrInfo.role = role;
+        onAction(usrInfo);
     }
+
     return <div>
         <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
-            <img src={logoInviteUsr} id="logo-add-dev" alt={"logo-add-dev"}/>
-            &nbsp;&#160;Invite by user ID
-        </div>
+            <img src={logoUpdateAccess} id="logo-clr-sett" alt={"logo-clr-sett"}/>
+            &nbsp;&#160;Modify access right
+        </div><br/>
 
-        <Box sx={{pt: 3, pb: 1}}>
+        <Box sx={{pt: 2, pb: 2}}>
             <div className={helpText}>
-                Choosing role OWNER would require other owner’s access
+                Here you can change non-OWNER user’s rights to access the device
             </div>
         </Box>
 
+        <div className={[h3Font].join(' ')}>Name</div>
+        <div className={[h4Font, devItemDelim].join(' ')}>{devInfo.name}</div>
 
-        <TextField sx={{mb: 2}}
-                   error={warning !== ""}
-                   label={"User ID"}
-                   id="outlined-uncontrolled"
-                   color={"info"}
-                   defaultValue={"0xFF0011AA"}
-                   fullWidth={true}
-                   helperText={warning}
-                   onChange={e => handleInputChange(e)}
-                   inputProps={{ pattern: "[a-f]{1,15}" }}
-                   value={userId}
-        />
+        <div className={[h3Font].join(' ')}>User</div>
+        <div style={{display: "flex", flexDirection: "row"}}>
+            <div className={[h4Font, cntrVContent].join(' ')} style={{marginRight: 15}}>
+                {usrInfo.name}
+            </div>
+            <ColorRoleLabel role={usrInfo.role}/>
+        </div><br/><br/>
 
         <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
@@ -131,7 +119,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
                 </Select>
             </FormControl>
-        </Box>
+        </Box><br/>
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
             <Button variant={"contained"}
@@ -140,10 +128,10 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                         width: 200, height: 42, borderRadius: 47,
                         textTransform: 'none'
                     }}
-                    disabled={userId.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
+                    disabled={role === usrInfo.role}
                     onClick={() => handleReqAccess()}
             >
-                Invite user
+                Update access
             </Button>
         </Box>
 
@@ -152,30 +140,35 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 }
 
 
-export const InviteUserModal: FC = () => {
+export const UpdUsrAccessModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [userData, setUserData] = useState<TConnectedUser | null>(null);
+    const [pageMode, setPageMode] = useState(PageMode.ReqState)
 
-    const setModeDone = (uData: TConnectedUser) => {
-        console.log("setModeDone", uData);
-        setUserData(uData);
-        modalProps.onAct(uData);
+    const {usrInfo, devInfo} = modalProps.data;
+
+    const setModeDone = (usrData: TConnectedUser) => {
+        modalProps.onAct(usrData);
+        setPageMode(PageMode.DoneState);
     }
     const complete = (dev_data: string) => {
+        setPageMode(PageMode.CompleteState);
         hideModal();
     }
 
     return (
         <div>
-            { !userData
-                ? <InviteUsrElement
+            { pageMode === PageMode.ReqState
+                ? <UpdUsrAccessElement
                     onAction={usrData => setModeDone(usrData)}
+                    devInfo={devInfo}
+                    usrInfo={usrInfo}
                 />
                 : <DoneElement
                     onAction={() => complete("dummy data")}
-                    usrInfo={userData}
+                    usrInfo={usrInfo}
                 />
             }
         </div>
+        // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>
     )
 }
