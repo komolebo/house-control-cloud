@@ -74,6 +74,7 @@ export const DevContainer: FC = () => {
             <DevList
                 devNames={devices.map(el => el.name)}
                 onSelect={i => setCurDev(i)}
+                initSelection={curDev}
             />
             <Button variant={"contained"}
                     className={btnCommon}

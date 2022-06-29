@@ -9,18 +9,19 @@ import {h3Font, helpText} from "../../styles/common/fonts.css";
 interface IPropDevList {
     devNames: Array<string>;
     onSelect: (i: number) => void
+    initSelection?: number;
 }
 
-const DevList: FC<IPropDevList> = ({devNames, onSelect}) => {
+const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
     const [devices, setDevices] = useState<Array<string>>(devNames)
-    const [selected, setSelected] = useState(0);
+    const [curSel, setCurSel] = useState(initSelection);
 
     useEffect(() => {
         setDevices(devNames);
     }, [devNames]);
 
     const handleSelect = (i: number) => {
-        setSelected(i);
+        setCurSel(i);
         onSelect(i);
     }
 
@@ -34,7 +35,7 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect}) => {
                             variant={"outlined"}
                             key={i}
                             onClick={ () => handleSelect(i) }
-                            id={i === selected ? devListItemSelect : devListItemUnselect}
+                            id={i === curSel ? devListItemSelect : devListItemUnselect}
                         >
                             {device}
                         </Button>
