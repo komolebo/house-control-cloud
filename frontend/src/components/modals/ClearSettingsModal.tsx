@@ -1,12 +1,12 @@
 import React, {FC, useState} from "react";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Box, Button, TextField} from "@mui/material";
+import {Box, Button} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
 import {TDevItem} from "../devices/DevItem";
 import logoBack from "../../assets/arrow-back.svg";
-import {MODAL_TYPE, useGlobalModalContext} from "./ModalProvider";
+import {useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
 
 enum PageState {
@@ -32,7 +32,7 @@ interface IClrSettingsProp {
 const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone}/>
+            <img src={logoDone} alt={"Logo job is done"}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
@@ -55,7 +55,7 @@ const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onDone()}
-                    startIcon={<img src={logoBack}/>}
+                    startIcon={<img src={logoBack} alt={"Logo get back"}/>}
             >
                 Back to Home
             </Button>

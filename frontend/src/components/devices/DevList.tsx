@@ -4,7 +4,7 @@ import {
     devListItemUnselect
 } from "../../styles/DeviceList.css"
 import {Box, Button} from "@mui/material";
-import {h3Font, helpText} from "../../styles/common/fonts.css";
+import {h3Font} from "../../styles/common/fonts.css";
 
 interface IPropDevList {
     devNames: Array<string>;

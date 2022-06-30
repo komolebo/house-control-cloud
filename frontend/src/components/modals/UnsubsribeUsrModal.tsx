@@ -28,7 +28,7 @@ enum PageMode{
 const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone}/>
+            <img src={logoDone} alt={"Logo job is done"}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
@@ -47,7 +47,7 @@ const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onAction()}
-                    startIcon={<img src={logoBack}/>}
+                    startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
             >
                 Back to Home
             </Button>
@@ -105,7 +105,7 @@ export const UnsubscribeUsrModal: FC = () => {
         onAct(devInfo);
         setPageMode(PageMode.DoneState);
     }
-    const complete = (dev_data: string) => {
+    const complete = () => {
         setPageMode(PageMode.CompleteState);
         hideModal();
     }
@@ -119,7 +119,7 @@ export const UnsubscribeUsrModal: FC = () => {
                 />
                 :
                 <DoneElement
-                    onAction={() => complete("dummy data")}
+                    onAction={() => complete()}
                     devInfo={devInfo}
                 />
             }

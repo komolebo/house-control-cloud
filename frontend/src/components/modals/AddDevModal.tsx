@@ -9,11 +9,6 @@ import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 
 const MIN_CHAR_ID = 8;
-
-interface IAddPopupProp {
-    onclose: () => void,
-    onact: (data: any) => void
-}
 interface IFinDevElem {
     onAction: (dev_data: string) => void
 }
@@ -31,7 +26,7 @@ function checkName(value: string) {
 const DoneElement: FC<IFinDevElem> = ({onAction}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone}/>
+            <img src={logoDone} alt={"Logo done"}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
@@ -53,7 +48,7 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onAction("Finaly requested rights")}
-                    startIcon={<img src={logoBack}/>}
+                    startIcon={<img src={logoBack} alt={"Logo get back"}/>}
             >
                 Back to Home
             </Button>
@@ -128,14 +123,14 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
 
 export const AddDevModal: FC = () => {
-    const { showModal, hideModal, modalProps} = useGlobalModalContext();
+    const { modalProps} = useGlobalModalContext();
     const [pageMode, setPageMode] = useState(PageMode.ReqState)
 
     const setModeDone = (dev_data: string) => {
         console.log(dev_data);
         setPageMode(PageMode.DoneState);
     }
-    const complete = (dev_data: string) => {
+    const complete = () => {
         setPageMode(PageMode.CompleteState);
         modalProps.onAct("some data");
     }
@@ -144,7 +139,7 @@ export const AddDevModal: FC = () => {
         <div>
             { pageMode === PageMode.ReqState
                 ? <FindDevElement onAction={(dev_data) => setModeDone(dev_data)}/>
-                : <DoneElement onAction={() => complete("dummy data")}/>
+                : <DoneElement onAction={() => complete()}/>
             }
         </div>
         // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>

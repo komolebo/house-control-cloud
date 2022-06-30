@@ -54,15 +54,13 @@ const DEFAULT_MODAL_PROPS: ModalProps = {
 
 const GlobalModalContext = createContext<ContextType>({
     hideModal: () => {},
-    showModal: (modelType: MODAL_TYPE,
-                modalProps: ModalProps) => {},
+    showModal: () => {},
     modalProps: DEFAULT_MODAL_PROPS
 })
 export const useGlobalModalContext = () => useContext(GlobalModalContext);
 
 
 export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
-    // debugger;
     const [modaltype, setType] = useState(MODAL_TYPE.DefaultModal);
     const [modalProps, setModalProps] = useState<ModalProps>({
         onAct: () => {},
@@ -99,7 +97,6 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                     width: "100%", height: "100%",
                 }}
             >
-                {/* modals window style */}
                 <Box
                     sx={{
                         p: 3, position: "absolute", ml: "50%", top: "50%",
@@ -110,11 +107,11 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                     }}
                 >
                     <div>
-                        <img
+                        <img alt={"Logo close"}
                             src={logoClose} className={imgHover}
                             onClick={() => hideModal()}
                             style={{float: "right"}}
-                        />
+                         />
                     </div>
                     {renderComponent()}
                 </Box>
@@ -124,5 +121,3 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
         </GlobalModalContext.Provider>
     )
 }
-
-export default GlobalModalContext;

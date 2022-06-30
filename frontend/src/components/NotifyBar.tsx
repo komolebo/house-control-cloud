@@ -1,13 +1,11 @@
-import React, {FC, useEffect, useState} from "react";
-import {AppBar, Box, Button, Popper, Toolbar} from "@mui/material";
+import React, {FC, useState} from "react";
+import {Box, Button} from "@mui/material";
 import {h4Font, h4FontBlue, helpText} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
 import logoBellGreen from "../assets/bell-green.svg"
 import logoBellRed from "../assets/bell-red.svg"
 import logoClose from "../assets/close.svg"
-import {btnCommon, imgHover} from "../styles/common/buttons.css";
-import logoAddDev from "../assets/add-device2.svg";
-import {devItemDelim} from "../styles/DeviceItem.css";
+import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 
 interface INotifyItemProps {
@@ -95,10 +93,10 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                          : colBorderRed
                  }>
                 {item.prio === TNotifyPrio.Approve
-                    ? <img src={logoBellBlue}/>
+                    ? <img src={logoBellBlue} alt={"Logo bel blue"}/>
                     : item.prio === TNotifyPrio.Info
-                        ? <img src={logoBellGreen}/>
-                        : <img src={logoBellRed}/>
+                        ? <img src={logoBellGreen} alt={"Logo bel green"}/>
+                        : <img src={logoBellRed} alt={"Logo bel red"}/>
                 }
 
             </div>
@@ -127,7 +125,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                 <img src={logoClose} style={{verticalAlign: "top", marginRight: 4}}
                      onClick={ () => onDelete(item.id) }
                      className={imgHover}
-                />
+                 alt={"Logo close"}/>
             </div>
         </Box>
     </div>

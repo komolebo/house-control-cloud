@@ -1,4 +1,4 @@
-import {FC, useRef, useState} from "react";
+import React, {FC, useRef, useState} from "react";
 import {
     delimiter,
     fieldIcon,
@@ -17,6 +17,7 @@ import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
 import {login} from "../http/auth";
 import {setAuthToken} from "../globals/AuthGlobal";
 import {wide} from "../styles/common/position.css";
+
 
 const LoginPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);

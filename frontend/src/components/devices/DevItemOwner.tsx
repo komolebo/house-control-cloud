@@ -1,12 +1,11 @@
-import React, {FC, useState} from "react";
-import {IProps, TConnectedUser, TDevItem, TDevRole} from "./DevItem";
+import React, {FC} from "react";
+import {TConnectedUser, TDevItem} from "./DevItem";
 import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Button, Chip} from "@mui/material";
+import {Button} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
-import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -93,7 +92,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
 
         <div id={devOwnerBottom}>
             <Button
-                endIcon={ <img src={logoInvite}/>}
+                endIcon={ <img src={logoInvite} alt={"Logo invite"}/>}
                 onClick={() => showModal(MODAL_TYPE.InviteUsrModal, {
                     onClose: () => {console.log("Modal onClose")},
                     onAct: (userInfo) => handleInviteUsr(userInfo)

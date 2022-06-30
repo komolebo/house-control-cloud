@@ -1,5 +1,5 @@
 import React, {FC, useState} from "react";
-import {MODAL_TYPE, useGlobalModalContext} from "./ModalProvider";
+import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
@@ -43,7 +43,7 @@ const DoneElement: FC<IUpdAccessDoneProp> = ({onAction, usrInfo,}) => {
 
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone}/>
+            <img src={logoDone} alt={"Job is done"}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
@@ -73,7 +73,7 @@ const DoneElement: FC<IUpdAccessDoneProp> = ({onAction, usrInfo,}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onAction()}
-                    startIcon={<img src={logoBack}/>}
+                    startIcon={<img src={logoBack} alt={"Back to home"}/>}
             >
                 Back to Home
             </Button>
@@ -123,7 +123,7 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
             <ColorRoleLabel role={usrInfo.role}/>
             {role !== usrInfo.role &&
                 <div style={{display: "flex"}}>
-                    <img src={logoTransition} style={{marginLeft: 5, marginRight: 5}}/>
+                    <img src={logoTransition} style={{marginLeft: 5, marginRight: 5}} alt={"Transition logo"}/>
                     <ColorRoleLabel role={role}/>
                 </div>
             }
@@ -191,10 +191,9 @@ export const UpdUsrAccessModal: FC = () => {
     const {usrInfo, devInfo} = modalProps.data;
 
     const setModeDone = () => {
-        // modalProps.onAct(usrData);
         setPageMode(PageMode.DoneState);
     }
-    const complete = (dev_data: string) => {
+    const complete = () => {
         setPageMode(PageMode.CompleteState);
         hideModal();
     }
@@ -208,11 +207,10 @@ export const UpdUsrAccessModal: FC = () => {
                     usrInfo={usrInfo}
                 />
                 : <DoneElement
-                    onAction={() => complete("dummy data")}
+                    onAction={() => complete()}
                     usrInfo={usrInfo}
                 />
             }
         </div>
-        // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>
     )
 }

@@ -31,7 +31,7 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
 
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone}/>
+            <img src={logoDone} alt={"Logo job is done"}/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>
@@ -50,7 +50,7 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
                         textTransform: 'none'
                     }}
                     onClick={() => onAction()}
-                    startIcon={<img src={logoBack}/>}
+                    startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
             >
                 Back to Home
             </Button>
@@ -161,7 +161,7 @@ export const InviteUserModal: FC = () => {
         setUserData(uData);
         modalProps.onAct(uData);
     }
-    const complete = (dev_data: string) => {
+    const complete = () => {
         hideModal();
     }
 
@@ -172,7 +172,7 @@ export const InviteUserModal: FC = () => {
                     onAction={usrData => setModeDone(usrData)}
                 />
                 : <DoneElement
-                    onAction={() => complete("dummy data")}
+                    onAction={() => complete()}
                     usrInfo={userData}
                 />
             }

@@ -89,7 +89,7 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
                           backgroundColor: "#2ED573", width: 130, height: 42,
                           textTransform: 'none', borderRadius: 47, marginTop: 2
 
-                      }} endIcon={<img src={logoStart}/>}
+                      }} endIcon={<img src={logoStart} alt={"Logo start"}/>}
             > START </Button>
         }
 
@@ -110,7 +110,7 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
                     width: 100, height: 42, borderRadius: 47, right: 0, top: 10, position:'absolute',
                     textTransform: 'none'
                 }}
-                endIcon={<img src={logoEdit}/>        }
+                endIcon={<img src={logoEdit} alt={"Logo edit"}/>        }
                 > Edit
             </Button>
         }

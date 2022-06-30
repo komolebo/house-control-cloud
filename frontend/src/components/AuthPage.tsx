@@ -1,4 +1,4 @@
-import {FC, useContext, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
@@ -10,7 +10,6 @@ import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
 import {UserSettingContext} from "../globals/UserGlobals";
 import {wide} from "../styles/common/position.css";
-
 
 const AuthPage: FC = () => {
     const [pwdVisible, SetPwdVisible] = useState(false);

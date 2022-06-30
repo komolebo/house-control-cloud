@@ -96,7 +96,7 @@ export const DevContainer: FC = () => {
                         float: "right", ml: 2
                     }}
                     endIcon={
-                        <img src={logoAddDev}/>
+                        <img src={logoAddDev} alt={"Adde device logo"}/>
                     }
                     onClick={() => showModal(MODAL_TYPE.AddDevModal, {
                         onClose: () => {console.log("Modal onClose")},
@@ -113,7 +113,7 @@ export const DevContainer: FC = () => {
                         float: "right",
                     }}
                     endIcon={
-                        <img src={logoDisconnect}/>
+                        <img src={logoDisconnect} alt={"Logo disconnect"}/>
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},

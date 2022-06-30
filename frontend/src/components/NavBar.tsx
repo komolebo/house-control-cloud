@@ -4,11 +4,10 @@ import {
     AppBar,
     Avatar,
     Box,
-    Button, ClickAwayListener,
+    ClickAwayListener,
     IconButton,
     Menu,
-    MenuItem, Paper,
-    Popper,
+    MenuItem, Popper,
     Toolbar,
     Tooltip,
     Typography
@@ -17,8 +16,6 @@ import logoHomeNet from "../assets/home-net.svg";
 import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";
-import {h2Font, h4FontBlue} from "../styles/common/fonts.css";
-import {colBlue} from "../styles/common/colors.css"
 import {NotifyBar} from "./NotifyBar";
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -51,25 +48,24 @@ export const NavBar: React.FC = () => {
         <div id={navBar}>
         <AppBar position="static">
             <Toolbar sx={{
-                // backgroundColor: "#1690E9"
                 height: 100
             }}>
                 <IconButton sx={{ ml: 4 }} >
-                    <img src={logoHomeNet}/>
+                    <img src={logoHomeNet} alt={"HomeNet logo"}/>
                     {/*<img src={logoHomeNetCloud}/>*/}
                     {/*<MenuIcon />*/}
                 </IconButton>
 
                 <Box sx={{ml: 1, flexGrow: 3}}>
-                    <img src={logoHomeNetCloud}/>
+                    <img src={logoHomeNetCloud} alt={"Logo HomeNet cloud"}/>
                 </Box>
 
                 <IconButton color="inherit" >
-                    <img src={logoFaq}/>
+                    <img src={logoFaq} alt={"Logo FAQ"}/>
                 </IconButton>
 
                 <IconButton onClick={handleOpenMsgMenu} color="inherit" sx={{ml: 1}}>
-                    <img src={logoMsgYes}/>
+                    <img src={logoMsgYes} alt={"Yes!"}/>
                 </IconButton>
                 {anchorElMsg &&
                     <ClickAwayListener onClickAway={() => handleCloseMsgMenu()}>

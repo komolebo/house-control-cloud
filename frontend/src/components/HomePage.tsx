@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC} from "react";
 import {homePage} from "../styles/Home.css"
 import {hFont, helpText} from "../styles/common/fonts.css";
 import {DevContainer} from "./devices/DevContainer";
@@ -12,10 +12,6 @@ const HomePage: FC = () => {
             <DevContainer/>
 
             <div>Bottom part</div>
-
-            {/*<button className={wideBtn}>*/}
-            {/*    Add new device*/}
-            {/*</button>*/}
         </div>
     )
 }
