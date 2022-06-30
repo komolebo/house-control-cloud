@@ -5,6 +5,7 @@ import {devContainer, devContContent, devContHead} from "../../styles/DevContain
 import {Button} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoAddDev from "../../assets/add-device2.svg";
+import logoDisconnect from "../../assets/disconnect-device.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
@@ -79,16 +80,20 @@ export const DevContainer: FC = () => {
 
     return <div id={devContainer}>
         <div id={devContHead}>
-            <DevList
-                devNames={devices.map(el => el.name)}
-                onSelect={i => setCurDev(i)}
-                initSelection={curDev}
-            />
+            <div style={{flexGrow: 4}}>
+                <DevList
+                    devNames={devices.map(el => el.name)}
+                    onSelect={i => setCurDev(i)}
+                    initSelection={curDev}
+                />
+            </div>
+            <div style={{flexGrow: 1}}>
             <Button variant={"contained"}
                     className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47, right: 0, top: 0, position:'absolute',
-                        textTransform: 'none'
+                        width: 160, height: 42, borderRadius: 47,
+                        textTransform: 'none',
+                        float: "right", ml: 2
                     }}
                     endIcon={
                         <img src={logoAddDev}/>
@@ -100,6 +105,27 @@ export const DevContainer: FC = () => {
             >
                 Add device
             </Button>
+            <Button variant={"outlined"}
+                    className={btnCommon}
+                    sx={{
+                        width: 160, height: 42, borderRadius: 47,
+                        textTransform: 'none',
+                        float: "right"
+                    }}
+                    endIcon={
+                        <img src={logoDisconnect}/>
+                    }
+                    onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
+                        onClose: () => {console.log("Modal onClose")},
+                        onAct: () => {hideModal()},
+                        data: {
+                            devInfo: devices[curDev]
+                        }
+                    })}
+            >
+                Unsubscribe
+            </Button>
+            </div>
         </div>
 
         { curDev >= 0 &&

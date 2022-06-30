@@ -7,12 +7,14 @@ import {AddDevModal} from "./AddDevModal";
 import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
 import {UpdUsrAccessModal} from "./UpdUsrAccessModal";
+import {UnsubscribeUsrModal} from "./UnsubsribeUsrModal";
 
 export enum MODAL_TYPE {
     AddDevModal,
     ClrSettModal,
     ModifyUsrAccessModal,
     InviteUsrModal,
+    UnsubscribeUsrModal,
     DefaultModal
 }
 
@@ -36,6 +38,7 @@ const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.ClrSettModal]: ClearSettingsModal,
     [MODAL_TYPE.InviteUsrModal]: InviteUserModal,
     [MODAL_TYPE.ModifyUsrAccessModal]: UpdUsrAccessModal,
+    [MODAL_TYPE.UnsubscribeUsrModal]: UnsubscribeUsrModal,
     [MODAL_TYPE.DefaultModal]: null,
 }
 
