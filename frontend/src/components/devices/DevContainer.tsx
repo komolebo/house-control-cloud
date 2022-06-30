@@ -80,7 +80,7 @@ export const DevContainer: FC = () => {
 
     return <div id={devContainer}>
         <div id={devContHead}>
-            <div style={{flexGrow: 4}}>
+            <div style={{flexGrow: 10}}>
                 <DevList
                     devNames={devices.map(el => el.name)}
                     onSelect={i => setCurDev(i)}
@@ -110,14 +110,14 @@ export const DevContainer: FC = () => {
                     sx={{
                         width: 160, height: 42, borderRadius: 47,
                         textTransform: 'none',
-                        float: "right"
+                        float: "right",
                     }}
                     endIcon={
                         <img src={logoDisconnect}/>
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},
-                        onAct: () => {hideModal()},
+                        onAct: (devInfo) => { clearDevice(devInfo.hex) },
                         data: {
                             devInfo: devices[curDev]
                         }
