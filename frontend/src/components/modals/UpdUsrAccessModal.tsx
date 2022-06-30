@@ -112,7 +112,7 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
             </div>
         </Box>
 
-        <div className={[h3Font].join(' ')}>Name</div>
+        <div className={[h3Font].join(' ')}>Device name</div>
         <div className={[h4Font, devItemDelim].join(' ')}>{devInfo.name}</div>
 
         <div className={[h3Font].join(' ')}>User</div>

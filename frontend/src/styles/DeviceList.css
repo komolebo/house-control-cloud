@@ -26,18 +26,15 @@
     color: #2F3542;
     font-family: Roboto, 'Roboto', sans-serif;
     font-style: normal;
-    font-weight: 400;
     font-size: 18px;
-    line-height: 21px;
 
-    padding: 5px 20px;
+    padding: 5px 15x;
     border: none;
     text-transform: none;
 }
 #dev-list-item-select {
     color: #1690E9;
     font-family: Roboto, 'Roboto', sans-serif;
-    font-weight: 600;
     font-size: 18px;
 
     padding: 5px 15px;
