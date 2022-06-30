@@ -1,11 +1,11 @@
 import React, {FC} from "react";
-import {TConnectedUser, TDevItem} from "./DevItem";
 import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
+import {TConnectedUser, TDevItem} from "../../globals/DeviceData";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,

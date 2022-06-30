@@ -1,45 +1,15 @@
 import React, {FC, useState} from "react";
-import {
-    devItem,
-    devItemDelim
-} from "../../styles/DeviceItem.css"
+import {devItem, devItemDelim} from "../../styles/DeviceItem.css"
 import {h3Font, h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField} from "@mui/material";
 import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
+import {TDevItem} from "../../globals/DeviceData";
 
 
 export interface IProps {
     dev: TDevItem,
     onDevChange: (dev_info: string) => void
-}
-
-export enum TDevStatus {
-    Connected,
-    Interrupted,
-    Disconnected
-}
-
-export enum TDevRole {
-    OWNER,
-    CHILD,
-    GUEST,
-    ROLES_NUMBER
-}
-
-export interface TConnectedUser {
-    name: string;
-    id: number;
-    role: TDevRole;
-}
-
-export interface TDevItem {
-    name: string;
-    ip: string;
-    hex: string;
-    users: Array<TConnectedUser>;
-    status: TDevStatus,
-    role: TDevRole
 }
 
 

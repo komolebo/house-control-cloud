@@ -1,16 +1,16 @@
 import React, {FC, useState} from "react";
-import {useGlobalModalContext} from "./ModalProvider";
+import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
-import {TConnectedUser, TDevItem, TDevRole} from "../devices/DevItem";
 import logoUpdateAccess from "../../assets/modal-update-access.svg";
 import {devItemDelim} from "../../styles/DeviceItem.css";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
+import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 
 interface IInvitElemProp {
     onAction: () => void,
@@ -22,19 +22,12 @@ interface IUpdAccessDoneProp {
     usrInfo?: TConnectedUser,
 }
 
-enum PageMode{
-    ReqState,
-    DoneState,
-    CompleteState
-}
-
 enum AccessActionTrigger {
     USER_ACCESS_UPDATE,
     USER_ACCESS_REMOVED,
     NONE
 }
 
-const ROLES = Array.from(Array(TDevRole.ROLES_NUMBER).keys());
 let accessActionTrigger: AccessActionTrigger = AccessActionTrigger.NONE;
 
 
@@ -186,21 +179,21 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
 
 export const UpdUsrAccessModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(PageMode.ReqState)
+    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
 
     const {usrInfo, devInfo} = modalProps.data;
 
     const setModeDone = () => {
-        setPageMode(PageMode.DoneState);
+        setPageMode(ModalPageState.DoneState);
     }
     const complete = () => {
-        setPageMode(PageMode.CompleteState);
+        setPageMode(ModalPageState.CompleteState);
         hideModal();
     }
 
     return (
         <div>
-            { pageMode === PageMode.ReqState
+            { pageMode === ModalPageState.ReqState
                 ? <UpdUsrAccessElement
                     onAction={() => setModeDone()}
                     devInfo={devInfo}

@@ -1,6 +1,6 @@
 import React, {FC, useState} from "react";
 import DevList from "./DevList";
-import DevItem, {TConnectedUser, TDevItem, TDevRole, TDevStatus} from "./DevItem";
+import DevItem from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
 import {Button} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
@@ -9,6 +9,7 @@ import logoDisconnect from "../../assets/disconnect-device.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
+import {TConnectedUser, TDevItem, TDevRole, TDevStatus} from "../../globals/DeviceData";
 
 
 export const DevContainer: FC = () => {

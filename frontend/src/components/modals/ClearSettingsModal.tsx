@@ -4,16 +4,11 @@ import {Box, Button} from "@mui/material";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
-import {TDevItem} from "../devices/DevItem";
 import logoBack from "../../assets/arrow-back.svg";
-import {useGlobalModalContext} from "./ModalProvider";
+import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
+import {TDevItem} from "../../globals/DeviceData";
 
-enum PageState {
-    ClearState,
-    DoneState,
-    CompleteState
-}
 
 interface IPropClrSetElem {
     devInfo: TDevItem,
@@ -101,23 +96,27 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
 export const ClearSettingsModal: FC<IClrSettingsProp> = () => {
     const {modalProps } = useGlobalModalContext();
     const {onAct, onClose, data} = modalProps;
-    let [pageState, setPageState] = useState(PageState.ClearState)
+    let [pageState, setPageState] = useState(ModalPageState.ReqState)
 
     const handleClear = () => {
         // req to DB
         // devInfo.users = [];
         onAct(data);
-        setPageState(PageState.DoneState);
+        setPageState(ModalPageState.DoneState);
     }
     const handleComplete = () => {
-        setPageState(PageState.CompleteState);
+        setPageState(ModalPageState.CompleteState);
         onClose();
     }
 
     return <div>
-        {pageState === PageState.ClearState
-            ? <ClrSettingElement devInfo={data} onClear={() => handleClear()}/>
-            : <DoneElement onDone={() => handleComplete()}/>
+        {pageState === ModalPageState.ReqState
+            ? <ClrSettingElement
+                devInfo={data} onClear={() => handleClear()}
+            />
+            : <DoneElement
+                onDone={() => handleComplete()}
+            />
         }
     </div>
 }

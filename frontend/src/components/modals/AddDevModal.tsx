@@ -1,5 +1,5 @@
 import React, {FC, useState} from "react";
-import {useGlobalModalContext} from "./ModalProvider";
+import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, TextField} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
@@ -11,12 +11,6 @@ import logoAddDev from "../../assets/modal-add-dev.svg";
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
     onAction: (dev_data: string) => void
-}
-
-enum PageMode{
-    ReqState,
-    DoneState,
-    CompleteState
 }
 
 function checkName(value: string) {
@@ -124,20 +118,20 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
 export const AddDevModal: FC = () => {
     const { modalProps} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(PageMode.ReqState)
+    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
 
     const setModeDone = (dev_data: string) => {
         console.log(dev_data);
-        setPageMode(PageMode.DoneState);
+        setPageMode(ModalPageState.DoneState);
     }
     const complete = () => {
-        setPageMode(PageMode.CompleteState);
+        setPageMode(ModalPageState.CompleteState);
         modalProps.onAct("some data");
     }
 
     return (
         <div>
-            { pageMode === PageMode.ReqState
+            { pageMode === ModalPageState.ReqState
                 ? <FindDevElement onAction={(dev_data) => setModeDone(dev_data)}/>
                 : <DoneElement onAction={() => complete()}/>
             }

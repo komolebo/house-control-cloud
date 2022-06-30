@@ -18,6 +18,12 @@ export enum MODAL_TYPE {
     DefaultModal
 }
 
+export enum ModalPageState{
+    ReqState,
+    DoneState,
+    CompleteState
+}
+
 type ModalProps = {
     onClose: () => void,
     onAct: (data: any) => void
@@ -33,6 +39,7 @@ type ContextType = {
     modalProps: ModalProps
 }
 
+// add here new modal dialogues
 const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.AddDevModal]: AddDevModal,
     [MODAL_TYPE.ClrSettModal]: ClearSettingsModal,

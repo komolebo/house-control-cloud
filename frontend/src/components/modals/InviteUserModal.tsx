@@ -6,8 +6,8 @@ import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
-import {TConnectedUser, TDevRole} from "../devices/DevItem";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
+import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/DeviceData";
 
 interface IInvitElemProp {
     onAction: (dev_data: TConnectedUser) => void
@@ -18,8 +18,6 @@ interface IDoneProp {
 }
 
 const MIN_CHAR_ID = 6;
-const ROLES = Array.from(Array(TDevRole.ROLES_NUMBER).keys());
-const DEFAULT_ROLE = TDevRole.GUEST;
 
 const checkUser = (name: string): Boolean => {
     return name === "12345678"

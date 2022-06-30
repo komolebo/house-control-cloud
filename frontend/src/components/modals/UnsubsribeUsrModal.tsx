@@ -1,13 +1,13 @@
 import React, {FC, useState} from "react";
-import {useGlobalModalContext} from "./ModalProvider";
+import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import {Box, Button} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
-import {TDevItem} from "../devices/DevItem";
 import logoDisconnect from "../../assets/disconnect-device.svg";
+import {TDevItem} from "../../globals/DeviceData";
 
 interface IUnsubElemProp {
     onAction: () => void,
@@ -17,12 +17,6 @@ interface IUnsubElemProp {
 interface IUnsubDoneElemProp {
     onAction: () => void,
     devInfo?: TDevItem,
-}
-
-enum PageMode{
-    ReqState,
-    DoneState,
-    CompleteState
 }
 
 const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
@@ -96,23 +90,23 @@ const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
 
 export const UnsubscribeUsrModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(PageMode.ReqState)
+    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
 
     const {onAct} = modalProps;
     const {devInfo} = modalProps.data;
 
     const setModeDone = () => {
         onAct(devInfo);
-        setPageMode(PageMode.DoneState);
+        setPageMode(ModalPageState.DoneState);
     }
     const complete = () => {
-        setPageMode(PageMode.CompleteState);
+        setPageMode(ModalPageState.CompleteState);
         hideModal();
     }
 
     return (
         <div>
-            { pageMode === PageMode.ReqState
+            { pageMode === ModalPageState.ReqState
                 ? <UnsubscribeUsrElement
                     onAction={() => setModeDone()}
                     devInfo={devInfo}

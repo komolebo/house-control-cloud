@@ -1,6 +1,6 @@
-import {TDevRole} from "../devices/DevItem";
 import {Chip} from "@mui/material";
 import React, {FC} from "react";
+import {TDevRole} from "../../globals/DeviceData";
 
 interface IRoleColorProp {
     role: TDevRole
