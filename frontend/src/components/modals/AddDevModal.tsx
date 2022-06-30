@@ -4,7 +4,6 @@ import {Box, Button, TextField} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 
@@ -36,10 +35,8 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     onClick={() => onAction("Finaly requested rights")}
                     startIcon={<img src={logoBack} alt={"Logo get back"}/>}
@@ -101,10 +98,8 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     disabled={deviceId.length < MIN_CHAR_ID}
                     onClick={() => handleReqAccess()}

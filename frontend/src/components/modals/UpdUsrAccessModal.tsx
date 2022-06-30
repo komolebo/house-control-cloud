@@ -4,7 +4,6 @@ import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEven
 import {cntrContent, cntrVContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoUpdateAccess from "../../assets/modal-update-access.svg";
 import {devItemDelim} from "../../styles/DeviceItem.css";
@@ -60,10 +59,8 @@ const DoneElement: FC<IUpdAccessDoneProp> = ({onAction, usrInfo,}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Back to home"}/>}
@@ -148,9 +145,6 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
                     color={"error"}
                     sx={{
                         width: 150,
-                        height: 42,
-                        borderRadius: 47,
-                        textTransform: 'none',
                         flexGrow: 1,
                         m: 1
                     }}
@@ -161,8 +155,7 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
 
             <Button variant={"contained"}
                     sx={{
-                        width: 150, height: 42, borderRadius: 47,
-                        textTransform: 'none',
+                        width: 150,
                         flexGrow: 1,
                         m: 1
                     }}

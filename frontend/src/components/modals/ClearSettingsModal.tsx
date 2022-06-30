@@ -1,7 +1,6 @@
 import React, {FC, useState} from "react";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Box, Button} from "@mui/material";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoDone from "../../assets/done-big.svg";
 import {cntrContent} from "../../styles/common/position.css";
 import logoBack from "../../assets/arrow-back.svg";
@@ -44,10 +43,8 @@ const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     onClick={() => onDone()}
                     startIcon={<img src={logoBack} alt={"Logo get back"}/>}
@@ -82,8 +79,8 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
         <div className={cntrContent}>
             <Button variant={"contained"} color={"error"}
                     sx={{
-                        width: 130, height: 42,
-                        textTransform: 'none', borderRadius: 47, marginTop: 2
+                        width: 130,
+                        marginTop: 2
 
                     }}
                     onClick={() => onClear()}

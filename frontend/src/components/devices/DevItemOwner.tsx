@@ -6,6 +6,8 @@ import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import {TConnectedUser, TDevItem} from "../../globals/DeviceData";
+import {theme} from "../mui/muiOverride";
+import {colRed} from "../../styles/common/colors.css";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -61,7 +63,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                         <td id={devOwnerConnusrProp} className={h4Font}>0x{conn_user.id}</td>
                         <td>
                             <Button variant={"outlined"}
-                                    color= "info"
+                                    color={"info"}
                                     disabled={!active}
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
@@ -72,14 +74,13 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                                     sx={active
                                         ? {
                                           height: 24, width: '100%',
-                                          textTransform: 'none', borderRadius: 47,
-                                          background: "rgba(22, 144, 233, 0.2)"
+                                          // background: "rgba(22, 144, 233, 0.2)"
                                         }
                                         : {
                                           height: 24, width: '100%',
-                                          textTransform: 'none', borderRadius: 47,
                                         }
                                     }
+                                    className={colRed}
                             >
                                 Modify
                             </Button>
@@ -98,8 +99,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                     onAct: (userInfo) => handleInviteUsr(userInfo)
                 })}
                 variant={"outlined"} sx={{
-                width: 130, height: 42, borderRadius: 47,
-                textTransform: 'none',
+                width: 130,
                 marginRight: 2
                 }}
             >
@@ -110,9 +110,6 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                     color={"error"}
                     sx={{
                 width: 140,
-                height: 42,
-                borderRadius: 47,
-                textTransform: 'none'
             }}
                     onClick={() => showModal(MODAL_TYPE.ClrSettModal, {
                         onClose: () => {hideModal()},

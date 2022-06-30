@@ -61,13 +61,6 @@
     background:url(../../../public/icons/add-device.svg) left top;
 }
 
-.btn-common {
-    text-transform: none;
-    border-radius: 47px;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-}
-
 .img-hover:hover {
     cursor: pointer;
 }

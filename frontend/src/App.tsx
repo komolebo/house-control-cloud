@@ -5,6 +5,7 @@ import {UserSettingContext} from "./globals/UserGlobals";
 import {isAuthToken} from "./globals/AuthGlobal";
 import {NavBar} from "./components/NavBar";
 
+
 const App = () => {
     let [isAuth, setIsAuth] = useState(false)
     const authorized = isAuthToken();
@@ -21,7 +22,6 @@ const App = () => {
           </BrowserRouter>
           {authorized ? <div>AUTH</div> : <div>NOT AUTH</div>}
       </UserSettingContext.Provider>
-    );
-    }
+    )}
 
 export default App;

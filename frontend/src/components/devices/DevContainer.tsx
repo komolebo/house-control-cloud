@@ -3,7 +3,6 @@ import DevList from "./DevList";
 import DevItem from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
 import {Button} from "@mui/material";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoAddDev from "../../assets/add-device2.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {h2Font} from "../../styles/common/fonts.css";
@@ -90,10 +89,8 @@ export const DevContainer: FC = () => {
             </div>
             <div style={{flexGrow: 1}}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 160, height: 42, borderRadius: 47,
-                        textTransform: 'none',
+                        width: 180,
                         float: "right", ml: 2
                     }}
                     endIcon={
@@ -107,10 +104,9 @@ export const DevContainer: FC = () => {
                 Add device
             </Button>
             <Button variant={"outlined"}
-                    className={btnCommon}
+                    size={"large"}
                     sx={{
-                        width: 160, height: 42, borderRadius: 47,
-                        textTransform: 'none',
+                        width: 180,
                         float: "right",
                     }}
                     endIcon={

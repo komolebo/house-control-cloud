@@ -1,13 +1,13 @@
 import React, {FC, useState} from "react";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
-import {Box, Button} from "@mui/material";
+import {Box, Button, ThemeProvider} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
+import {theme} from "../mui/muiOverride";
 
 interface IUnsubElemProp {
     onAction: () => void,
@@ -35,10 +35,8 @@ const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
@@ -70,18 +68,17 @@ const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
         </Box>
 
         <div className={cntrContent}>
+            <ThemeProvider theme={theme}>
             <Button variant={"contained"}
                     color={"info"}
                     sx={{
-                        height: 42,
-                        borderRadius: 47,
-                        textTransform: 'none',
                         mt: 2
                     }}
                     onClick={() => handleUnsubscribe()}
             >
                 Unsubscribe
             </Button>
+            </ThemeProvider>
         </div>
 
     </div>

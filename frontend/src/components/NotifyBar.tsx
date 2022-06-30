@@ -111,8 +111,8 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 
                 <Button variant={"contained"}
                         sx={{
-                            width: "50%", height: 32, borderRadius: 47,
-                            textTransform: 'none', bgcolor: "#1690E9"
+                            width: "50%", height: 32,
+                            bgcolor: "#1690E9"
                         }}
                         onClick={onAct}
                 >

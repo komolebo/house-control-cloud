@@ -4,7 +4,6 @@ import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEven
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import {btnCommon} from "../../styles/common/buttons.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/DeviceData";
@@ -42,10 +41,8 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
@@ -133,10 +130,8 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
         <Box sx={{display: "flex", justifyContent: "center", mt: 3}}>
             <Button variant={"contained"}
-                    className={btnCommon}
                     sx={{
-                        width: 200, height: 42, borderRadius: 47,
-                        textTransform: 'none'
+                        width: 200,
                     }}
                     disabled={userId.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
                     onClick={() => handleReqAccess()}

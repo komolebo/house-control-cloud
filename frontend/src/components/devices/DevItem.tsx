@@ -48,16 +48,17 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
         {editMode
             ? <Button variant={"contained"}
                       sx={{
-                          width: 200, height: 42, borderRadius: 47, marginTop: 2,
-                          textTransform: 'none'
+                          width: 200, marginTop: 2,
                       }}
                       disabled={name.length === 0}
                       onClick={handleSave}
             > Save </Button>
             : <Button variant={"contained"}
+                      color={"success"}
                       sx={{
-                          backgroundColor: "#2ED573", width: 130, height: 42,
-                          textTransform: 'none', borderRadius: 47, marginTop: 2
+                          // backgroundColor: "#2ED573",
+                          width: 130,
+                          marginTop: 2
 
                       }} endIcon={<img src={logoStart} alt={"Logo start"}/>}
             > START </Button>
@@ -68,8 +69,7 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
             <Button variant={"text"}
                     onClick={() => setEditMode(!editMode)}
                     sx={{
-                        width: 100, height: 42, borderRadius: 47, right: 0, top: 10, position:'absolute',
-                        textTransform: 'none'
+                        width: 100, right: 0, top: 10, position:'absolute',
                     }}
             > Cancel
             </Button>
@@ -77,8 +77,7 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
             <Button variant={"text"}
                 onClick={() => setEditMode(!editMode)}
                 sx={{
-                    width: 100, height: 42, borderRadius: 47, right: 0, top: 10, position:'absolute',
-                    textTransform: 'none'
+                    width: 100, right: 0, top: 10, position:'absolute',
                 }}
                 endIcon={<img src={logoEdit} alt={"Logo edit"}/>        }
                 > Edit
