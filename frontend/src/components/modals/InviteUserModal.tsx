@@ -93,7 +93,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             &nbsp;&#160;Invite by user ID
         </div>
 
-        <Box sx={{pt: 3, pb: 1}}>
+        <Box sx={{pt: 3, pb: 3}}>
             <div className={helpText}>
                 Choosing role OWNER would require other owner’s access
             </div>
@@ -133,7 +133,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             </FormControl>
         </Box>
 
-        <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
+        <Box sx={{display: "flex", justifyContent: "center", mt: 3}}>
             <Button variant={"contained"}
                     className={btnCommon}
                     sx={{

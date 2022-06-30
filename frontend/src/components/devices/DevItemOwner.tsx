@@ -31,6 +31,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
         onUsrInvite(devInfo.hex, userInfo);
     }
 
+    console.log("--> ", devInfo)
+
     return <div id={devOwner}>
         <div className={h3Font}>Connected users: </div>
 
@@ -72,15 +74,11 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                                         ? {
                                           height: 24, width: '100%',
                                           textTransform: 'none', borderRadius: 47,
-                                          // fontWeight: 550,
-                                          // backgroundColor: '#ffdcd5',
                                           background: "rgba(22, 144, 233, 0.2)"
                                         }
                                         : {
                                           height: 24, width: '100%',
                                           textTransform: 'none', borderRadius: 47,
-
-                                          // fontWeight: 550
                                         }
                                     }
                             >
