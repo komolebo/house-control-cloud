@@ -9,6 +9,8 @@ import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TConnectedUser, TDevItem, TDevRole, TDevStatus} from "../../globals/DeviceData";
+import {wideMuiBtn} from "../../styles/common/buttons.css";
+import {floatr} from "../../styles/common/position.css";
 
 
 export const DevContainer: FC = () => {
@@ -90,8 +92,7 @@ export const DevContainer: FC = () => {
             <div style={{flexGrow: 1}}>
             <Button variant={"contained"}
                     sx={{
-                        width: 180,
-                        float: "right", ml: 2
+                        ml: 2
                     }}
                     endIcon={
                         <img src={logoAddDev} alt={"Adde device logo"}/>
@@ -100,15 +101,11 @@ export const DevContainer: FC = () => {
                         onClose: () => {console.log("Modal onClose")},
                         onAct: () => {hideModal()}
                     })}
+                    className={[wideMuiBtn, floatr].join(' ')}
             >
                 Add device
             </Button>
             <Button variant={"outlined"}
-                    size={"large"}
-                    sx={{
-                        width: 180,
-                        float: "right",
-                    }}
                     endIcon={
                         <img src={logoDisconnect} alt={"Logo disconnect"}/>
                     }
@@ -119,6 +116,7 @@ export const DevContainer: FC = () => {
                             devInfo: devices[curDev]
                         }
                     })}
+                    className={[wideMuiBtn, floatr].join(' ')}
             >
                 Unsubscribe
             </Button>

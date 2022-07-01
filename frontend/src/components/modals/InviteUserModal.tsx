@@ -7,6 +7,7 @@ import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/DeviceData";
+import {widerMuiBtn} from "../../styles/common/buttons.css";
 
 interface IInvitElemProp {
     onAction: (dev_data: TConnectedUser) => void
@@ -41,11 +42,9 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
+                    className={widerMuiBtn}
             >
                 Back to Home
             </Button>
@@ -130,11 +129,9 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
         <Box sx={{display: "flex", justifyContent: "center", mt: 3}}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     disabled={userId.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
                     onClick={() => handleReqAccess()}
+                    className={widerMuiBtn}
             >
                 Invite user
             </Button>

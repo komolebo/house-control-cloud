@@ -6,8 +6,8 @@ import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import {TConnectedUser, TDevItem} from "../../globals/DeviceData";
-import {theme} from "../mui/muiOverride";
-import {colRed} from "../../styles/common/colors.css";
+import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
+import {styleHeights} from "../../styles/common/customMuiStyle";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -70,17 +70,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                                         onAct: () => {},
                                         data: {usrInfo: conn_user, devInfo: devInfo}
                                     })}
-
-                                    sx={active
-                                        ? {
-                                          height: 24, width: '100%',
-                                          // background: "rgba(22, 144, 233, 0.2)"
-                                        }
-                                        : {
-                                          height: 24, width: '100%',
-                                        }
-                                    }
-                                    className={colRed}
+                                    sx={styleHeights.lowBtn}
+                                    className={[fulWidMuiBtn].join(' ')}
                             >
                                 Modify
                             </Button>
@@ -99,23 +90,21 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                     onAct: (userInfo) => handleInviteUsr(userInfo)
                 })}
                 variant={"outlined"} sx={{
-                width: 130,
-                marginRight: 2
+                    mr: 2
                 }}
+                className={shortMuiBtn}
             >
                 Invite
             </Button>
 
             <Button variant={"outlined"}
                     color={"error"}
-                    sx={{
-                width: 140,
-            }}
                     onClick={() => showModal(MODAL_TYPE.ClrSettModal, {
                         onClose: () => {hideModal()},
                         onAct: () => {handleClrSettings(devInfo)},
                         data: devInfo
                     })}
+                    className={shortMuiBtn}
             >
                 Clear settings
             </Button>

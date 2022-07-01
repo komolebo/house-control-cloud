@@ -5,6 +5,7 @@ import {Button, TextField} from "@mui/material";
 import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
+import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
 
 
 export interface IProps {
@@ -48,19 +49,19 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
         {editMode
             ? <Button variant={"contained"}
                       sx={{
-                          width: 200, marginTop: 2,
+                          mt: 2,
                       }}
                       disabled={name.length === 0}
                       onClick={handleSave}
+                      className={wideMuiBtn}
             > Save </Button>
             : <Button variant={"contained"}
                       color={"success"}
                       sx={{
-                          // backgroundColor: "#2ED573",
-                          width: 130,
-                          marginTop: 2
-
-                      }} endIcon={<img src={logoStart} alt={"Logo start"}/>}
+                          mt: 2
+                      }}
+                      endIcon={<img src={logoStart} alt={"Logo start"}/>}
+                      className={shortMuiBtn}
             > START </Button>
         }
 
@@ -69,34 +70,22 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
             <Button variant={"text"}
                     onClick={() => setEditMode(!editMode)}
                     sx={{
-                        width: 100, right: 0, top: 10, position:'absolute',
+                        right: 0, top: 10, position:'absolute',
                     }}
+                    className={shorterMuiBtn}
             > Cancel
             </Button>
             :
             <Button variant={"text"}
                 onClick={() => setEditMode(!editMode)}
                 sx={{
-                    width: 100, right: 0, top: 10, position:'absolute',
+                    right: 0, top: 10, position:'absolute',
                 }}
-                endIcon={<img src={logoEdit} alt={"Logo edit"}/>        }
-                > Edit
+                endIcon={<img src={logoEdit} alt={"Logo edit"}/>}
+                className={shorterMuiBtn}
+            > Edit
             </Button>
         }
-                {/*<div id={devItemBottom}>*/}
-                {/*    <div id={devItemBottomLeft}>*/}
-                {/*        <div className={devProp}>*/}
-
-
-                {/*        </div>*/}
-                {/*    </div>*/}
-
-                {/*    <div id={devItemBottomRight}>*/}
-                {/*        <div className={[devProp, bold].join(' ')} id={devName}>{user.name}</div>*/}
-                {/*        <div className={[devProp].join(' ')} id={devStat}>id: '{user.hex}'</div>*/}
-                {/*        <div className={devProp} id={devStat}>{user.ip}</div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
     </div>
 }
 

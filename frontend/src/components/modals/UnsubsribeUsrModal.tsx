@@ -8,6 +8,7 @@ import logoBack from "../../assets/arrow-back.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {theme} from "../mui/muiOverride";
+import {widerMuiBtn} from "../../styles/common/buttons.css";
 
 interface IUnsubElemProp {
     onAction: () => void,
@@ -35,11 +36,9 @@ const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
+                    className={widerMuiBtn}
             >
                 Back to Home
             </Button>

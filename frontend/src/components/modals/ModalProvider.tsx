@@ -8,6 +8,7 @@ import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
 import {UpdUsrAccessModal} from "./UpdUsrAccessModal";
 import {UnsubscribeUsrModal} from "./UnsubsribeUsrModal";
+import {PopperStyle} from "../../styles/common/customMuiStyle";
 
 export enum MODAL_TYPE {
     AddDevModal,
@@ -99,25 +100,21 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
             <Popper
                 id={"simple-popper"}
                 open={true}
-                sx={{
-                    backgroundColor: "rgba(0,0,0,0.7)",
-                    width: "100%", height: "100%",
-                }}
+                sx={PopperStyle}
             >
                 <Box
                     sx={{
-                        p: 3, position: "absolute", ml: "50%", top: "50%",
+                        p: 3, position: "absolute", left: "50%", top: "50%",
                         transform: "translate(-50%, -50%)",
                         background: "#FFFFFF", boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.15)",
                         borderRadius: "15px",
-                        display: "flex", flexDirection: "column"
                     }}
                 >
                     <div>
                         <img alt={"Logo close"}
-                            src={logoClose} className={imgHover}
-                            onClick={() => hideModal()}
-                            style={{float: "right"}}
+                             src={logoClose} className={imgHover}
+                             onClick={() => hideModal()}
+                             style={{float: "right"}}
                          />
                     </div>
                     {renderComponent()}

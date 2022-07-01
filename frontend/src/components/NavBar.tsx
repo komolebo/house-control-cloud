@@ -17,6 +17,7 @@ import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";
 import {NotifyBar} from "./NotifyBar";
+import {styleHeights} from "../styles/common/customMuiStyle";
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -47,9 +48,9 @@ export const NavBar: React.FC = () => {
     return (
         <div id={navBar}>
         <AppBar position="static">
-            <Toolbar sx={{
-                height: 100
-            }}>
+            <Toolbar sx={styleHeights.toolbar}
+                     className={navBar}
+            >
                 <IconButton sx={{ ml: 4 }} >
                     <img src={logoHomeNet} alt={"HomeNet logo"}/>
                     {/*<img src={logoHomeNetCloud}/>*/}

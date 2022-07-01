@@ -10,6 +10,7 @@ import {devItemDelim} from "../../styles/DeviceItem.css";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
+import {mediumMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
 
 interface IInvitElemProp {
     onAction: () => void,
@@ -59,11 +60,9 @@ const DoneElement: FC<IUpdAccessDoneProp> = ({onAction, usrInfo,}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     onClick={() => onAction()}
                     startIcon={<img src={logoBack} alt={"Back to home"}/>}
+                    className={widerMuiBtn}
             >
                 Back to Home
             </Button>
@@ -144,23 +143,23 @@ const UpdUsrAccessElement: FC<IInvitElemProp> = ({onAction, devInfo, usrInfo}) =
             <Button variant={"outlined"}
                     color={"error"}
                     sx={{
-                        width: 150,
                         flexGrow: 1,
                         m: 1
                     }}
                     onClick={() => handleRmAccess()}
+                    className={mediumMuiBtn}
             >
                 Delete access
             </Button>
 
             <Button variant={"contained"}
                     sx={{
-                        width: 150,
                         flexGrow: 1,
                         m: 1
                     }}
                     disabled={role === usrInfo.role}
                     onClick={() => handleUpdAccess()}
+                    className={mediumMuiBtn}
             >
                 Update access
             </Button>

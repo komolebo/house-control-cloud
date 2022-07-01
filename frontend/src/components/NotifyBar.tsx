@@ -7,6 +7,7 @@ import logoBellRed from "../assets/bell-red.svg"
 import logoClose from "../assets/close.svg"
 import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
+import {styleHeights} from "../styles/common/customMuiStyle";
 
 interface INotifyItemProps {
     item: TNotifyItem,
@@ -110,9 +111,9 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                 </div>
 
                 <Button variant={"contained"}
-                        sx={{
-                            width: "50%", height: 32,
-                            bgcolor: "#1690E9"
+                        color={"info"}
+                        sx={{...styleHeights.midHiBtn,
+                            width: "50%"
                         }}
                         onClick={onAct}
                 >

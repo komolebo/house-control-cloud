@@ -16,3 +16,16 @@
     align-items: center;
     /*vertical-align: center;*/
 }
+
+.flexc {
+    display: flex;
+    flex-direction: column;
+}
+.flexr {
+    display: flex;
+    flex-direction: row;
+}
+
+.floatr {
+    float: right;
+}

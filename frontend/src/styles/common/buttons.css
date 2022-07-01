@@ -64,3 +64,26 @@
 .img-hover:hover {
     cursor: pointer;
 }
+
+
+.ful-wid-mui-btn {
+    width: 100%;
+}
+.wider-mui-btn {
+    width: 200px;
+}
+.wide-mui-btn {
+    width: 180px;
+}
+.medium-mui-btn {
+    width: 150px;
+}
+.short-mui-btn {
+    width: 130px;
+}
+.shorter-mui-btn {
+    width: 100px;
+}
+.low-mui-btn {
+    height: 24px;
+}

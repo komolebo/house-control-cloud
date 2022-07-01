@@ -1,5 +1,4 @@
-import {createTheme, makeStyles} from "@mui/material";
-import {inspect} from "util";
+import {createTheme} from "@mui/material";
 
 export let theme = createTheme({});
 
@@ -8,6 +7,9 @@ theme = createTheme(theme, {
         success: {
             main: theme.palette.success.light,
         },
+        info: {
+            main: theme.palette.info.light
+        }
     },
     components: {
         MuiButton: {
@@ -16,8 +18,16 @@ theme = createTheme(theme, {
                     borderRadius: 47,
                     height: 42
                 }
-            }
-        }
+            },
+            variants: [
+                {
+                    props: { size: 'xlow' },
+                    style: {
+                        height: '24px'
+                    },
+                },
+            ],
+        },
     },
     typography: {
         button: {
@@ -25,4 +35,3 @@ theme = createTheme(theme, {
         }
     }
 });
-

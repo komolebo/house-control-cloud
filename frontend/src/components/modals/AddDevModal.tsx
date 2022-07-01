@@ -6,6 +6,7 @@ import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
+import {widerMuiBtn} from "../../styles/common/buttons.css";
 
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
@@ -35,11 +36,9 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     onClick={() => onAction("Finaly requested rights")}
                     startIcon={<img src={logoBack} alt={"Logo get back"}/>}
+                    className={widerMuiBtn}
             >
                 Back to Home
             </Button>
@@ -98,11 +97,9 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     disabled={deviceId.length < MIN_CHAR_ID}
                     onClick={() => handleReqAccess()}
+                    className={widerMuiBtn}
             >
                 Request access
             </Button>

@@ -7,6 +7,7 @@ import logoBack from "../../assets/arrow-back.svg";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
 import {TDevItem} from "../../globals/DeviceData";
+import {shortMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
 
 
 interface IPropClrSetElem {
@@ -43,11 +44,9 @@ const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
 
         <div className={cntrContent}>
             <Button variant={"contained"}
-                    sx={{
-                        width: 200,
-                    }}
                     onClick={() => onDone()}
                     startIcon={<img src={logoBack} alt={"Logo get back"}/>}
+                    className={widerMuiBtn}
             >
                 Back to Home
             </Button>
@@ -79,11 +78,11 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
         <div className={cntrContent}>
             <Button variant={"contained"} color={"error"}
                     sx={{
-                        width: 130,
-                        marginTop: 2
+                        mt: 2
 
                     }}
                     onClick={() => onClear()}
+                    className={shortMuiBtn}
             > Clear settings </Button>
 
         </div>
