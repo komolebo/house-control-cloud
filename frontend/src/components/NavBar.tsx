@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {navBar} from "../styles/NavBar.css";
 import {
     AppBar,
@@ -18,6 +18,7 @@ import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
+import {getUserInfo, UserSettingContext} from "../globals/UserSettingsProvider";
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -25,6 +26,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 export const NavBar: React.FC = () => {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = React.useState<null | HTMLElement>(null);
+    const userInfo = getUserInfo();
 
     const handleOpenMsgMenu = (event: React.MouseEvent<HTMLElement>) => {
         console.log("open");
@@ -85,7 +87,7 @@ export const NavBar: React.FC = () => {
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
                                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                             </IconButton>
-                            <Typography paddingTop={3}>Username</Typography>
+                            <Typography paddingTop={3}>{userInfo ? userInfo.name : "not_authorized"}</Typography>
                         </Box>
                     </Tooltip>
                     <Menu
