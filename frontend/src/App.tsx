@@ -1,7 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import {privateRoutes, publicRoutes} from "./routes";
-import {isAuth, UserAuthContext, UserAuthProvider} from "./globals/UserAuthProvider";
+import {UserAuthContext} from "./globals/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 
 

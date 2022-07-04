@@ -69,7 +69,6 @@ const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
         <div className={cntrContent}>
             <ThemeProvider theme={theme}>
             <Button variant={"contained"}
-                    color={"info"}
                     sx={{
                         mt: 2
                     }}

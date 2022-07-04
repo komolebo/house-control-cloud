@@ -47,7 +47,6 @@ const LoginPage: FC = () => {
     })
 
     const signIn = () => {
-        console.log("signIn", values);
         login(values.email, values.password).then(
             ({data}) => {
                 switch (data.status) {
@@ -140,9 +139,7 @@ const LoginPage: FC = () => {
             ): <></>
             }<br/><br/>
 
-            <button className={[btn, wide].join(' ')}
-                    onClick={signIn}
-                >
+            <button className={[btn, wide].join(' ')} onClick={signIn}>
                 LOGIN
             </button>
 

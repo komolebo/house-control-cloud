@@ -3,7 +3,6 @@ import {homePage} from "../styles/Home.css"
 import {hFont, helpText} from "../styles/common/fonts.css";
 import {DevContainer} from "./devices/DevContainer";
 import {NavBar} from "./NavBar";
-import {BrowserRouter} from "react-router-dom";
 
 const HomePage: FC = () => {
     return (

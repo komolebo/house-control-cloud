@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, loginPage, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
@@ -42,7 +42,6 @@ const SignupPage: FC = () => {
                 case 403:
                     console.log(response.data.message);
                     setValues({...values, warnings: response.data.message})
-                    // setPwdWarnings();
                     break;
                 case 422:
                     console.log(response.data.response.message);

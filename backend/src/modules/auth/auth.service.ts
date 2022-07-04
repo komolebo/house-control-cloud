@@ -19,7 +19,7 @@ export class AuthService {
     }
 
     public async login(email: string, pass: string) {
-        let user = await this.userService.findOneByEmail(email);
+        let user = await this.userService.findOneByEmail(email.toLocaleLowerCase());
         if (!user) {
             return new UnauthorizedException({message: 'User not exist'})
         }
@@ -42,6 +42,8 @@ export class AuthService {
     public async create(user) {
         // hash the password
         const pass = await this.hashPassword(user.password);
+
+        user.email = user.email.toLowerCase()
 
         // create the user
         const newUser = await this.userService.create({ ...user, password: pass});
