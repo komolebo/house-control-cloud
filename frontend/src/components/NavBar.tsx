@@ -12,7 +12,7 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
-import logoHomeNet from "../assets/home-net.svg";
+import logoHomeNet from "../assets/home-net-white.svg";
 import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";

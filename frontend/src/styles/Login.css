@@ -1,6 +1,6 @@
 .login-page {
     position: absolute;
-    top: 100px;
+    top: 120px;
     left: 50%;
     transform: translate(-50%, 0);
     width: 400px;
@@ -23,7 +23,7 @@
 .delimiter {
     color: #1065bb;
     border-bottom: 1px solid;
-    margin-top: 50px;
+    margin-top: 30px;
 }
 
 .field-icon {

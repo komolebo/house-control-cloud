@@ -16,8 +16,8 @@
 .free-label {
     display: block;
     color: dimgray;
-    font: .9rem 'Fira Sans', sans-serif;
-    padding: 20px 0;
+    /*font: .7rem 'Fira Sans', sans-serif;*/
+    /*padding: 20px 0;*/
 }
 
 .warn-label {

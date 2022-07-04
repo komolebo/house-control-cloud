@@ -1,7 +1,7 @@
 import {AUTH_PAGE, HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import React, {ReactNode} from "react";
 import LoginPage from "./components/LoginPage";
-import AuthPage from "./components/AuthPage";
+import SignupPage from "./components/SignupPage";
 import HomePage from "./components/HomePage";
 
 interface ITableRoute {
@@ -16,7 +16,7 @@ export const publicRoutes: ITableRoute[] = [
     },
     {
         path: AUTH_PAGE,
-        Component: <AuthPage/>
+        Component: <SignupPage/>
     }
 ]
 

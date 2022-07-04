@@ -1,43 +1,61 @@
 import React, {FC, useContext, useRef, useState} from "react";
 import {
     delimiter,
-    fieldIcon,
     loginPage,
-    pwdHide,
-    pwdShow,
     stickCntr,
     stickRight
 } from "../styles/Login.css";
-import {freeLabel, mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
-import {bold, hFont, underline} from "../styles/common/fonts.css";
-import {inputBox} from "../styles/common/inputs.css";
+import {point, preLabel, warnLabel} from "../styles/common/labels.css";
+import {hFont, underline} from "../styles/common/fonts.css";
 import {btn} from "../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
 import {login} from "../http/auth";
-import {wide} from "../styles/common/position.css";
+import {flexr, wide} from "../styles/common/position.css";
 import {UserAuthContext} from "../globals/UserAuthProvider";
+import logoHomeNet from "../assets/home-net-black.svg";
+import {
+    Checkbox,
+    FormControl, FormControlLabel,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    OutlinedInput,
+    TextField,
+    Typography
+} from "@mui/material";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
+interface IState {
+    showPassword: boolean;
+    warning: string;
+    email: string;
+    password: string;
+    rememberMe: boolean;
+}
 
 const LoginPage: FC = () => {
-    const [pwdVisible, SetPwdVisible] = useState(false);
-    const [credWarning, setCredWarning] = useState<string>("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const pwdFocusRef = useRef<any>();
     const navigate = useNavigate();
     const {setAuthData} = useContext(UserAuthContext);
+    const [values, setValues] = useState<IState>({
+        showPassword: false,
+        warning: "",
+        email: "",
+        password: "",
+        rememberMe: false
+    })
 
     const signIn = () => {
-
-        login(email, password).then(
+        console.log("signIn", values);
+        login(values.email, values.password).then(
             ({data}) => {
                 switch (data.status) {
                     case 401:
-                        setCredWarning("Wrong email or password")
+                        setValues({...values, warning: "Wrong email or password"})
                         break;
                     case 202:
-                        setCredWarning("");
+                        setValues({...values, warning: ""})
                         setAuthData(data.token);
                         navigate(HOME_PAGE);
                         break;
@@ -47,7 +65,7 @@ const LoginPage: FC = () => {
         ).catch(({response}) => {
             switch (response.status) {
                 case 422:
-                    setCredWarning("Email or password is invalid")
+                    setValues({...values, warning: "Email or password is invalid"})
                     break;
             }
             console.log("catch: ", response);
@@ -62,39 +80,66 @@ const LoginPage: FC = () => {
 
     return (
         <div className={loginPage}>
-            <p className={[mainLabel, hFont].join(' ')}>LOGIN</p>
+            <div className={flexr}>
+                <img src={logoHomeNet} alt={"HomeNet logo"}/>
+                <p className={[hFont].join(' ')}>&nbsp;LOGIN</p>
+            </div><br/>
 
             <div>
-                <label className={[preLabel, bold].join(' ')}>Email</label>
-                <input className={inputBox} type="text"
-                       onChange={e => setEmail(e.target.value)}
-                       onKeyUp={e => handleKeyUp(e, false)}
+                <TextField
+                    sx={{width: "100%"}}
+                    id="outlined-multiline-flexible"
+                    label="Email"
+                    multiline
+                    maxRows={4}
+                    value={values.email}
+                    onChange={e => setValues({...values, email: e.target.value})}
+                    onKeyUp={e => handleKeyUp(e, false)}
                 />
-            </div>
-            <br />
-            <div>
-                <label className={[preLabel, bold].join(' ')}>Password</label>
-                <input className={inputBox} type={pwdVisible ? "text" : "password"}
-                       onChange={e => setPassword(e.target.value)}
-                       ref={pwdFocusRef}
-                       onKeyUp={e => handleKeyUp(e, true)}
-                       required/>
-                <span className={[fieldIcon, point, pwdVisible ? pwdShow : pwdHide].join(' ')}
-                      onClick={() => {SetPwdVisible(!pwdVisible)}}
+            </div><br/>
+
+            <FormControl sx={{ width: '100%' }} variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={values.showPassword ? 'text' : 'password'}
+                    value={values.password}
+                    onChange={e => setValues({...values, password: e.target.value})}
+                    endAdornment={
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={e => setValues({...values, showPassword: !values.showPassword})}
+                                edge="end"
+                            >
+                                {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                    label="Password"
+                    onKeyUp={e => handleKeyUp(e, true)}
                 />
-            </div>
+            </FormControl><br />
 
-            <div className={freeLabel}>
-                <input type="checkbox" name="remember"/>
-                <label> Remember me? </label>
-            </div>
+            <FormControlLabel
+                value="end"
+                control={
+                    <Checkbox
+                        onChange={e => setValues({...values, rememberMe: e.target.checked})}
+                    />
+                }
+                label={
+                    <Typography variant="body2" color="textSecondary">
+                        Remember me?
+                    </Typography>}
+                labelPlacement="end"
+            /><br/>
 
-            {credWarning.length ? (
-                <div className={[warnLabel].join(' ')}>{credWarning}</div>
-            ): <div/>
-            }
+            {values.warning.length ? (
+                <div className={[warnLabel].join(' ')}>{values.warning}</div>
+            ): <></>
+            }<br/><br/>
 
-            <br/>
             <button className={[btn, wide].join(' ')}
                     onClick={signIn}
                 >
