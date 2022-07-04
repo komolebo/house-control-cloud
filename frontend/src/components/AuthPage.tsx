@@ -1,4 +1,4 @@
-import React, {FC, useContext, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
@@ -8,7 +8,7 @@ import {btn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
-import {UserSettingContext} from "../globals/UserSettingsProvider";
+import {isAuth, setUSerInfo, UserSettingContext} from "../globals/UserSettingsProvider";
 import {wide} from "../styles/common/position.css";
 
 const AuthPage: FC = () => {
@@ -16,13 +16,16 @@ const AuthPage: FC = () => {
     const [pwdWarnings, setPwdWarnings] = useState<Array<string>>([]);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    // const {setIsAuth} = useContext(UserSettingContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuth()) navigate(HOME_PAGE);
+    })
 
     const signUp = async () => {
         await register(email, password).then(data => {
                 console.log("signed up, data: ", data);
-                // setIsAuth(true);
+                setUSerInfo(data.data.token);
                 navigate(HOME_PAGE);
             }
         ).catch(({response}) => {
