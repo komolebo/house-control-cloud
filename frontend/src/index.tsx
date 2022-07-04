@@ -4,6 +4,7 @@ import App from './App';
 import {ModalProvider} from "./components/modals/ModalProvider";
 import {ThemeProvider} from "@mui/material";
 import {theme} from "./components/mui/muiOverride";
+import {UserAuthProvider} from "./globals/UserAuthProvider";
 
 declare module '@mui/material/styles' {
     interface Palette {
@@ -26,7 +27,9 @@ declare module '@mui/material/Button' {
 ReactDOM.render(
     <ThemeProvider theme={theme}>
         <ModalProvider>
-            <App/>
+            <UserAuthProvider>
+                <App/>
+            </UserAuthProvider>
         </ModalProvider>
     </ThemeProvider>,
     document.getElementById('root')

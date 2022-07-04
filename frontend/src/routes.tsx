@@ -17,16 +17,12 @@ export const publicRoutes: ITableRoute[] = [
     {
         path: AUTH_PAGE,
         Component: <AuthPage/>
-    },
-    {
-        path: HOME_PAGE,
-        Component: <HomePage/>
     }
 ]
 
 export const privateRoutes: ITableRoute[] = [
     {
-        path: LOGIN_PAGE,
-        Component: <LoginPage/>
-    },
+        path: HOME_PAGE,
+        Component: <HomePage/>
+    }
 ]

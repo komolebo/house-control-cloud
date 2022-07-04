@@ -1,5 +1,5 @@
 import axios from "axios";
-import {getAuthToken} from "../globals/UserSettingsProvider";
+import {getAuthToken} from "../globals/UserAuthProvider";
 
 export const host = axios.create({
     baseURL: process.env.REACT_APP_API_URL,

@@ -11,10 +11,10 @@ export interface IUserSetting {
 }
 
 
-export function setUSerInfo(jwtUserInfo: string) {
+function setUserInfo(jwtUserInfo: string) {
     localStorage.setItem(USER_INFO, JSON.stringify(jwtDecode(jwtUserInfo)));
 }
-export function clearUser() {
+function clearUser() {
     localStorage.removeItem(USER_INFO);
 }
 export function getUserInfo(): IUserSetting | null {
@@ -28,26 +28,31 @@ export function isAuth(): boolean {
     return getAuthToken() !== null;
 }
 
-export const useUserValue = () => {
-    const [userSettings, setUserSettings] = useState<IUserSetting>({
-        name: "Oleh13",
-        email: "dummy_email",
-        id: "12345678",
-        phone: "+38(096)954-86-76"
-    })
+export const useAuth = () => {
+    const [authorized, setAuthorized] = useState(isAuth());
+
+    const setAuthData = (jwtUserInfo: string) => {
+        setUserInfo(jwtUserInfo);
+        setAuthorized(isAuth());
+    }
+    const clearUserData = () => {
+        clearUser();
+        setAuthorized(isAuth);
+    }
 
     return {
-        userSettings,
-        setUserSettings
+        authorized,
+        setAuthData,
+        clearUserData,
     }
 }
 
-export const UserSettingContext = createContext({} as ReturnType<typeof useUserValue>)
+export const UserAuthContext = createContext({} as ReturnType<typeof useAuth>)
 
-export const UserSettingsProvider: FC<any> = (props) => {
+export const UserAuthProvider: FC<any> = (props) => {
     return (
-        <UserSettingContext.Provider value={useUserValue()}>
+        <UserAuthContext.Provider value={useAuth()}>
             {props.children}
-        </UserSettingContext.Provider>
+        </UserAuthContext.Provider>
     )
 }

@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useRef, useState} from "react";
+import React, {FC, useContext, useRef, useState} from "react";
 import {
     delimiter,
     fieldIcon,
@@ -16,7 +16,7 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
 import {login} from "../http/auth";
 import {wide} from "../styles/common/position.css";
-import {isAuth, setUSerInfo, UserSettingContext} from "../globals/UserSettingsProvider";
+import {UserAuthContext} from "../globals/UserAuthProvider";
 
 
 const LoginPage: FC = () => {
@@ -26,12 +26,10 @@ const LoginPage: FC = () => {
     const [password, setPassword] = useState("");
     const pwdFocusRef = useRef<any>();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (isAuth()) navigate(HOME_PAGE);
-    })
+    const {setAuthData} = useContext(UserAuthContext);
 
     const signIn = () => {
+
         login(email, password).then(
             ({data}) => {
                 switch (data.status) {
@@ -40,7 +38,7 @@ const LoginPage: FC = () => {
                         break;
                     case 202:
                         setCredWarning("");
-                        setUSerInfo(data.token);
+                        setAuthData(data.token);
                         navigate(HOME_PAGE);
                         break;
                 }

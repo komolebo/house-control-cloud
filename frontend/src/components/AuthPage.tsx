@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, fieldIcon, loginPage, pwdHide, pwdShow, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
@@ -8,7 +8,7 @@ import {btn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
-import {isAuth, setUSerInfo, UserSettingContext} from "../globals/UserSettingsProvider";
+import {isAuth, UserAuthContext} from "../globals/UserAuthProvider";
 import {wide} from "../styles/common/position.css";
 
 const AuthPage: FC = () => {
@@ -17,6 +17,7 @@ const AuthPage: FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const {setAuthData} = useContext(UserAuthContext);
 
     useEffect(() => {
         if (isAuth()) navigate(HOME_PAGE);
@@ -25,7 +26,7 @@ const AuthPage: FC = () => {
     const signUp = async () => {
         await register(email, password).then(data => {
                 console.log("signed up, data: ", data);
-                setUSerInfo(data.data.token);
+                setAuthData(data.data.token);
                 navigate(HOME_PAGE);
             }
         ).catch(({response}) => {

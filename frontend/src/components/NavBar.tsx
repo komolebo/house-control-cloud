@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext} from "react";
 import {navBar} from "../styles/NavBar.css";
 import {
     AppBar,
@@ -18,15 +18,21 @@ import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
-import {getUserInfo, UserSettingContext} from "../globals/UserSettingsProvider";
+import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 
 export const NavBar: React.FC = () => {
+    const {clearUserData} = useContext(UserAuthContext);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = React.useState<null | HTMLElement>(null);
     const userInfo = getUserInfo();
+    const settingsMenu = [
+        {name: 'Profile', handler: () => {}},
+        {name: 'Account', handler: () => {}},
+        {name: 'Dashboard', handler: () => {}},
+        {name: 'Logout', handler: () => clearUserData()},
+    ];
 
     const handleOpenMsgMenu = (event: React.MouseEvent<HTMLElement>) => {
         console.log("open");
@@ -106,9 +112,12 @@ export const NavBar: React.FC = () => {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
-                        {settings.map((setting) => (
-                            <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                <Typography textAlign="right">{setting}</Typography>
+                        {settingsMenu.map((setting) => (
+                            <MenuItem
+                                key={setting.name}
+                                onClick={() => setting.handler()}
+                            >
+                                <Typography textAlign="right">{setting.name}</Typography>
                             </MenuItem>
                         ))}
                     </Menu>
