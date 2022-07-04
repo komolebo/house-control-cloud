@@ -1,9 +1,9 @@
 import {Injectable, Inject} from '@nestjs/common';
 import { Users } from './user.entity';
-import { UserDto } from './dto/user.dto';
 import { USER_REPOSITORY } from '../../core/constants/index1';
 import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
+import {UserDto} from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
