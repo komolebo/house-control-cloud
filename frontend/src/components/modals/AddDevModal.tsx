@@ -7,14 +7,14 @@ import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
+import {postReqRoleAccess, roleStrToId} from "../../http/rqData";
+import {TDevRole} from "../../globals/DeviceData";
+import {getUserInfo} from "../../globals/UserAuthProvider";
+import {warnLabel} from "../../styles/common/labels.css";
 
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
-    onAction: (dev_data: string) => void
-}
-
-function checkName(value: string) {
-    return value === "12345678";
+    onAction: (dev_data: any) => void
 }
 
 const DoneElement: FC<IFinDevElem> = ({onAction}) => {
@@ -47,23 +47,29 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
 }
 
 const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
-    const [deviceId, setDeviceID] = useState("");
+    const [devHex, setDevHex] = useState("0011AABB");
     const [warning, setWarning] = useState("");
 
     const onInputChange = (e: any) => {
         const re = /^[0-9\b,A-F]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setDeviceID(e.target.value)
+        const str = e.target.value.toUpperCase()
+        if (str === '' || (re.test(str) && str.length <= MIN_CHAR_ID)) {
+            setDevHex(str)
         }
     }
 
     const handleReqAccess = () => {
-        if (checkName(deviceId)) {
-            onAction("Test dev data");
-        }
-        else {
-            setWarning("Incorrect ID")
-        }
+        postReqRoleAccess(devHex, TDevRole[TDevRole.GUEST])
+            .then(res => {
+                if (res && res.length
+                    && res[0].userId === getUserInfo()?.id
+                    && roleStrToId(res[0].role) < TDevRole.ROLES_NUMBER) {
+                    onAction(res[0])
+                }
+                else {
+                    setWarning("Device does not exist")
+                }
+            })
     }
 
     return <div>
@@ -83,21 +89,26 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
 
         <TextField sx={{mt: 2, mb: 2}}
-                   error={warning !== ""}
+                   // error={warning !== ""}
                    label={"Device ID"}
                    id="outlined-uncontrolled"
                    color={"info"}
                    defaultValue={"0xFF0011AA"}
                    fullWidth={true}
-                   helperText={warning}
+                   // helperText={warning}
                    onChange={e => onInputChange(e)}
                    inputProps={{ pattern: "[a-f]{1,15}" }}
-                   value={deviceId}
+                   value={devHex}
         />
+        {warning.length ? (
+            <div className={[warnLabel].join(' ')}>{warning}</div>
+        ): <></>
+        }
+
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
             <Button variant={"contained"}
-                    disabled={deviceId.length < MIN_CHAR_ID}
+                    disabled={devHex.length < MIN_CHAR_ID}
                     onClick={() => handleReqAccess()}
                     className={widerMuiBtn}
             >
@@ -112,20 +123,26 @@ export const AddDevModal: FC = () => {
     const { modalProps} = useGlobalModalContext();
     const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
 
-    const setModeDone = (dev_data: string) => {
+    const setModeDone = (dev_data: any) => {
         console.log(dev_data);
+        modalProps.onAct(dev_data)
         setPageMode(ModalPageState.DoneState);
     }
     const complete = () => {
         setPageMode(ModalPageState.CompleteState);
-        modalProps.onAct("some data");
+        // modalProps.onAct("some data");
+        modalProps.onClose();
     }
 
     return (
         <div>
             { pageMode === ModalPageState.ReqState
-                ? <FindDevElement onAction={(dev_data) => setModeDone(dev_data)}/>
-                : <DoneElement onAction={() => complete()}/>
+                ? <FindDevElement
+                    onAction={(dev_data) => setModeDone(dev_data)}
+                />
+                : <DoneElement
+                    onAction={() => complete()}
+                />
             }
         </div>
         // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>

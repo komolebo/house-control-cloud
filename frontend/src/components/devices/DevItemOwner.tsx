@@ -5,12 +5,11 @@ import {Button} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
-import {TConnectedUser, TDevItem} from "../../globals/DeviceData";
+import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice} from "../../http/rqData";
-import {equal} from "assert";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -54,7 +53,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
                 </tr>
                 {users.map(conn_user => {
-                    const active = userInfo ? userInfo.id != conn_user.id.toString() : true;
+                    const isIdMatched = conn_user.id === userInfo?.id;
                     return <tr>
                         <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
@@ -71,7 +70,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                         <td>
                             <Button variant={"outlined"}
                                     color={"info"}
-                                    disabled={!active}
+                                    disabled={isIdMatched || conn_user.role === TDevRole.OWNER}
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
                                         onAct: () => {},

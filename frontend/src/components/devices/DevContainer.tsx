@@ -11,18 +11,20 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {fetchDevListByUser} from "../../http/rqData";
+import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 
 interface IState {
     ind: number;
     devices: Array<TDevItem>;
+    canUnsubscribe: boolean;
 }
 
 export const DevContainer: FC = () => {
     const [values, setValues] = useState<IState>({
         ind: -1,
-        devices: []
+        devices: [],
+        canUnsubscribe: true
     })
     const { showModal, hideModal } = useGlobalModalContext();
     const userInfo = getUserInfo();
@@ -33,11 +35,12 @@ export const DevContainer: FC = () => {
     }
 
     const clearDevice = (devId: string) => {
-        setValues({
-            devices: values.devices.filter(dev => {return dev.hex !== devId}),
-            ind: values.devices.length - 1 ? 0 : -1
+        postUnsubscribeFromDevice(devId).then(resp => {
+            console.log("Unsubscribed: ", resp)
+            if (resp.status === 201) {
+                syncData();
+            }
         })
-        console.log("ClearDevice: ", devId);
     }
     const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
         values.devices.map(dev => {
@@ -50,17 +53,32 @@ export const DevContainer: FC = () => {
         setValues({...values, devices: values.devices});
     }
 
-
-    useEffect(() => {
+    const syncData = () => {
         userInfo && fetchDevListByUser(userInfo.id, (data: Array<TDevItem>) => {
             if (JSON.stringify(values.devices) !== JSON.stringify(data)) {
                 setValues({
+                    ...values,
                     devices: data,
-                    ind: data.length ? 0 : -1
+                    ind: data.length ? 0 : -1,
                 })
             }
         })
-    }, [values])
+        values.ind >= 0 && fetchConnUsersByDevice(values.devices[values.ind].id, (conn_list) => {
+            // unsubscribable if any other owner or you're not owner
+            let manyOwners = false;
+            const curRole = values.devices[values.ind].role;
+            if (curRole === TDevRole.OWNER) {
+                conn_list.forEach(el => {
+                    manyOwners = (el.id !== getUserInfo()?.id && el.role === TDevRole.OWNER) || manyOwners
+                })
+            }
+            setValues({...values, canUnsubscribe: curRole !== TDevRole.OWNER || manyOwners})
+        })
+    }
+
+    useEffect(() => {
+        syncData();
+    }, [values.devices, values.ind])
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -78,8 +96,8 @@ export const DevContainer: FC = () => {
                         <img src={logoAddDev} alt={"Adde device logo"}/>
                     }
                     onClick={() => showModal(MODAL_TYPE.AddDevModal, {
-                        onClose: () => {console.log("Modal onClose")},
-                        onAct: () => {hideModal()}
+                        onClose: () => hideModal(),
+                        onAct: () => syncData()
                     })}
                     className={[wideMuiBtn, floatr].join(' ')}
             >
@@ -97,6 +115,7 @@ export const DevContainer: FC = () => {
                         }
                     })}
                     className={[wideMuiBtn, floatr].join(' ')}
+                    disabled={!values.canUnsubscribe}
             >
                 Unsubscribe
             </Button>

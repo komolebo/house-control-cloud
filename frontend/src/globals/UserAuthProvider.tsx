@@ -4,7 +4,7 @@ import jwtDecode from "jwt-decode";
 const USER_INFO = "USER_INFO"
 
 export interface IUserSetting {
-    id: string;
+    id: number;
     name: string;
     email: string;
     phone: string;

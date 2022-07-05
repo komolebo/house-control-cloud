@@ -1,7 +1,7 @@
 import {host} from "./index";
 import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
 
-function roleStrToId(role: string) {
+export function roleStrToId(role: string) {
     switch (role) {
         case "OWNER":
             return TDevRole.OWNER;
@@ -23,7 +23,7 @@ export async function getDeviceList2(then: (data: any) => void) {
     return data;
 }
 
-export function fetchDevListByUser(id: string, onThen: (data: Array<TDevItem>) => void) {
+export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) => void) {
     host.get("/api/devices/list/" + id)
         .then(resp =>{
             let devList: Array<TDevItem> = [];
@@ -62,4 +62,17 @@ export function fetchConnUsersByDevice(dev_id: number,
 
             onThen(userList);
         })
+}
+
+export function postReqRoleAccess(dev_id: string,
+                                  role: string, ) {
+    return host.post("api/devices/access/" + dev_id)
+        .then(resp => {
+            console.log("postAccess response: ", resp.data)
+            return resp.data
+        })
+}
+
+export function postUnsubscribeFromDevice(dev_id: string) {
+    return host.post("api/devices/forget/" + dev_id)
 }
