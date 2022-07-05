@@ -6,14 +6,16 @@ import {Devices} from "./device.entity";
 import {Roles} from "./role.entity";
 import {Users} from "../users/user.entity";
 import {DatabaseModule} from "../../core/database/database.module";
+import {PassportModule} from "@nestjs/passport";
 
 @Module({
   providers: [DevicesService],
   exports: [DevicesModule],
   controllers: [DevicesController],
   imports: [
+    PassportModule,
     DatabaseModule,
-    SequelizeModule.forFeature([Devices, Users, Roles])
+    SequelizeModule.forFeature([Devices, Users, Roles]),
   ]
 })
 

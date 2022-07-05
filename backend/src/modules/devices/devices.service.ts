@@ -68,4 +68,52 @@ export class DevicesService {
     async deleteDeviceById(device_id: number) {
         return await this.deviceRepository.destroy({where: {id: device_id}})
     }
+
+    async accessDeviceByHex(hexId: string, thisUserId: number) {
+        console.log("Requesting access to ", hexId, " for user=", thisUserId)
+        hexId = hexId.toLowerCase()
+
+        return await this.deviceRepository.findOne({where: {hex: hexId}})
+            .then(device => {
+                return device.$get("users").then(users => {
+                    if(users.length) {
+                        console.log("Device already owned")
+                    } else {
+                        console.log("Device is lonely")
+                        return this.usersRepository.findOne({where: {id: thisUserId}})
+                            .then(curUser => {
+                                return device.$add("users", curUser, {through: {role: "OWNER"}})
+                            })
+                    }
+                })
+            })
+    }
+
+    async unsubscribeFromDeviceByHex(hexId: string, thisUserId: number) {
+        let curRole = null;
+        let ownersCount = 0;
+
+        this.deviceRepository.findOne({where: {hex: hexId}})
+            .then(device => {
+                device.$get("users")
+                    .then(conn_users => {
+                        conn_users.forEach(el => {
+                            const role = el.get("Roles")["dataValues"].role;
+                            const uId = el.id;
+
+                            if (uId === thisUserId) curRole = role;
+                            if (role === "OWNER") ownersCount += 1;
+                        })
+                        // remove myself if you're not the single left OWNER
+                        const curUser = conn_users.find(el => el.id === thisUserId)
+                        if (curRole !== "OWNER " || ownersCount > 1) {
+                            device.$remove("users", curUser)
+                        }
+                        else {
+                        }
+                        // console.log(conn_users)
+                    })
+
+            })
+    }
 }

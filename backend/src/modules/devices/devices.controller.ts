@@ -1,8 +1,10 @@
-import {Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Logger, Param, Post, Req, UseGuards} from '@nestjs/common';
 import {DevicesService} from "./devices.service";
-import {UserDto} from "../users/dto/user.dto";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto} from "./dto/roles__dto";
+import { Headers } from '@nestjs/common';
+import {Users} from "../users/user.entity";
+
 
 @Controller('api/devices')
 export class DevicesController {
@@ -25,6 +27,22 @@ export class DevicesController {
     async unbindDeviceForUser(@Param('device_id') device_id: number,
                               @Param('user_id') user_id: number) {
         return await this.devicesService.bindDeviceWithUser(user_id, device_id, false);
+    }
+
+    @Post('access/:device_id')
+    async reqAccessToDevice(@Headers() headers,
+                            @Param('device_id') dev_hex: string) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.accessDeviceByHex(dev_hex, thisUser.id)
+    }
+
+    @Post('forget/:device_id')
+    async reqUnsubscribeFromDevice(@Headers() headers,
+                            @Param('device_id') dev_hex: string) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.unsubscribeFromDeviceByHex(dev_hex, thisUser.id)
     }
 
     @Get('list')
