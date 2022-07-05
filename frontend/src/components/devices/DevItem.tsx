@@ -62,6 +62,7 @@ const DevItem: FC<IProps> = ({dev, onDevChange}: IProps) => {
                       }}
                       endIcon={<img src={logoStart} alt={"Logo start"}/>}
                       className={shortMuiBtn}
+                      disabled={!dev.active}
             > START </Button>
         }
 
