@@ -6,7 +6,7 @@ import {imgHover} from "../../styles/common/buttons.css";
 import {AddDevModal} from "./AddDevModal";
 import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
-import {UpdUsrAccessModal} from "./UpdUsrAccessModal";
+import {ModifyAccessModal} from "./ModifyAccessModal";
 import {UnsubscribeUsrModal} from "./UnsubsribeUsrModal";
 import {PopperStyle} from "../../styles/common/customMuiStyle";
 
@@ -45,7 +45,7 @@ const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.AddDevModal]: AddDevModal,
     [MODAL_TYPE.ClrSettModal]: ClearSettingsModal,
     [MODAL_TYPE.InviteUsrModal]: InviteUserModal,
-    [MODAL_TYPE.ModifyUsrAccessModal]: UpdUsrAccessModal,
+    [MODAL_TYPE.ModifyUsrAccessModal]: ModifyAccessModal,
     [MODAL_TYPE.UnsubscribeUsrModal]: UnsubscribeUsrModal,
     [MODAL_TYPE.DefaultModal]: null,
 }

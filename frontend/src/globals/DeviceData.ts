@@ -18,12 +18,13 @@ export interface TConnectedUser {
 }
 
 export interface TDevItem {
+    id: number;
     name: string;
     ip: string;
     hex: string;
-    users: Array<TConnectedUser>;
     status: TDevStatus,
-    role: TDevRole
+    role: TDevRole,
+    active: boolean;
 }
 
 export const ROLES = Array.from(Array(TDevRole.ROLES_NUMBER).keys());

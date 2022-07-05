@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button} from "@mui/material";
@@ -8,6 +8,9 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import {TConnectedUser, TDevItem} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
+import {getUserInfo} from "../../globals/UserAuthProvider";
+import {fetchConnUsersByDevice} from "../../http/rqData";
+import {equal} from "assert";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -15,24 +18,29 @@ interface IDevOwnerProps {
     onUsrInvite: (devId: string, userInfo: TConnectedUser) => void
 }
 
+const userInfo = getUserInfo();
 
 
-const DevItemOwner: FC<IDevOwnerProps> = ({
-                                              devInfo,
-                                              onDevClrSetting,
-                                              onUsrInvite}) => {
+const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
+                                           onDevClrSetting,
+                                           onUsrInvite}) => {
+    const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const { showModal, hideModal } = useGlobalModalContext();
-
 
     const handleClrSettings = (devInfo: TDevItem) => {
         onDevClrSetting(devInfo.hex);
     }
     const handleInviteUsr = (userInfo: TConnectedUser) => {
-        console.log("userInfo", userInfo)
         onUsrInvite(devInfo.hex, userInfo);
     }
 
-    console.log("--> ", devInfo)
+    useEffect(() => {
+        fetchConnUsersByDevice(devInfo.id, (uList) => {
+            if (JSON.stringify(uList) !== JSON.stringify(users)) {
+                setUsers(uList);
+            }
+        })
+    })
 
     return <div id={devOwner}>
         <div className={h3Font}>Connected users: </div>
@@ -45,9 +53,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>ID</th>
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
                 </tr>
-
-                {devInfo.users.map(conn_user => {
-                    const active = conn_user.name !== 'Oleh';
+                {users.map(conn_user => {
+                    const active = userInfo ? userInfo.id != conn_user.id.toString() : true;
                     return <tr>
                         <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
@@ -68,7 +75,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
                                         onAct: () => {},
-                                        data: {usrInfo: conn_user, devInfo: devInfo}
+                                        data: {usrInfo: conn_user, devInfo: devInfo, userList: users}
                                     })}
                                     sx={styleHeights.lowBtn}
                                     className={[fulWidMuiBtn].join(' ')}

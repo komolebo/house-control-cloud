@@ -18,7 +18,8 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
 
     useEffect(() => {
         setDevices(devNames);
-    }, [devNames]);
+        setCurSel(initSelection)
+    }, [devNames, initSelection]);
 
     const handleSelect = (i: number) => {
         setCurSel(i);

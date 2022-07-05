@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
@@ -8,92 +8,72 @@ import logoDisconnect from "../../assets/disconnect-device.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
-import {TConnectedUser, TDevItem, TDevRole, TDevStatus} from "../../globals/DeviceData";
+import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
+import {fetchDevListByUser} from "../../http/rqData";
+import {getUserInfo} from "../../globals/UserAuthProvider";
 
+interface IState {
+    ind: number;
+    devices: Array<TDevItem>;
+}
 
 export const DevContainer: FC = () => {
-    let [devices, setDevices] = useState<Array<TDevItem>>([
-        {
-            hex: "FF00F213",
-            ip: "192.168.0.1",
-            name: "Sofia Borshaga",
-            users: [
-                {name: "Oleh", id: 0x123213, role: TDevRole.OWNER},
-                {name: "Horse", id: 0x121113, role: TDevRole.GUEST},
-                {name: "Oleh1", id: 0x123213, role: TDevRole.CHILD},
-
-            ],
-            status: TDevStatus.Connected,
-            role: TDevRole.OWNER
-        },
-        {
-            hex: "FF00F214",
-            ip: "127.0.0.1",
-            name: "Netishynka",
-            users: [
-                {name: "Oleh", id: 0x123213, role: TDevRole.OWNER},
-            ],
-            status: TDevStatus.Disconnected,
-            role: TDevRole.CHILD
-        },
-        {
-            hex: "FF00F215",
-            ip: "174.164.1.1",
-            name: "Chicago Bulls board",
-            users: [
-                {name: "Oleh", id: 0x123213, role: TDevRole.OWNER},
-                {name: "Horse", id: 0x121113, role: TDevRole.GUEST},
-                {name: "Oleh1", id: 0x123213, role: TDevRole.CHILD},
-                {name: "Horse", id: 0x121113, role: TDevRole.GUEST},
-                {name: "Kid", id: 0x123213, role: TDevRole.CHILD},
-
-            ],
-            status: TDevStatus.Connected,
-            role: TDevRole.OWNER
-        },
-    ])
-    let [curDev, setCurDev] = useState(devices.length ? 0 : -1);
+    const [values, setValues] = useState<IState>({
+        ind: -1,
+        devices: []
+    })
     const { showModal, hideModal } = useGlobalModalContext();
-
+    const userInfo = getUserInfo();
 
     const handleDevInfoChange = (devName: string) => {
-        devices[curDev].name = devName;
-        setDevices([...devices]);
+        values.devices[values.ind].name = devName;
+        setValues({...values, devices: values.devices})
     }
 
     const clearDevice = (devId: string) => {
-        setCurDev( devices.length - 1 ? 0 : -1);
-
-        setDevices([...devices.filter(dev => {return dev.hex !== devId})])
+        setValues({
+            devices: values.devices.filter(dev => {return dev.hex !== devId}),
+            ind: values.devices.length - 1 ? 0 : -1
+        })
         console.log("ClearDevice: ", devId);
     }
     const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
-        devices.map(dev => {
+        values.devices.map(dev => {
             if (dev.hex === devId) {
                 console.log("Pushing info", userInfo)
-                dev.users.push(userInfo)
+                // dev.users.push(userInfo)
             }
             return dev;
         })
-        setDevices([...devices]);
+        setValues({...values, devices: values.devices});
     }
+
+
+    useEffect(() => {
+        userInfo && fetchDevListByUser(userInfo.id, (data: Array<TDevItem>) => {
+            if (JSON.stringify(values.devices) !== JSON.stringify(data)) {
+                setValues({
+                    devices: data,
+                    ind: data.length ? 0 : -1
+                })
+            }
+        })
+    }, [values])
 
     return <div id={devContainer}>
         <div id={devContHead}>
             <div style={{flexGrow: 10}}>
                 <DevList
-                    devNames={devices.map(el => el.name)}
-                    onSelect={i => setCurDev(i)}
-                    initSelection={curDev}
+                    devNames={values.devices.map(el => el.name)}
+                    onSelect={i => setValues({...values, ind: i})}
+                    initSelection={values.ind}
                 />
             </div>
             <div style={{flexGrow: 1}}>
             <Button variant={"contained"}
-                    sx={{
-                        ml: 2
-                    }}
+                    sx={{ ml: 2 }}
                     endIcon={
                         <img src={logoAddDev} alt={"Adde device logo"}/>
                     }
@@ -113,7 +93,7 @@ export const DevContainer: FC = () => {
                         onClose: () => {console.log("Modal onClose")},
                         onAct: (devInfo) => { clearDevice(devInfo.hex) },
                         data: {
-                            devInfo: devices[curDev]
+                            devInfo: values.devices[values.ind]
                         }
                     })}
                     className={[wideMuiBtn, floatr].join(' ')}
@@ -122,18 +102,18 @@ export const DevContainer: FC = () => {
             </Button>
             </div>
         </div>
-
-        { curDev >= 0 &&
+        { values.ind >= 0 &&
         <div>
             <div className={h2Font}>Device information</div>
+
             <div id={devContContent}>
-                <DevItem dev={devices[curDev]} onDevChange={dev_info => {
+                <DevItem dev={values.devices[values.ind]} onDevChange={dev_info => {
                     handleDevInfoChange(dev_info)
                 }}/>
 
-                { devices[curDev].role === TDevRole.OWNER &&
+                { values.devices[values.ind].role === TDevRole.OWNER &&
                     <DevItemOwner
-                        devInfo={devices[curDev]}
+                        devInfo={values.devices[values.ind]}
                         onDevClrSetting={id => clearDevice(id)}
                         onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}/>
                  }
