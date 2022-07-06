@@ -72,6 +72,16 @@ export class DevicesController {
         return this.devicesService.removeRole(Number(userId), thisUser.id, devHex);
     }
 
+    @Post('invite/:device_id/:user_id/:role')
+    async reqInviteUser(@Headers() headers,
+                          @Param('device_id') devHex: string,
+                          @Param('user_id') userId: number,
+                          @Param('role') role: string) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.inviteUser(Number(userId), thisUser.id, devHex, role);
+    }
+
     @Get('list')
     async getDevicesList() {
         return await this.devicesService.getDevices();

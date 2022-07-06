@@ -162,7 +162,7 @@ export class DevicesService {
     }
 
     async removeRole(uId: number, thisUID: number, devHex: string) {
-        console.log("modifyRoleAccess, uid=", uId, "hex=", devHex, " by req of:", thisUID);
+        console.log("removeRole, uid=", uId, "hex=", devHex, " by req of:", thisUID);
 
         // check if you are an owner for this device
         await this.deviceRepository.findOne({
@@ -175,6 +175,30 @@ export class DevicesService {
             if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
                 objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 d.$remove("users", objUser);
+            }
+        })
+    }
+
+    async inviteUser(uId: number, thisUID: number, devHex: string, role: string) {
+        console.log("inviteUser, uid=", uId, "hex=", devHex, " by req of:", thisUID, " role=", role);
+
+        // check if you are an owner for this device
+        await this.deviceRepository.findOne({
+            where: {hex: devHex},
+            include: {model: Users},
+        }).then(d => {
+            const thisUser = d.users.find(el => el.id === thisUID);
+            const usrAlreadyInvited = d.users.find(el => el.id === uId) !== undefined;
+
+            console.log(thisUser);
+            console.log(thisUser.get("Roles")["dataValues"].role);
+
+            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
+                !usrAlreadyInvited) {
+                this.usersRepository.findOne({where: {id: uId}})
+                    .then(objUser => {
+                        d.$add('users', objUser, {through: {role: role}});
+                    })
             }
         })
     }
