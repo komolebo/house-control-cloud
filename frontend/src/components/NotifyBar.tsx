@@ -84,7 +84,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
     return <div>
         <Box sx={{borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
                     display: "flex",
-                    flexDirection: "row", pt: 2, pb: 2, mr: 2
+                    flexDirection: "row", pt: 2, pb: 2, mr: 2,
             }}>
             <div style={{paddingLeft: 15}}
                  className={item.prio === TNotifyPrio.Approve
@@ -102,7 +102,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 
             </div>
 
-            <Box sx={{flexGrow: 6, pl: 2, pr: 1}}>
+            <Box sx={{flexGrow: 6, pl: 2, pr: 2}}>
                 <div className={[h4Font].join(' ')}>
                     {item.text}
                 </div>
@@ -111,7 +111,6 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                 </div>
 
                 <Button variant={"contained"}
-                        color={"info"}
                         sx={{...styleHeights.midHiBtn,
                             width: "50%"
                         }}

@@ -3,14 +3,17 @@ import {useNavigate} from "react-router-dom";
 import {delimiter, loginPage, stickCntr, warnContainer} from "../styles/Login.css";
 import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {hFont, underline} from "../styles/common/fonts.css";
-import {btn} from "../styles/common/buttons.css";
+import {btn, wideMuiBtn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
 import {UserAuthContext} from "../globals/UserAuthProvider";
-import {wide} from "../styles/common/position.css";
-import {FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
+import {flexr, floatr, wide} from "../styles/common/position.css";
+import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import logoHomeNet from "../assets/home-net-black.svg";
+import logoAddDev from "../assets/add-device2.svg";
+import {MODAL_TYPE} from "./modals/ModalProvider";
 
 interface IState {
     showPassword: boolean;
@@ -55,7 +58,10 @@ const SignupPage: FC = () => {
 
     return (
         <div className={loginPage}>
-            <p className={[mainLabel, hFont].join(' ')}>SIGN UP</p>
+            <div className={flexr}>
+                <img src={logoHomeNet} alt={"HomeNet logo"}/>
+                <p className={[hFont].join(' ')}>&nbsp;Sign up</p>
+            </div><br/>
 
             <TextField
                 sx={{width: "100%"}}
@@ -105,10 +111,12 @@ const SignupPage: FC = () => {
                 ): <div><br/><br/></div>
             }
 
-            <button className={[wide, btn].join(' ')}
-                    onClick={() => signUp()}>
+            <Button variant={"contained"}
+                    onClick={() => signUp()}
+                    className={[wide, btn].join(' ')}
+            >
                 SIGN UP
-            </button><br/>
+            </Button><br/>
 
             <div className={delimiter} />
             <div>

@@ -14,7 +14,8 @@ import {fetchConnUsersByDevice} from "../../http/rqData";
 interface IDevOwnerProps {
     devInfo: TDevItem,
     onDevClrSetting: (id: string) => void,
-    onUsrInvite: (devId: string, userInfo: TConnectedUser) => void
+    onUsrInvite: (devId: string, userInfo: TConnectedUser) => void,
+    onDevDataChanged: () => void
 }
 
 const userInfo = getUserInfo();
@@ -22,7 +23,8 @@ const userInfo = getUserInfo();
 
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                            onDevClrSetting,
-                                           onUsrInvite}) => {
+                                           onUsrInvite,
+                                           onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const { showModal, hideModal } = useGlobalModalContext();
 
@@ -31,6 +33,9 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     }
     const handleInviteUsr = (userInfo: TConnectedUser) => {
         onUsrInvite(devInfo.hex, userInfo);
+    }
+    const handleModifyUsr = (userInfo: TConnectedUser) => {
+
     }
 
     useEffect(() => {
@@ -73,7 +78,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                     disabled={isIdMatched || conn_user.role === TDevRole.OWNER}
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
-                                        onAct: () => {},
+                                        onAct: () => onDevDataChanged(),
                                         data: {usrInfo: conn_user, devInfo: devInfo, userList: users}
                                     })}
                                     sx={styleHeights.lowBtn}

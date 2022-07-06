@@ -73,6 +73,12 @@ export function postReqRoleAccess(dev_id: string,
         })
 }
 
+export function postModifyAccess(devHex: string,
+                                 userId: number,
+                                 newRole: string) {
+    return host.post(`api/devices/modify/${devHex}/${userId}/${newRole}`)
+}
+
 export function postUnsubscribeFromDevice(dev_id: string) {
     return host.post("api/devices/forget/" + dev_id)
 }

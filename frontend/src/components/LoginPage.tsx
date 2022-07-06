@@ -15,6 +15,7 @@ import {flexr, wide} from "../styles/common/position.css";
 import {UserAuthContext} from "../globals/UserAuthProvider";
 import logoHomeNet from "../assets/home-net-black.svg";
 import {
+    Button,
     Checkbox,
     FormControl, FormControlLabel,
     IconButton,
@@ -81,7 +82,7 @@ const LoginPage: FC = () => {
         <div className={loginPage}>
             <div className={flexr}>
                 <img src={logoHomeNet} alt={"HomeNet logo"}/>
-                <p className={[hFont].join(' ')}>&nbsp;LOGIN</p>
+                <p className={[hFont].join(' ')}>&nbsp;Login</p>
             </div><br/>
 
             <div>
@@ -138,9 +139,12 @@ const LoginPage: FC = () => {
             ): <></>
             }<br/><br/>
 
-            <button className={[btn, wide].join(' ')} onClick={signIn}>
+            <Button variant={"contained"}
+                    onClick={() => signIn()}
+                    className={[wide, btn].join(' ')}
+            >
                 LOGIN
-            </button>
+            </Button><br/>
 
             <div>
                 <label className={[stickRight, point, preLabel].join(' ')}>

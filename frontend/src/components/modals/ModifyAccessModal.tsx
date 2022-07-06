@@ -11,12 +11,13 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {mediumMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
+import {postModifyAccess} from "../../http/rqData";
+import {userInfo} from "os";
 
 interface IModifyElemProp {
-    onAction: () => void,
+    onAction: (usrInfo: TConnectedUser | null) => void,
     devInfo: TDevItem,
     usrInfo: TConnectedUser,
-    userList: Array<TConnectedUser>
 }
 interface IModifyAccessDoneProp {
     onAction: () => void,
@@ -71,7 +72,7 @@ const DoneElement: FC<IModifyAccessDoneProp> = ({onAction, usrInfo,}) => {
     </Box>
 }
 
-const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo, userList}) => {
+const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo}) => {
     const [role, setRole] = useState<number>(usrInfo.role);
 
     const handleSelectChange = (e: SelectChangeEvent) => {
@@ -80,14 +81,16 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo, u
 
     const handleUpdAccess = () => {
         usrInfo.role = role;
-        accessActionTrigger = AccessActionTrigger.USER_ACCESS_UPDATE;
-        onAction();
+        postModifyAccess(devInfo.hex, usrInfo.id, TDevRole[role])
+            .then(() => {
+                accessActionTrigger = AccessActionTrigger.USER_ACCESS_UPDATE;
+                onAction(usrInfo);
+            })
     }
 
     const handleRmAccess = () => {
-        userList = userList.filter(e => e !== usrInfo);
         accessActionTrigger = AccessActionTrigger.USER_ACCESS_REMOVED;
-        onAction();
+        onAction(null);
     }
 
     return <div>
@@ -174,10 +177,12 @@ export const ModifyAccessModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
     const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
 
-    const {usrInfo, devInfo, userList} = modalProps.data;
+    let {usrInfo, devInfo} = modalProps.data;
 
-    const setModeDone = () => {
+    const setModeDone = (_usrInfo: TConnectedUser | null) => {
+        usrInfo = _usrInfo
         setPageMode(ModalPageState.DoneState);
+        modalProps.onAct(null);
     }
     const complete = () => {
         setPageMode(ModalPageState.CompleteState);
@@ -188,10 +193,9 @@ export const ModifyAccessModal: FC = () => {
         <div>
             { pageMode === ModalPageState.ReqState
                 ? <UpdUsrAccessElement
-                    onAction={() => setModeDone()}
+                    onAction={(usrInfo) => setModeDone(usrInfo)}
                     devInfo={devInfo}
                     usrInfo={usrInfo}
-                    userList={userList}
                 />
                 : <DoneElement
                     onAction={() => complete()}

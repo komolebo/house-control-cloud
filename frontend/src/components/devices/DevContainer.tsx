@@ -5,6 +5,7 @@ import {devContainer, devContContent, devContHead} from "../../styles/DevContain
 import {Button} from "@mui/material";
 import logoAddDev from "../../assets/add-device2.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
+import logoDisconnectGrey from "../../assets/disconnect-device-grey.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
@@ -14,7 +15,7 @@ import {floatr} from "../../styles/common/position.css";
 import {
     fetchConnUsersByDevice,
     fetchDevListByUser,
-    postClearDeviceUsers,
+    postClearDeviceUsers, postModifyAccess,
     postUnsubscribeFromDevice
 } from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
@@ -119,7 +120,9 @@ export const DevContainer: FC = () => {
             </Button>
             <Button variant={"outlined"}
                     endIcon={
-                        <img src={logoDisconnect} alt={"Logo disconnect"}/>
+                        <img
+                            src={values.canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
+                        />
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},
@@ -148,7 +151,8 @@ export const DevContainer: FC = () => {
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
                         onDevClrSetting={id => clearDevice(id)}
-                        onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}/>
+                        onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}
+                        onDevDataChanged={() => syncData()}/>
                  }
             </div>
         </div>
