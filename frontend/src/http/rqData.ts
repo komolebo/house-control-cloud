@@ -79,10 +79,14 @@ export function postModifyAccess(devHex: string,
     return host.post(`api/devices/modify/${devHex}/${userId}/${newRole}`)
 }
 
-export function postUnsubscribeFromDevice(dev_id: string) {
-    return host.post("api/devices/forget/" + dev_id)
+export function postUnsubscribeFromDevice(devHex: string) {
+    return host.post("api/devices/forget/" + devHex)
 }
 
-export function postClearDeviceUsers(dev_id: string) {
-    return host.post("api/devices/abandon/" + dev_id)
+export function postClearDeviceUsers(devHex: string) {
+    return host.post("api/devices/abandon/" + devHex)
+}
+
+export function deleteAccess(devHex: string, userId: number) {
+    return host.delete(`api/devices/${devHex}/${userId}`)
 }
