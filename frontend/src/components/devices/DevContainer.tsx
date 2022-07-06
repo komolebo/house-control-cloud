@@ -48,14 +48,6 @@ export const DevContainer: FC = () => {
             }
         })
     }
-    const clearDevice = (devId: string) => {
-        postClearDeviceUsers(devId).then(resp => {
-            console.log("Cleared device: ", resp)
-            if (resp.status === 201) {
-                syncData();
-            }
-        })
-    }
 
     const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
         values.devices.map(dev => {
@@ -143,14 +135,13 @@ export const DevContainer: FC = () => {
             <div className={h2Font}>Device information</div>
 
             <div id={devContContent}>
-                <DevItem dev={values.devices[values.ind]} onDevChange={dev_info => {
+                <DevItem dev={values.devices[values.ind]} onDevDataChange={dev_info => {
                     handleDevInfoChange(dev_info)
                 }}/>
 
                 { values.devices[values.ind].role === TDevRole.OWNER &&
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
-                        onDevClrSetting={id => clearDevice(id)}
                         onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}
                         onDevDataChanged={() => syncData()}/>
                  }

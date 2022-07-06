@@ -9,11 +9,10 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice} from "../../http/rqData";
+import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
-    onDevClrSetting: (id: string) => void,
     onUsrInvite: (devId: string, userInfo: TConnectedUser) => void,
     onDevDataChanged: () => void
 }
@@ -22,14 +21,18 @@ const userInfo = getUserInfo();
 
 
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
-                                           onDevClrSetting,
                                            onUsrInvite,
                                            onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const { showModal, hideModal } = useGlobalModalContext();
 
     const handleClrSettings = (devInfo: TDevItem) => {
-        onDevClrSetting(devInfo.hex);
+        postClearDeviceUsers(devInfo.hex).then(resp => {
+            console.log("Cleared device: ", resp)
+            if (resp.status === 201) {
+                onDevDataChanged();
+            }
+        })
     }
     const handleInviteUsr = (userInfo: TConnectedUser) => {
         onUsrInvite(devInfo.hex, userInfo);
