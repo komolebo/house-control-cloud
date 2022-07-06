@@ -63,6 +63,15 @@ export class DevicesController {
         return this.devicesService.modifyRoleAccess(Number(userId), thisUser.id, devHex, role);
     }
 
+    @Delete(':device_id/:user_id')
+    async reqRemoveAccess(@Headers() headers,
+                          @Param('device_id') devHex: string,
+                          @Param('user_id') userId: number) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.removeRole(Number(userId), thisUser.id, devHex);
+    }
+
     @Get('list')
     async getDevicesList() {
         return await this.devicesService.getDevices();

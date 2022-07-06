@@ -160,4 +160,22 @@ export class DevicesService {
             }
         })
     }
+
+    async removeRole(uId: number, thisUID: number, devHex: string) {
+        console.log("modifyRoleAccess, uid=", uId, "hex=", devHex, " by req of:", thisUID);
+
+        // check if you are an owner for this device
+        await this.deviceRepository.findOne({
+            where: {hex: devHex},
+            include: {model: Users},
+        }).then(d => {
+            const thisUser = d.users.find(el => el.id === thisUID);
+            const objUser = d.users.find(el => el.id === uId);
+
+            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
+                objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
+                d.$remove("users", objUser);
+            }
+        })
+    }
 }
