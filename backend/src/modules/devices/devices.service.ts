@@ -4,6 +4,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
+import {Roles} from "./role.entity";
 
 @Injectable()
 export class DevicesService {
@@ -73,17 +74,13 @@ export class DevicesService {
         console.log("Requesting access to ", hexId, " for user=", thisUserId)
         hexId = hexId.toLowerCase()
 
-        return await this.deviceRepository.findOne({where: {hex: hexId}})
+        this.deviceRepository.findOne({where: {hex: hexId}})
             .then(device => {
-                return device.$get("users").then(users => {
+                device.$get("users").then(users => {
                     if(users.length) {
                         console.log("Device already owned")
                     } else {
-                        console.log("Device is lonely")
-                        return this.usersRepository.findOne({where: {id: thisUserId}})
-                            .then(curUser => {
-                                return device.$add("users", curUser, {through: {role: "OWNER"}})
-                            })
+                        return this.bindDeviceWithUser(thisUserId, device.id, true, RoleValues.Owner)
                     }
                 })
             })
@@ -114,6 +111,34 @@ export class DevicesService {
                         // console.log(conn_users)
                     })
 
+            })
+    }
+
+    async clearUsersOfDevice(hexId: string, thisUserId: number) {
+        console.log("clearUsersOfDevice:", hexId, thisUserId)
+        const deviceWithUsers = await this.deviceRepository.findOne({
+            where: { hex: hexId },
+            include: [
+                {model: Users},
+            ],
+        });
+
+        // if you're an OWNER for current device
+        if (deviceWithUsers && deviceWithUsers.users.length) {
+            const curUser = deviceWithUsers.users.find(el => el.id === thisUserId);
+
+            // yes, you are OWNER -> remove everyone
+            if (curUser.get("Roles")["dataValues"].role === RoleValues.Owner) {
+                return await deviceWithUsers.$remove("Users", deviceWithUsers.users)
+            }
+        } else {
+            console.log("Empty values")
+        }
+
+        this.deviceRepository.findOne({where: {hex: hexId}})
+            .then(device => {
+                device.$get("users").then(connUsers => {
+                })
             })
     }
 }

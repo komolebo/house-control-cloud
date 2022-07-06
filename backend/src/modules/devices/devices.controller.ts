@@ -39,10 +39,18 @@ export class DevicesController {
 
     @Post('forget/:device_id')
     async reqUnsubscribeFromDevice(@Headers() headers,
-                            @Param('device_id') dev_hex: string) {
+                                   @Param('device_id') dev_hex: string) {
         const [, userInfo] = headers.authorization.split("Bearer ")
         const thisUser: Users  = JSON.parse(userInfo);
         return this.devicesService.unsubscribeFromDeviceByHex(dev_hex, thisUser.id)
+    }
+
+    @Post('abandon/:device_id')
+    async reqClearDeviceUsers(@Headers() headers,
+                                   @Param('device_id') dev_hex: string) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.clearUsersOfDevice(dev_hex, thisUser.id)
     }
 
     @Get('list')
