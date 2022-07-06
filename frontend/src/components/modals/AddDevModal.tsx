@@ -61,10 +61,8 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     const handleReqAccess = () => {
         postReqRoleAccess(devHex, TDevRole[TDevRole.GUEST])
             .then(res => {
-                if (res && res.length
-                    && res[0].userId === getUserInfo()?.id
-                    && roleStrToId(res[0].role) < TDevRole.ROLES_NUMBER) {
-                    onAction(res[0])
+                if (res && res.status === 201) {
+                    onAction(res)
                 }
                 else {
                     setWarning("Device does not exist")

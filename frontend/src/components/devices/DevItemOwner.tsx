@@ -112,7 +112,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                     })}
                     className={shortMuiBtn}
             >
-                Clear settings
+                Clear users
             </Button>
         </div>
     </div>

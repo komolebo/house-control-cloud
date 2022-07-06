@@ -68,11 +68,15 @@ export function postReqRoleAccess(dev_id: string,
                                   role: string, ) {
     return host.post("api/devices/access/" + dev_id)
         .then(resp => {
-            console.log("postAccess response: ", resp.data)
-            return resp.data
+            console.log("postAccess response: ", resp)
+            return resp
         })
 }
 
 export function postUnsubscribeFromDevice(dev_id: string) {
     return host.post("api/devices/forget/" + dev_id)
+}
+
+export function postClearDeviceUsers(dev_id: string) {
+    return host.post("api/devices/abandon/" + dev_id)
 }

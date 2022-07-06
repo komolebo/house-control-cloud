@@ -83,7 +83,7 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
                     }}
                     onClick={() => onClear()}
                     className={shortMuiBtn}
-            > Clear settings </Button>
+            > Clear users </Button>
 
         </div>
     </div>

@@ -11,7 +11,12 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
+import {
+    fetchConnUsersByDevice,
+    fetchDevListByUser,
+    postClearDeviceUsers,
+    postUnsubscribeFromDevice
+} from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 
 interface IState {
@@ -34,7 +39,7 @@ export const DevContainer: FC = () => {
         setValues({...values, devices: values.devices})
     }
 
-    const clearDevice = (devId: string) => {
+    const unsubscribeDevice = (devId: string) => {
         postUnsubscribeFromDevice(devId).then(resp => {
             console.log("Unsubscribed: ", resp)
             if (resp.status === 201) {
@@ -42,6 +47,15 @@ export const DevContainer: FC = () => {
             }
         })
     }
+    const clearDevice = (devId: string) => {
+        postClearDeviceUsers(devId).then(resp => {
+            console.log("Cleared device: ", resp)
+            if (resp.status === 201) {
+                syncData();
+            }
+        })
+    }
+
     const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
         values.devices.map(dev => {
             if (dev.hex === devId) {
@@ -109,7 +123,7 @@ export const DevContainer: FC = () => {
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},
-                        onAct: (devInfo) => { clearDevice(devInfo.hex) },
+                        onAct: (devInfo) => { unsubscribeDevice(devInfo.hex) },
                         data: {
                             devInfo: values.devices[values.ind]
                         }
