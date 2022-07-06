@@ -8,20 +8,17 @@ import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
+import {postInviteUser} from "../../http/rqData";
 
 interface IInvitElemProp {
-    onAction: (dev_data: TConnectedUser) => void
+    onAction: (usrInf: TConnectedUser) => void
 }
 interface IDoneProp {
     onAction: () => void,
     usrInfo: TConnectedUser | null
 }
 
-const MIN_CHAR_ID = 6;
-
-const checkUser = (name: string): Boolean => {
-    return name === "12345678"
-}
+const MIN_CHAR_ID = 1;
 
 const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
     const ROLE = usrInfo?.role ? TDevRole[usrInfo?.role] : "INVALID ROLE";
@@ -53,6 +50,9 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
 }
 
 const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
+    const {modalProps } = useGlobalModalContext();
+    const {data} = modalProps;
+
     const [userId, setUserId] = useState("");
     const [warning, setWarning] = useState("");
     const [role, setRole] = useState<number>(DEFAULT_ROLE);
@@ -63,24 +63,26 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             setUserId(e.target.value)
         }
     }
-
     const handleSelectChange = (e: SelectChangeEvent) => {
         const re = /^[0-9\b,A-F]+$/;
         if (e.target.value === '' || re.test(e.target.value)) {
             setRole(Number(e.target.value));
         }
     };
-
-    const handleReqAccess = () => {
-        if (checkUser(userId)) {
-            onAction({
-                name: "New user", role: role, id: Number(userId)
-            });
-        }
-        else {
-            setWarning("User ID not found")
-        }
+    const handleUserInvite = () => {
+        postInviteUser(data.devInfo.hex, Number(userId), TDevRole[role]).then(resp => {
+            if (resp.status === 201) {
+                onAction({
+                    id: Number(userId),
+                    role: role,
+                    name: "Unknown yet user"
+                });
+            } else {
+                setWarning("User ID not found")
+            }
+        })
     }
+
     return <div>
         <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
             <img src={logoInviteUsr} id="logo-add-dev" alt={"logo-add-dev"}/>
@@ -130,7 +132,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         <Box sx={{display: "flex", justifyContent: "center", mt: 3}}>
             <Button variant={"contained"}
                     disabled={userId.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
-                    onClick={() => handleReqAccess()}
+                    onClick={() => handleUserInvite()}
                     className={widerMuiBtn}
             >
                 Invite user
@@ -149,7 +151,7 @@ export const InviteUserModal: FC = () => {
     const setModeDone = (uData: TConnectedUser) => {
         console.log("setModeDone", uData);
         setUserData(uData);
-        modalProps.onAct(uData);
+        modalProps.onAct(null);
     }
     const complete = () => {
         hideModal();
@@ -158,9 +160,7 @@ export const InviteUserModal: FC = () => {
     return (
         <div>
             { !userData
-                ? <InviteUsrElement
-                    onAction={usrData => setModeDone(usrData)}
-                />
+                ? <InviteUsrElement onAction={(usrInfo) => setModeDone(usrInfo)}/>
                 : <DoneElement
                     onAction={() => complete()}
                     usrInfo={userData}

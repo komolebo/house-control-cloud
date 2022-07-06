@@ -49,17 +49,6 @@ export const DevContainer: FC = () => {
         })
     }
 
-    const inviteUsr = (devId: string, userInfo: TConnectedUser) => {
-        values.devices.map(dev => {
-            if (dev.hex === devId) {
-                console.log("Pushing info", userInfo)
-                // dev.users.push(userInfo)
-            }
-            return dev;
-        })
-        setValues({...values, devices: values.devices});
-    }
-
     const syncData = () => {
         userInfo && fetchDevListByUser(userInfo.id, (data: Array<TDevItem>) => {
             if (JSON.stringify(values.devices) !== JSON.stringify(data)) {
@@ -142,7 +131,6 @@ export const DevContainer: FC = () => {
                 { values.devices[values.ind].role === TDevRole.OWNER &&
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
-                        onUsrInvite={(devId, userInfo) => inviteUsr(devId, userInfo)}
                         onDevDataChanged={() => syncData()}/>
                  }
             </div>

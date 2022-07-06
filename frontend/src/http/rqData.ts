@@ -83,6 +83,10 @@ export function postUnsubscribeFromDevice(devHex: string) {
     return host.post("api/devices/forget/" + devHex)
 }
 
+export function postInviteUser(devHex: string, userId: number, role: string) {
+    return host.post(`api/devices/invite/${devHex}/${userId}/${role}`)
+}
+
 export function postClearDeviceUsers(devHex: string) {
     return host.post("api/devices/abandon/" + devHex)
 }

@@ -9,11 +9,10 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
+import {fetchConnUsersByDevice, postClearDeviceUsers, postInviteUser} from "../../http/rqData";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
-    onUsrInvite: (devId: string, userInfo: TConnectedUser) => void,
     onDevDataChanged: () => void
 }
 
@@ -21,7 +20,6 @@ const userInfo = getUserInfo();
 
 
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
-                                           onUsrInvite,
                                            onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const { showModal, hideModal } = useGlobalModalContext();
@@ -34,10 +32,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
             }
         })
     }
-    const handleInviteUsr = (userInfo: TConnectedUser) => {
-        onUsrInvite(devInfo.hex, userInfo);
-    }
-    const handleModifyUsr = (userInfo: TConnectedUser) => {
+    const handleInviteUsr = (userInfo: TConnectedUser, role: TDevRole) => {
 
     }
 
@@ -101,7 +96,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 endIcon={ <img src={logoInvite} alt={"Logo invite"}/>}
                 onClick={() => showModal(MODAL_TYPE.InviteUsrModal, {
                     onClose: () => {console.log("Modal onClose")},
-                    onAct: (userInfo) => handleInviteUsr(userInfo)
+                    onAct: () => onDevDataChanged(),
+                    data: {devInfo: devInfo}
                 })}
                 variant={"outlined"} sx={{
                     mr: 2
