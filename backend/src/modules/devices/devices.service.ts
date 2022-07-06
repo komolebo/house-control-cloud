@@ -141,4 +141,23 @@ export class DevicesService {
                 })
             })
     }
+
+    async modifyRoleAccess(uId: number, thisUID: number, devHex: string, newRole: RoleValues) {
+        console.log("modifyRoleAccess, uid=", uId, "hex=", devHex, " by req of:", thisUID, " role:", newRole);
+
+        // check if you are an owner for this device
+        await this.deviceRepository.findOne({
+            where: {hex: devHex},
+            include: {model: Users},
+        }).then(d => {
+            const thisUser = d.users.find(el => el.id === thisUID);
+            const objUser = d.users.find(el => el.id === uId);
+
+            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
+                objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
+                const role = objUser["dataValues"]["Roles"]
+                role.set("role", newRole).save()
+            }
+        })
+    }
 }

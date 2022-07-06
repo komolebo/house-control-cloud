@@ -1,7 +1,7 @@
 import {Body, Controller, Delete, Get, Logger, Param, Post, Req, UseGuards} from '@nestjs/common';
 import {DevicesService} from "./devices.service";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
-import {BindDevice_Dto} from "./dto/roles__dto";
+import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
 import { Headers } from '@nestjs/common';
 import {Users} from "../users/user.entity";
 
@@ -51,6 +51,16 @@ export class DevicesController {
         const [, userInfo] = headers.authorization.split("Bearer ")
         const thisUser: Users  = JSON.parse(userInfo);
         return this.devicesService.clearUsersOfDevice(dev_hex, thisUser.id)
+    }
+
+    @Post('modify/:device_id/:user_id/:role')
+    async reqModifyAccess(@Headers() headers,
+                          @Param('device_id') devHex: string,
+                          @Param('user_id') userId: number,
+                          @Param('role') role: RoleValues) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return this.devicesService.modifyRoleAccess(Number(userId), thisUser.id, devHex, role);
     }
 
     @Get('list')
