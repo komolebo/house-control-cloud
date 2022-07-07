@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {devItem, devItemDelim} from "../../styles/DeviceItem.css"
 import {h3Font, h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField} from "@mui/material";
@@ -15,8 +15,12 @@ export interface IProps {
 
 
 const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
-    let [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(false);
     let [name, setName] = useState(dev.name);
+
+    useEffect(() => {
+        setEditMode(false);
+    }, [dev])
 
     const handleSave = () => {
         onDevDataChange(name);
