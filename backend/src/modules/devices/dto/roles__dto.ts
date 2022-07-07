@@ -1,8 +1,7 @@
 export enum RoleValues {
     Owner = "OWNER",
-    Guest = "QUEST",
+    Guest = "GUEST",
     Child = "CHILD",
-
     None = "NONE",
 
     Default = Guest

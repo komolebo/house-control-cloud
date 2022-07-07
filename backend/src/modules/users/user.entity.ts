@@ -1,6 +1,7 @@
-import {Table, Column, Model, DataType, BelongsToMany} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, BelongsToMany, HasMany} from 'sequelize-typescript';
 import {Roles} from "../devices/role.entity";
 import {Devices} from "../devices/device.entity";
+import {Notifications} from "../notification/notification.entity";
 
 
 @Table({tableName: 'users'})
@@ -32,4 +33,7 @@ export class Users extends Model<Users> {
 
     @BelongsToMany(() => Devices, () => Roles)
     devices: Devices[]
+
+    @HasMany(() => Notifications)
+    notifications: Notifications[]
 }

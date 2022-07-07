@@ -1,9 +1,9 @@
 import {IsNotEmpty} from "class-validator";
-import {NotificationTypes} from "../messages/notification.types";
+import {ENotificationTypes} from "../messages/ENotificationTypes";
 
 export class CreateNotification_Dto {
     @IsNotEmpty()
-    readonly msgType: NotificationTypes;
+    readonly msgType: ENotificationTypes;
 
     @IsNotEmpty()
     readonly targetUserId: number;

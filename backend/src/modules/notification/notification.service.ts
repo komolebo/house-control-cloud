@@ -8,7 +8,7 @@ export class NotificationService {
     constructor(@InjectModel(Notifications) private readonly notificationRepository: typeof Notifications) {}
 
     async create(notification: CreateNotification_Dto) {
-        return await this.notificationRepository.create<Notifications>(notification);
+        // return await this.notificationRepository.create<Notifications>(notification);
     }
 
     async remove(notificationId: number) {

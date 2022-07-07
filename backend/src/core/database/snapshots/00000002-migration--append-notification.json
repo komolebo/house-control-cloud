@@ -271,7 +271,21 @@
         "allowNull": false
       }
     } ,
-    "foreignKeys": { } ,
+    "foreignKeys": {
+      "fk_notifications_sourceUserId_users": {
+        "references": {
+          "table": "users" ,
+          "field": "id"
+        } ,
+        "onDelete": "SET NULL" ,
+        "onUpdate": "CASCADE" ,
+        "fields": {
+          "sourceUserId": "sourceUserId"
+        } ,
+        "type": "foreign key" ,
+        "name": "fk_notifications_sourceUserId_users"
+      }
+    } ,
     "indexes": { } ,
     "uniqueConstraints": { }
   }

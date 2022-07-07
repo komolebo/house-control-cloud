@@ -7,6 +7,7 @@ import * as process from "process";
 import {Users} from "../../modules/users/user.entity";
 import {Devices} from "../../modules/devices/device.entity";
 import {Roles} from "../../modules/devices/role.entity";
+import {Notifications} from "../../modules/notification/notification.entity";
 
 
 function getRealPathFromGenFiles(js_path: string) : string {
@@ -17,8 +18,9 @@ function getRealPathFromGenFiles(js_path: string) : string {
 export const databaseProviders = [{
     provide: SEQUELIZE,
     useFactory: async () => {
+        console.log("RUN MODE", process.env.RUN_MODE)
         let config;
-        switch (process.env.NODE_ENV) {
+        switch (process.env.RUN_MODE) {
             case DEVELOPMENT:
                 config = databaseConfig.development;
                 break;
@@ -32,16 +34,17 @@ export const databaseProviders = [{
                 config = databaseConfig.development;
         }
         const sequelize: Sequelize = new Sequelize(config);
+        sequelize.addModels([Users, Roles, Devices, Notifications])
 
         const cur_dir = getRealPathFromGenFiles(__dirname);
+
+        await sequelize.sync();
 
         await generateMigration(sequelize, {
             outDir: path.join(cur_dir, "./migrations"),
             snapshotDir: path.join(cur_dir, "./snapshots"),
-            migrationName: "migration--init",
+            migrationName: "migration--append-notification",
         });
-
-        await sequelize.sync();
 
         return sequelize;
     },

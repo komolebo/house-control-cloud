@@ -12,7 +12,8 @@ import { NotificationModule } from './modules/notification/notification.module';
 @Module({
   imports: [
       ConfigModule.forRoot({
-          envFilePath: `.${process.env.NODE_ENV}.env`
+          envFilePath: `.${process.env.NODE_ENV}.env`,
+          isGlobal: true
       }),
       SequelizeModule.forRoot({
           dialect: 'postgres',
@@ -20,9 +21,7 @@ import { NotificationModule } from './modules/notification/notification.module';
           port: Number(process.env.DB_PORT),
           username: process.env.DB_USER,
           password: process.env.DB_PASS,
-          database: process.env.DB_NAME_DEVELOPMENT,
-          autoLoadModels: true,
-          synchronize: true
+          database: process.env.DB_NAME_TEST,
         }),
       DatabaseModule,
       UsersModule,
@@ -34,3 +33,4 @@ import { NotificationModule } from './modules/notification/notification.module';
   providers: [AppService],
 })
 export class AppModule {}
+

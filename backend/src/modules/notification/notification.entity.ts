@@ -1,7 +1,8 @@
-import {Table, Column, Model, DataType, ForeignKey, PrimaryKey} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, ForeignKey, PrimaryKey, BelongsToMany, BelongsTo} from 'sequelize-typescript';
 import {Users} from "../users/user.entity";
-import {NotificationTypes} from "./messages/notification.types";
+import {ENotificationSeverity, ENotificationTypes} from "./messages/ENotificationTypes";
 import {Devices} from "../devices/device.entity";
+import {Roles} from "../devices/role.entity";
 
 @Table({tableName: 'notifications'})
 export class Notifications extends Model<Notifications> {
@@ -35,8 +36,17 @@ export class Notifications extends Model<Notifications> {
     targetUserId: number;
 
     @Column({
-        type: DataType.ENUM({values: Object.keys(NotificationTypes)}),
+        type: DataType.ENUM({values: Object.keys(ENotificationTypes)}),
         allowNull: false
     })
     msgType: string
+
+    @Column({
+        type: DataType.ENUM({values: Object.keys(ENotificationSeverity)}),
+        allowNull: false,
+    })
+    severity: ENotificationSeverity;
+
+    @BelongsTo(() => Users)
+    user: Users
 }
