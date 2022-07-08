@@ -43,7 +43,7 @@ export const databaseProviders = [{
         await generateMigration(sequelize, {
             outDir: path.join(cur_dir, "./migrations"),
             snapshotDir: path.join(cur_dir, "./snapshots"),
-            migrationName: "migration--append-notification",
+            migrationName: "migration--dummy-change",
         });
 
         return sequelize;

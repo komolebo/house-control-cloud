@@ -28,18 +28,11 @@ export class Notifications extends Model<Notifications> {
     })
     sourceUserId: number;
 
-    @ForeignKey(() => Users)
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    targetUserId: number;
-
     @Column({
         type: DataType.ENUM({values: Object.keys(ENotificationTypes)}),
         allowNull: false
     })
-    msgType: string
+    msgType: ENotificationTypes
 
     @Column({
         type: DataType.ENUM({values: Object.keys(ENotificationSeverity)}),
