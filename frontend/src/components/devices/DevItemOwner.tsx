@@ -32,10 +32,6 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
             }
         })
     }
-    const handleInviteUsr = (userInfo: TConnectedUser, role: TDevRole) => {
-
-    }
-
     useEffect(() => {
         fetchConnUsersByDevice(devInfo.id, (uList) => {
             if (JSON.stringify(uList) !== JSON.stringify(users)) {
@@ -49,15 +45,17 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
 
         <div id={devOwnerTop}>
             <table>
-                <tr style={{paddingTop: '100px', paddingBottom: '100px'}}>
+                <thead><tr style={{paddingTop: '100px', paddingBottom: '100px'}}>
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Name</th>
                     <th id={devOwnerConnusrProp} className={helpText} style={{textAlign: "left"}}>Status</th>
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>ID</th>
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
-                </tr>
+                </tr></thead>
+
+                <tbody>
                 {users.map(conn_user => {
                     const isIdMatched = conn_user.id === userInfo?.id;
-                    return <tr>
+                    return <tr key={conn_user.id}>
                         <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
                             <ColorRoleLabel role={conn_user.role}/>
@@ -87,6 +85,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                         </td>
                     </tr>
                 })}
+                </tbody>
             </table>
         </div>
 

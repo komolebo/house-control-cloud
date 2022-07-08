@@ -39,7 +39,7 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
                     status: 0
                 })
             })
-            console.log("downloaded devices", devList);
+            console.log("sync devices per user", devList);
             onThen(devList)
         })
 }
@@ -58,7 +58,7 @@ export function fetchConnUsersByDevice(dev_id: number,
             })
 
             userList.sort((a, b) => a.role - b.role)
-            console.log("downloaded users for device", userList);
+            console.log("sync users for device", userList);
 
             onThen(userList);
         })

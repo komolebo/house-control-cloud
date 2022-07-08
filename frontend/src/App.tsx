@@ -12,10 +12,10 @@ const App = () => {
       <BrowserRouter>
           <Routes>
               {authorized
-              ? privateRoutes.map(({path, Component}) =>
-                  <Route path={path} element={Component}/>)
-              : publicRoutes.map(({path, Component}) =>
-                  <Route path={path} element={Component}/>)
+              ? privateRoutes.map(({path, Component}, i) =>
+                  <Route path={path} element={Component} key={i}/>)
+              : publicRoutes.map(({path, Component}, i) =>
+                  <Route path={path} element={Component} key={i}/>)
               }
 
               <Route

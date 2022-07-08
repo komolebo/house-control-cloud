@@ -39,21 +39,17 @@ export const NavBar: React.FC = () => {
     ];
 
     const handleOpenMsgMenu = (event: React.MouseEvent<HTMLElement>) => {
-        console.log("open");
         setAnchorElMsg(event.currentTarget);
     };
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        console.log("change open anchorElUser");
         setAnchorElUser(event.currentTarget);
     };
 
     const handleCloseMsgMenu = () => {
-        console.log("close");
         setAnchorElMsg(null);
     };
 
     const handleCloseUserMenu = () => {
-        console.log("change close anchorElUser");
         setAnchorElUser(null);
     };
 
@@ -65,7 +61,7 @@ export const NavBar: React.FC = () => {
                     setNotification(resp.data);
                 }
             })
-    })
+    }, [])
 
     return (
         <div id={navBar}>

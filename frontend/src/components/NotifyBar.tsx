@@ -111,8 +111,10 @@ export const NotifyBar: React.FC = () => {
                     maxHeight: "600px",
                     overflowY: "auto",}}
             >
-                {notifications.map(el => {
-                    return <NotifyElement  item={el} onDelete={handleRemoveElement} onAct={() => console.log("onAct")} />
+                {notifications.map((el, i) => {
+                    return <div key={i}>
+                        <NotifyElement item={el} onDelete={handleRemoveElement} onAct={() => console.log("onAct")} />
+                    </div>
                 })}
             </Box>
         </Box>

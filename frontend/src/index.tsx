@@ -1,18 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './App';
 import {ModalProvider} from "./components/modals/ModalProvider";
 import {ThemeProvider} from "@mui/material";
 import {theme} from "./components/mui/muiOverride";
 import {UserAuthProvider} from "./globals/UserAuthProvider";
+import {createRoot} from "react-dom/client";
 
-ReactDOM.render(
-    <ThemeProvider theme={theme}>
+
+const rootEl = document.getElementById('root')
+if (rootEl === null) throw new Error('Root container missing in index.html')
+
+const root = createRoot(rootEl)
+root.render(
+    <ThemeProvider key={123} theme={theme}>
         <ModalProvider>
             <UserAuthProvider>
                 <App/>
             </UserAuthProvider>
         </ModalProvider>
-    </ThemeProvider>,
-    document.getElementById('root')
+    </ThemeProvider>
 );
