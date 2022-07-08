@@ -10,7 +10,7 @@ import {hFont, underline} from "../styles/common/fonts.css";
 import {btn} from "../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
-import {login} from "../http/auth";
+import {login} from "../web/http/auth";
 import {flexr, wide} from "../styles/common/position.css";
 import {UserAuthContext} from "../globals/UserAuthProvider";
 import logoHomeNet from "../assets/home-net-black.svg";

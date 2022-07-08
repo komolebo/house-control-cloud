@@ -9,7 +9,7 @@ import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
-import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
+import {deleteNotification, getNotificationsListPerUser} from "../web/http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
 
 interface INotificationProp {

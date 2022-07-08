@@ -11,7 +11,7 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {mediumMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
-import {deleteAccess, postModifyAccess} from "../../http/rqData";
+import {deleteAccess, postModifyAccess} from "../../web/http/rqData";
 import {userInfo} from "os";
 
 interface IModifyElemProp {

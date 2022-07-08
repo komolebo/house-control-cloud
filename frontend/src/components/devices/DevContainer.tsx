@@ -12,7 +12,7 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
+import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../web/http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 
 interface IState {

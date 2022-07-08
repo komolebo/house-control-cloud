@@ -1,5 +1,6 @@
 import {host} from "./index";
-import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
+import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
+import axios from "axios";
 
 export function roleStrToId(role: string) {
     switch (role) {
@@ -98,3 +99,4 @@ export function isNotificationPerUser(userId: number) {
 export function deleteNotification(notifId: number) {
     return host.delete("api/notification/" + notifId)
 }
+

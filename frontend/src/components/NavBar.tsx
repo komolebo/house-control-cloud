@@ -20,7 +20,7 @@ import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
-import {isNotificationPerUser} from "../http/rqData";
+import {isNotificationPerUser} from "../web/http/rqData";
 
 
 const userInfo = getUserInfo();

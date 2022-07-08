@@ -9,7 +9,7 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice, postClearDeviceUsers, postInviteUser} from "../../http/rqData";
+import {fetchConnUsersByDevice, postClearDeviceUsers, postInviteUser} from "../../web/http/rqData";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,

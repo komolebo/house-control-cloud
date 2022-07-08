@@ -8,7 +8,7 @@ import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
-import {postInviteUser} from "../../http/rqData";
+import {postInviteUser} from "../../web/http/rqData";
 
 interface IInvitElemProp {
     onAction: (usrInf: TConnectedUser) => void

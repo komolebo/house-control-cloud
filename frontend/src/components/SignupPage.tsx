@@ -6,7 +6,7 @@ import {hFont, underline} from "../styles/common/fonts.css";
 import {btn, wideMuiBtn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
-import {register} from "../http/auth";
+import {register} from "../web/http/auth";
 import {UserAuthContext} from "../globals/UserAuthProvider";
 import {flexr, floatr, wide} from "../styles/common/position.css";
 import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
