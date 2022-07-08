@@ -1,6 +1,6 @@
 import React, {createContext, FC, useContext, useState} from "react";
 
-import {Box, Popper} from "@mui/material";
+import {Box, Modal} from "@mui/material";
 import logoClose from "../../assets/close.svg";
 import {imgHover} from "../../styles/common/buttons.css";
 import {AddDevModal} from "./AddDevModal";
@@ -8,7 +8,6 @@ import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
 import {ModifyAccessModal} from "./ModifyAccessModal";
 import {UnsubscribeUsrModal} from "./UnsubsribeUsrModal";
-import {PopperStyle} from "../../styles/common/customMuiStyle";
 
 export enum MODAL_TYPE {
     AddDevModal,
@@ -97,10 +96,10 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
     return (
         <GlobalModalContext.Provider value={{showModal, hideModal, modalProps}}>
             {modaltype !== MODAL_TYPE.DefaultModal &&
-            <Popper
-                id={"simple-popper"}
+            <Modal
                 open={true}
-                sx={PopperStyle}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
             >
                 <Box
                     sx={{
@@ -119,7 +118,7 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                     </div>
                     {renderComponent()}
                 </Box>
-            </Popper>
+            </Modal>
             }
             {children}
         </GlobalModalContext.Provider>

@@ -91,7 +91,6 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
                    label={"Device ID"}
                    id="outlined-uncontrolled"
                    color={"info"}
-                   defaultValue={"0xFF0011AA"}
                    fullWidth={true}
                    // helperText={warning}
                    onChange={e => onInputChange(e)}
