@@ -101,7 +101,6 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                    label={"User ID"}
                    id="outlined-uncontrolled"
                    color={"info"}
-                   defaultValue={"0xFF0011AA"}
                    fullWidth={true}
                    helperText={warning}
                    onChange={e => handleInputChange(e)}
@@ -120,8 +119,8 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                     onChange={handleSelectChange}
                 >
                     {
-                        ROLES.map(role => {
-                            return <MenuItem value={role}>{TDevRole[role]}</MenuItem>
+                        ROLES.map((role, i) => {
+                            return <MenuItem key={i} value={role}>{TDevRole[role]}</MenuItem>
                         })
                     }
 
@@ -160,7 +159,9 @@ export const InviteUserModal: FC = () => {
     return (
         <div>
             { !userData
-                ? <InviteUsrElement onAction={(usrInfo) => setModeDone(usrInfo)}/>
+                ? <InviteUsrElement
+                    onAction={(usrInfo) => setModeDone(usrInfo)}
+                />
                 : <DoneElement
                     onAction={() => complete()}
                     usrInfo={userData}

@@ -14,18 +14,10 @@ export function roleStrToId(role: string) {
     }
 }
 
-export async function getDeviceList2(then: (data: any) => void) {
-    let data = null;
-    await host.get('auth/signup')
-        .then(response =>
-            data = response.data
-        );
-    return data;
-}
-
 export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) => void) {
-    host.get("/api/devices/list/" + id)
+    host.get("/api/devices/list/")
         .then(resp =>{
+            console.log("Fuck: ", resp)
             let devList: Array<TDevItem> = [];
 
             resp.data.forEach((dev: any) => {
@@ -36,7 +28,8 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
                     role: roleStrToId(dev.Roles.role),
                     active: dev.active,
                     id: dev.id,
-                    status: 0
+                    status: 0,
+                    unsubscribable: dev.canUnsubscribe
                 })
             })
             console.log("sync devices per user", devList);

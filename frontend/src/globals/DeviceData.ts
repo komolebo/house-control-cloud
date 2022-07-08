@@ -25,6 +25,7 @@ export interface TDevItem {
     status: TDevStatus,
     role: TDevRole,
     active: boolean;
+    unsubscribable: boolean;
 }
 
 export const ROLES = Array.from(Array(TDevRole.ROLES_NUMBER).keys());

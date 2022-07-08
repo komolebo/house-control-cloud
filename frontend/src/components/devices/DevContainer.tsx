@@ -9,31 +9,26 @@ import logoDisconnectGrey from "../../assets/disconnect-device-grey.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
-import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
+import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {
-    fetchConnUsersByDevice,
-    fetchDevListByUser,
-    postClearDeviceUsers, postModifyAccess,
-    postUnsubscribeFromDevice
-} from "../../http/rqData";
+import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 
 interface IState {
     ind: number;
     devices: Array<TDevItem>;
-    canUnsubscribe: boolean;
 }
+
+const userInfo = getUserInfo();
 
 export const DevContainer: FC = () => {
     const [values, setValues] = useState<IState>({
         ind: -1,
         devices: [],
-        canUnsubscribe: true
     })
     const { showModal, hideModal } = useGlobalModalContext();
-    const userInfo = getUserInfo();
+    const canUnsubscribe = values.ind >= 0 && values.devices[values.ind].unsubscribable;
 
     const handleDevInfoChange = (devName: string) => {
         values.devices[values.ind].name = devName;
@@ -49,32 +44,37 @@ export const DevContainer: FC = () => {
         })
     }
 
-    const syncData = () => {
-        userInfo && fetchDevListByUser(userInfo.id, (data: Array<TDevItem>) => {
-            if (JSON.stringify(values.devices) !== JSON.stringify(data)) {
-                setValues({
-                    ...values,
-                    devices: data,
-                    ind: data.length ? 0 : -1,
-                })
-            }
-        })
-        values.ind >= 0 && fetchConnUsersByDevice(values.devices[values.ind].id, (conn_list) => {
-            // unsubscribable if any other owner or you're not owner
+    const checkUnsubscribe = (devId: number) => {
+        fetchConnUsersByDevice(devId, conn_list => {
             let manyOwners = false;
-            const curRole = values.devices[values.ind].role;
-            if (curRole === TDevRole.OWNER) {
-                conn_list.forEach(el => {
-                    manyOwners = (el.id !== getUserInfo()?.id && el.role === TDevRole.OWNER) || manyOwners
+            console.log(conn_list);
+            conn_list.forEach(el => {
+                console.log(el.id !== getUserInfo()?.id, el.role === TDevRole.OWNER)
+                manyOwners ||= (el.id !== getUserInfo()?.id && el.role === TDevRole.OWNER);
+            })
+            setValues({
+                ...values,
+            })
+        })
+    }
+
+    const syncData = () => {
+        userInfo && fetchDevListByUser(userInfo.id, (devList: Array<TDevItem>) => {
+            if (JSON.stringify(values.devices) !== JSON.stringify(devList)) {
+                console.log("Syncing data change: ", devList)
+                const devInd = devList.length ? 0 : -1;
+
+                setValues({
+                    devices: devList,
+                    ind: devInd
                 })
             }
-            setValues({...values, canUnsubscribe: curRole !== TDevRole.OWNER || manyOwners})
         })
     }
 
     useEffect(() => {
         syncData();
-    }, [values.devices, values.ind])
+    }, [])
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -102,7 +102,7 @@ export const DevContainer: FC = () => {
             <Button variant={"outlined"}
                     endIcon={
                         <img
-                            src={values.canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
+                            src={canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
                         />
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
@@ -113,7 +113,7 @@ export const DevContainer: FC = () => {
                         }
                     })}
                     className={[wideMuiBtn, floatr].join(' ')}
-                    disabled={!values.canUnsubscribe}
+                    disabled={!canUnsubscribe}
             >
                 Unsubscribe
             </Button>

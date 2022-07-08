@@ -32,13 +32,18 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
             }
         })
     }
-    useEffect(() => {
+    const syncUsers = () => {
         fetchConnUsersByDevice(devInfo.id, (uList) => {
+            console.log("fetchConnUsersByDevice 2")
             if (JSON.stringify(uList) !== JSON.stringify(users)) {
                 setUsers(uList);
             }
         })
-    })
+    }
+
+    useEffect(() => {
+        syncUsers()
+    }, [devInfo])
 
     return <div id={devOwner}>
         <div className={h3Font}>Connected users: </div>
@@ -74,7 +79,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                     disabled={isIdMatched || conn_user.role === TDevRole.OWNER}
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
-                                        onAct: () => onDevDataChanged(),
+                                        onAct: () => syncUsers(),
                                         data: {usrInfo: conn_user, devInfo: devInfo, userList: users}
                                     })}
                                     sx={styleHeights.lowBtn}
@@ -95,7 +100,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 endIcon={ <img src={logoInvite} alt={"Logo invite"}/>}
                 onClick={() => showModal(MODAL_TYPE.InviteUsrModal, {
                     onClose: () => {console.log("Modal onClose")},
-                    onAct: () => onDevDataChanged(),
+                    onAct: () => syncUsers(),
                     data: {devInfo: devInfo}
                 })}
                 variant={"outlined"} sx={{
