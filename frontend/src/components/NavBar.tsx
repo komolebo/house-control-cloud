@@ -29,7 +29,7 @@ export const NavBar: React.FC = () => {
     const {clearUserData} = useContext(UserAuthContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
-    const [notification, setNotification] = useState(false);
+    const [notification, setNotification] = useState<boolean>(false);
 
     const settingsMenu = [
         {name: 'Profile', handler: () => {}},
@@ -53,7 +53,7 @@ export const NavBar: React.FC = () => {
         setAnchorElUser(null);
     };
 
-    useEffect(() => {
+    const syncNotificationStatus = () => {
         userInfo && isNotificationPerUser(userInfo?.id)
             .then(resp => {
                 console.log("isNotificationPerUser resp: ", resp.data > 0)
@@ -61,6 +61,10 @@ export const NavBar: React.FC = () => {
                     setNotification(resp.data);
                 }
             })
+    }
+
+    useEffect(() => {
+        syncNotificationStatus();
     }, [])
 
     return (
@@ -93,7 +97,9 @@ export const NavBar: React.FC = () => {
                                 open={Boolean(anchorElMsg)}
                                 anchorEl={anchorElMsg}
                         >
-                            <NotifyBar/>
+                            <NotifyBar
+                                onNotificationStatusChange={syncNotificationStatus}
+                            />
                         </Popper>
                     </ClickAwayListener>
                 }

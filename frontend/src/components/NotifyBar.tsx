@@ -9,10 +9,15 @@ import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
-import {getNotificationsListPerUser} from "../http/rqData";
+import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
 
+interface INotificationProp {
+    onNotificationStatusChange: () => void
+}
+
 const userInfo = getUserInfo();
+
 
 const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
     console.log(item)
@@ -71,23 +76,30 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 }
 
 
-export const NotifyBar: React.FC = () => {
+export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) => {
     const [notifications, setNotifications] = useState<Array<TNotifyItem>>([])
 
     const handleRemoveElement = (id: number) => {
-        setNotifications([...notifications.filter(obj => {return obj.id !== id})])
+        deleteNotification(id).then(resp => {
+            if (resp.status === 200 || resp.status === 201) {
+                console.log("Response from removing the notification", resp)
+                syncNotifications();
+            }
+        })
     }
 
-    useEffect(() => {
+    const syncNotifications = () => {
         userInfo && getNotificationsListPerUser(userInfo?.id)
             .then(resp => {
                 if (resp.status === 201 || 200) {
                     setNotifications(resp.data);
-                    console.log("++++++++++ notifications", resp.data)
-                } else {
-                    console.log("bad status: ", resp.status)
-                }
+                    onNotificationStatusChange();
+                } else {}
             })
+    }
+
+    useEffect(() => {
+        syncNotifications();
     }, [])
 
     return <div>
