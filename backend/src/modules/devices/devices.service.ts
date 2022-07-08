@@ -106,13 +106,10 @@ export class DevicesService {
         if(users.length) {
             console.log("Device already owned") // TODO
         } else {
-            const res = await this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, RoleValues.Owner)
-            await this.notificationService.createNotification({
-                userId: thisUserId,
-                msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_ADDED],
-                deviceId: deviceWithUsers.id,
-                severity: ENotificationSeverity[ENotificationSeverity.INFO]
-            })
+            const newRole = RoleValues.Owner;
+            const res = await this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, newRole)
+            await this.notificationService.createNotificationYouAreAdded(
+                thisUserId, deviceWithUsers.id, deviceWithUsers.name, newRole)
             return res
         }
     }
@@ -153,9 +150,19 @@ export class DevicesService {
         if (deviceWithUsers && deviceWithUsers.users.length) {
             const curUser = deviceWithUsers.users.find(el => el.id === thisUserId);
 
+            const rmUsers = deviceWithUsers.users;
+
             // yes, you are OWNER -> remove everyone
             if (curUser.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                return await deviceWithUsers.$remove("Users", deviceWithUsers.users)
+                const res =  await deviceWithUsers.$remove("Users", deviceWithUsers.users)
+                // TODO check res
+                rmUsers.forEach(u => {
+                    this.notificationService.createNotificationYouLostAccess(
+                        u.id, deviceWithUsers.id, deviceWithUsers.name
+                    )
+                })
+
+                return res
             }
         } else {
             console.log("Empty values")

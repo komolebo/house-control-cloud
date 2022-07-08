@@ -17,7 +17,7 @@ export enum ENotificationTypes {
     DEVICE_ADDED,
 
     USER_REMOVED,
-    YOU_ARE_REMOVED,
+    YOU_LOST_ACCESS,
 
     // with options //
     ACCEPT_USER_ADD,
@@ -68,7 +68,7 @@ export function ExplainNotificationMap(type: ENotificationTypes, dbObj: Notifica
                 text: "Your subscription is prolonged",
                 actions: NO_ACTION_STR,
             };
-        case typeStr(ENotificationTypes.YOU_ARE_REMOVED):
+        case typeStr(ENotificationTypes.YOU_LOST_ACCESS):
             return {
                 text: "You are now removed from the device",
                 actions: NO_ACTION_STR,

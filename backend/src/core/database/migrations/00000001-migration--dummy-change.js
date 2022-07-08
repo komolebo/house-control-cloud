@@ -74,7 +74,7 @@ module.exports = {
           "YOU_ARE_ADDED",
           "DEVICE_ADDED",
           "USER_REMOVED",
-          "YOU_ARE_REMOVED",
+          "YOU_LOST_ACCESS",
           "ACCEPT_USER_ADD",
           "ACCEPT_USER_REMOVE",
           "SUBSCRIPTION_EXPIRED",

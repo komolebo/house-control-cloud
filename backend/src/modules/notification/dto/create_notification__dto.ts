@@ -11,8 +11,11 @@ export class CreateNotification_Dto {
     @IsNotEmpty()
     readonly severity: string;
 
+    readonly text: string;
+
     readonly deviceId?: number;
 
     readonly sourceUserId?: number;
+
 }
 

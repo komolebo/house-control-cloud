@@ -16,11 +16,11 @@ export class NotificationController {
         return await this.notificationService.isNotificationsByUser(user_id);
     }
 
-    @Post("trigger/:notif_id/:action")
-    async triggerNotification(@Param('notif_id') notif_id: number,
-                              @Param('action') msgType: string) {
-        return await this.notificationService.createNotification(null)
-    }
+    // @Post("trigger/:notif_id/:action")
+    // async triggerNotification(@Param('notif_id') notif_id: number,
+    //                           @Param('action') msgType: string) {
+    //     return await this.notificationService.createNotification(null)
+    // }
 
     @Delete(":notif_id")
     async deleteNotificationById(@Headers() headers,

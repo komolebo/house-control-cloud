@@ -3,17 +3,15 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Notifications} from "./notification.entity";
 import {CreateNotification_Dto} from "./dto/create_notification__dto";
 import {Users} from "../users/user.entity";
-import {ExplainNotificationMap} from "./messages/ENotificationTypes";
+import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from "./messages/ENotificationTypes";
 import * as moment from 'moment'
 
 
 function notificationInterpretData(notification: Notifications) {
     const notifyObj = notification["dataValues"];
-    // console.log("checking ", notifyObj.msgType, ExplainNotificationMap[notifyObj.msgType])
     const explainInfo = ExplainNotificationMap(notifyObj.msgType, notifyObj);
-    if (!notifyObj.text && explainInfo) {
+    if (explainInfo) {
         notifyObj["actions"] = explainInfo.actions;
-        notifyObj["text"] = explainInfo.text;
         notifyObj.createdAt = moment(notifyObj.createdAt).fromNow();
     }
 }
@@ -76,20 +74,38 @@ export class NotificationService {
     //
     // readonly sourceUserId?: number;
 
-    async createNotification(notificationDto: CreateNotification_Dto) {
+    private async createNotification(notificationDto: CreateNotification_Dto) {
         const user = await this.userRepository.findOne({
             where: {id: notificationDto.userId}, include: {model: Notifications}}
         )
 
         const notification = await this.notificationRepository.create<Notifications>(notificationDto)
 
-        await user.$add("notifications", notification);
+        return await user.$add("notifications", notification);
+    }
 
-        // const notification = this.notificationRepository.create({
-        //     deviceId: notificationDto.deviceId,
-        //     sourceUserId: notificationDto.sourceUserId,
-        //     severity: notificationDto.severity,
-        //     msgType: notificationDto.msgType
-        // })
+    async createNotificationYouAreAdded(userId: number,
+                                        deviceId: number,
+                                        deviceName: string,
+                                        newRole: string) {
+        return await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_ADDED],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            deviceId: deviceId,
+            userId: userId,
+            text: `You are now added to the device '${deviceName}' with role '${newRole}'`
+        })
+    }
+
+    async createNotificationYouLostAccess(userId: number,
+                                          deviceId: number,
+                                          deviceName: string) {
+        return await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            deviceId: deviceId,
+            userId: userId,
+            text: `You have now lost an access to the device '${deviceName}'`
+        })
     }
 }
