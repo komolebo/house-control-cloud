@@ -94,3 +94,10 @@ export function postClearDeviceUsers(devHex: string) {
 export function deleteAccess(devHex: string, userId: number) {
     return host.delete(`api/devices/${devHex}/${userId}`)
 }
+
+export function getNotificationsListPerUser(userId: number) {
+    return host.get("api/notification/list/" + userId)
+}
+export function isNotificationPerUser(userId: number) {
+    return host.get("api/notification/exist/" + userId)
+}

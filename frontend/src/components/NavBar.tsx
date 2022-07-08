@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {navBar} from "../styles/NavBar.css";
 import {
     AppBar,
@@ -16,17 +16,21 @@ import logoHomeNet from "../assets/home-net-white.svg";
 import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
 import logoMsgYes from "../assets/nav-notification-yes.svg";
+import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
+import {isNotificationPerUser} from "../http/rqData";
 
 
+const userInfo = getUserInfo();
 
 export const NavBar: React.FC = () => {
     const {clearUserData} = useContext(UserAuthContext);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [anchorElMsg, setAnchorElMsg] = React.useState<null | HTMLElement>(null);
-    const userInfo = getUserInfo();
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+    const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
+    const [notification, setNotification] = useState(false);
+
     const settingsMenu = [
         {name: 'Profile', handler: () => {}},
         {name: 'Account', handler: () => {}},
@@ -53,6 +57,16 @@ export const NavBar: React.FC = () => {
         setAnchorElUser(null);
     };
 
+    useEffect(() => {
+        userInfo && isNotificationPerUser(userInfo?.id)
+            .then(resp => {
+                console.log("isNotificationPerUser resp: ", resp.data > 0)
+                if (resp.status === 200 || resp.status === 201) {
+                    setNotification(resp.data);
+                }
+            })
+    })
+
     return (
         <div id={navBar}>
         <AppBar position="static">
@@ -61,8 +75,6 @@ export const NavBar: React.FC = () => {
             >
                 <IconButton sx={{ ml: 4 }} >
                     <img src={logoHomeNet} alt={"HomeNet logo"}/>
-                    {/*<img src={logoHomeNetCloud}/>*/}
-                    {/*<MenuIcon />*/}
                 </IconButton>
 
                 <Box sx={{ml: 1, flexGrow: 3}}>
@@ -74,7 +86,10 @@ export const NavBar: React.FC = () => {
                 </IconButton>
 
                 <IconButton onClick={handleOpenMsgMenu} color="inherit" sx={{ml: 1}}>
-                    <img src={logoMsgYes} alt={"Yes!"}/>
+                    {notification
+                        ? <img src={logoMsgYes} alt={"Yes!"}/>
+                        : <img src={logoMsgNo} alt={"No!"}/>
+                    }
                 </IconButton>
                 {anchorElMsg &&
                     <ClickAwayListener onClickAway={() => handleCloseMsgMenu()}>

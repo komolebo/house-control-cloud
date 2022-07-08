@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {Box, Button} from "@mui/material";
 import {h4Font, h4FontBlue, helpText} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
@@ -8,78 +8,14 @@ import logoClose from "../assets/close.svg"
 import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 import {styleHeights} from "../styles/common/customMuiStyle";
+import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
+import {getNotificationsListPerUser} from "../http/rqData";
+import {getUserInfo} from "../globals/UserAuthProvider";
 
-interface INotifyItemProps {
-    item: TNotifyItem,
-    onDelete: (id: number) => void,
-    onAct: () => void
-}
-
-enum TNotifyPrio {
-    Info,
-    Critical,
-    Approve
-}
-
-interface TNotifyItem {
-    id: number;
-    text: string;
-    date: string;
-    prio: TNotifyPrio
-}
-
-const notifications: Array<TNotifyItem> = [
-    {
-        id: 0,
-        text: "Lorem ipsum dolor sit amet, avec \n" +
-            "moi consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Approve},
-    {
-        id: 1,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Info},
-    {
-        id: 2,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Yesterday, 10:00 AM",
-        prio: TNotifyPrio.Info},
-    {
-        id: 3,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Critical},
-    {
-        id: 4,
-        text: "Lorem ipsum dolor sit amet, avec \n" +
-            "moi consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Approve},
-    {
-        id: 5,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Critical},
-    {
-        id: 6,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Info},
-    {
-        id: 7,
-        text: "Lorem ipsum dolor sit amet, \n" +
-            "consectetur adipiscing elit",
-        date: "Today, 10:00 AM",
-        prio: TNotifyPrio.Approve},
-]
+const userInfo = getUserInfo();
 
 const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
+    console.log(item)
 
     return <div>
         <Box sx={{borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
@@ -87,15 +23,15 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                     flexDirection: "row", pt: 2, pb: 2, mr: 2,
             }}>
             <div style={{paddingLeft: 15}}
-                 className={item.prio === TNotifyPrio.Approve
+                 className={item.severity === TNotifySeverity.Action
                      ? colBorderBlue
-                    : item.prio === TNotifyPrio.Info
+                    : item.severity === TNotifySeverity.Info
                          ? colBorderGreen
                          : colBorderRed
                  }>
-                {item.prio === TNotifyPrio.Approve
+                {item.severity === TNotifySeverity.Action
                     ? <img src={logoBellBlue} alt={"Logo bel blue"}/>
-                    : item.prio === TNotifyPrio.Info
+                    : item.severity === TNotifySeverity.Info
                         ? <img src={logoBellGreen} alt={"Logo bel green"}/>
                         : <img src={logoBellRed} alt={"Logo bel red"}/>
                 }
@@ -107,17 +43,20 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                     {item.text}
                 </div>
                 <div className={[helpText].join(' ')} style={{paddingTop: "10px", paddingBottom: "10px"}}>
-                    {item.date}
+                    {item.createdAt}
                 </div>
 
-                <Button variant={"contained"}
-                        sx={{...styleHeights.midHiBtn,
-                            width: "50%"
-                        }}
-                        onClick={onAct}
-                >
-                    Approve
-                </Button>
+                {item.actions
+                    ? <Button variant={"contained"}
+                            sx={{...styleHeights.midHiBtn,
+                                width: "50%"
+                            }}
+                            onClick={onAct}
+                    >
+                        {item.actions}
+                    </Button>
+                    : <></>
+                }
 
             </Box>
 
@@ -133,12 +72,23 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 
 
 export const NotifyBar: React.FC = () => {
-    const [messages, setMessages] = useState(notifications);
+    const [notifications, setNotifications] = useState<Array<TNotifyItem>>([])
 
     const handleRemoveElement = (id: number) => {
-        setMessages([...messages.filter(obj => {return obj.id !== id})])
+        setNotifications([...notifications.filter(obj => {return obj.id !== id})])
     }
 
+    useEffect(() => {
+        userInfo && getNotificationsListPerUser(userInfo?.id)
+            .then(resp => {
+                if (resp.status === 201 || 200) {
+                    setNotifications(resp.data);
+                    console.log("++++++++++ notifications", resp.data)
+                } else {
+                    console.log("bad status: ", resp.status)
+                }
+            })
+    }, [])
 
     return <div>
         {/* Notifications window */}
@@ -151,7 +101,7 @@ export const NotifyBar: React.FC = () => {
             <Box  sx={{ p: 1, pl: 3, pr: 3, display: "flex", flexDirection: "row",
                         borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)"}}>
                 <div className={h4FontBlue} style={{flexGrow: 3,}}>Notifications</div>
-                <div className={h4FontBlue}>{messages.length}</div>
+                <div className={h4FontBlue}>{notifications.length}</div>
             </Box>
 
             {/* Notifications list */}
@@ -161,13 +111,9 @@ export const NotifyBar: React.FC = () => {
                     maxHeight: "600px",
                     overflowY: "auto",}}
             >
-                {/*<div style={{maxHeight: "200px"}}>*/}
-                {
-                    messages.map(el => {
-                        return <NotifyElement  item={el} onDelete={handleRemoveElement} onAct={() => console.log("onAct")} />
-                    })
-                }
-                {/*</div>*/}
+                {notifications.map(el => {
+                    return <NotifyElement  item={el} onDelete={handleRemoveElement} onAct={() => console.log("onAct")} />
+                })}
             </Box>
         </Box>
     </div>;
