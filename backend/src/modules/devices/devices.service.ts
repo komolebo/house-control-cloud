@@ -5,6 +5,7 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
+import validator from "validator";
 
 @Injectable()
 export class DevicesService {
@@ -42,12 +43,34 @@ export class DevicesService {
     }
 
     async getDevicesPerUser(user_id: number) {
-        return await this.usersRepository.findOne({where: {id: user_id}})
-            .then(user=>{
-                if(!user) return;
+        console.log(user_id)
+        const curUser = await this.usersRepository.findOne({
+            where: {id: user_id},
+            include: {model: Devices},
+            plain: true
+        })
+        if (!curUser) return;
 
-                return user.$get('devices');
-            })
+        const devices = curUser.devices;
+        let promises: Array<any> = [];
+
+        devices.map((device) => {
+            device["dataValues"]["canUnsubscribe"] = true;
+            if (device.get("Roles")["dataValues"].role === RoleValues.Owner) {
+                promises.push(device.$get("users").then(conn_users => {
+                    let manyOwners = false;
+                    conn_users.forEach(u => {
+                        if (u.id !== user_id && u.get("Roles")["dataValues"].role === RoleValues.Owner) {
+                            manyOwners = true;
+                        }
+                    })
+                    device["dataValues"]["canUnsubscribe"] = manyOwners
+                }));
+            }
+        })
+        await Promise.all(promises)
+
+        return devices
     }
 
     async getRoleByUserAndDevice(userId: number, deviceId: number): Promise<RoleValues> {
@@ -74,53 +97,47 @@ export class DevicesService {
         console.log("Requesting access to ", hexId, " for user=", thisUserId)
         hexId = hexId.toLowerCase()
 
-        this.deviceRepository.findOne({where: {hex: hexId}})
-            .then(device => {
-                device.$get("users").then(users => {
-                    if(users.length) {
-                        console.log("Device already owned")
-                    } else {
-                        return this.bindDeviceWithUser(thisUserId, device.id, true, RoleValues.Owner)
-                    }
-                })
-            })
+        const deviceWithUsers = await this.deviceRepository.findOne({
+            where: {hex: hexId}, include: {model: Users}
+        })
+        const users = deviceWithUsers.users;
+        if(users.length) {
+            console.log("Device already owned")
+        } else {
+            return this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, RoleValues.Owner)
+        }
     }
 
     async unsubscribeFromDeviceByHex(hexId: string, thisUserId: number) {
         let curRole = null;
         let ownersCount = 0;
 
-        this.deviceRepository.findOne({where: {hex: hexId}})
-            .then(device => {
-                device.$get("users")
-                    .then(conn_users => {
-                        conn_users.forEach(el => {
-                            const role = el.get("Roles")["dataValues"].role;
-                            const uId = el.id;
+        const deviceWithUsers = await this.deviceRepository.findOne({
+            where: {hex: hexId},
+            include: {model: Users}
+        })
+        const conn_users = deviceWithUsers.users;
 
-                            if (uId === thisUserId) curRole = role;
-                            if (role === "OWNER") ownersCount += 1;
-                        })
-                        // remove myself if you're not the single left OWNER
-                        const curUser = conn_users.find(el => el.id === thisUserId)
-                        if (curRole !== "OWNER " || ownersCount > 1) {
-                            device.$remove("users", curUser)
-                        }
-                        else {
-                        }
-                        // console.log(conn_users)
-                    })
+        conn_users.forEach(el => {
+            const role = el.get("Roles")["dataValues"].role;
+            const uId = el.id;
 
-            })
+            if (uId === thisUserId) curRole = role;
+            if (role === "OWNER") ownersCount += 1;
+        })
+
+        // remove myself if you're not the single left OWNER
+        const curUser = conn_users.find(el => el.id === thisUserId)
+        if (curRole !== "OWNER" || ownersCount > 1) {
+            return await deviceWithUsers.$remove("users", curUser)
+        } else {}
     }
 
     async clearUsersOfDevice(hexId: string, thisUserId: number) {
         console.log("clearUsersOfDevice:", hexId, thisUserId)
         const deviceWithUsers = await this.deviceRepository.findOne({
             where: { hex: hexId },
-            include: [
-                {model: Users},
-            ],
+            include: {model: Users},
         });
 
         // if you're an OWNER for current device

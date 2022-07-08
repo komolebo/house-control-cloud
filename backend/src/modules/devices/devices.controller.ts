@@ -83,13 +83,10 @@ export class DevicesController {
     }
 
     @Get('list')
-    async getDevicesList() {
-        return await this.devicesService.getDevices();
-    }
-
-    @Get('list/:user_id')
-    async getDevicesListPerUser(@Param('user_id') user_id: number) {
-        return await this.devicesService.getDevicesPerUser(user_id);
+    async getDevicesListPerUser(@Headers() headers) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return await this.devicesService.getDevicesPerUser(thisUser.id);
     }
 
     @Get('role/:user_id/:device_id')
