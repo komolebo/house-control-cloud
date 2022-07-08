@@ -86,6 +86,7 @@ module.exports = {
         type: Sequelize.ENUM("0", "1", "2", "INFO", "ACTION", "ERROR"),
         allowNull: false,
       },
+      text: { type: Sequelize.STRING },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });

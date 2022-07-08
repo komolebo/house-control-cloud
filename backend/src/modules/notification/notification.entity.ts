@@ -32,13 +32,18 @@ export class Notifications extends Model<Notifications> {
         type: DataType.ENUM({values: Object.keys(ENotificationTypes)}),
         allowNull: false
     })
-    msgType: ENotificationTypes
+    msgType: string;
 
     @Column({
         type: DataType.ENUM({values: Object.keys(ENotificationSeverity)}),
         allowNull: false,
     })
-    severity: ENotificationSeverity;
+    severity: string;
+
+    @Column({
+        type: DataType.STRING
+    })
+    text: string;
 
     @BelongsTo(() => Users)
     user: Users

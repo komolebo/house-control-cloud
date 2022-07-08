@@ -3,11 +3,16 @@ import {ENotificationSeverity, ENotificationTypes} from "../messages/ENotificati
 
 export class CreateNotification_Dto {
     @IsNotEmpty()
-    readonly msgType: ENotificationTypes;
+    readonly userId: number;
 
     @IsNotEmpty()
-    readonly severity: ENotificationSeverity;
+    readonly msgType: string;
 
-    readonly sourceUserId?: string;
+    @IsNotEmpty()
+    readonly severity: string;
+
+    readonly deviceId?: number;
+
+    readonly sourceUserId?: number;
 }
 

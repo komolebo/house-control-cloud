@@ -1,5 +1,6 @@
-import {Controller, Get, Param, Post} from '@nestjs/common';
+import {Controller, Delete, Get, Headers, Param, Post} from '@nestjs/common';
 import {NotificationService} from "./notification.service";
+import {Users} from "../users/user.entity";
 
 @Controller('api/notification')
 export class NotificationController {
@@ -19,5 +20,13 @@ export class NotificationController {
     async triggerNotification(@Param('notif_id') notif_id: number,
                               @Param('action') msgType: string) {
         return await this.notificationService.createNotification(null)
+    }
+
+    @Delete(":notif_id")
+    async deleteNotificationById(@Headers() headers,
+                                 @Param('notif_id') notif_id: number) {
+        const [, userInfo] = headers.authorization.split("Bearer ")
+        const thisUser: Users  = JSON.parse(userInfo);
+        return await this.notificationService.removeNotificationFromUser(notif_id, thisUser.id)
     }
 }

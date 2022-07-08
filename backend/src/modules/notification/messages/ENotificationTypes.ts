@@ -1,3 +1,5 @@
+import {Notifications} from "../notification.entity";
+
 export enum ENotificationSeverity {
     INFO,
     ACTION,
@@ -28,20 +30,23 @@ export enum ENotificationTypes {
 
 interface IExplainMap {text: string, actions: string}
 
+const NO_ACTION_STR = "";
+
 const typeStr = (type: ENotificationTypes): string => {
     return ENotificationTypes[type];
 }
-export function ExplainNotificationMap(type: ENotificationTypes): IExplainMap {
+
+export function ExplainNotificationMap(type: ENotificationTypes, dbObj: Notifications): IExplainMap {
     switch (type.toString()) {
+        case typeStr(ENotificationTypes.YOU_ARE_ADDED):
+            return {
+                text: `You are now added to the device ${dbObj.deviceId}`,
+                actions: NO_ACTION_STR,
+            };
         case typeStr(ENotificationTypes.DEVICE_ADDED):
             return {
                 text: "Device is successfully added",
                 actions: "OK"
-            };
-        case typeStr(ENotificationTypes.YOU_ARE_ADDED):
-            return {
-                text: "You are now added to the device",
-                actions: "Sure",
             };
         case typeStr(ENotificationTypes.ACCEPT_USER_ADD):
             return {
@@ -61,20 +66,15 @@ export function ExplainNotificationMap(type: ENotificationTypes): IExplainMap {
         case typeStr(ENotificationTypes.SUBSCRIPTION_PROLONGED):
             return {
                 text: "Your subscription is prolonged",
-                actions: "",
+                actions: NO_ACTION_STR,
             };
         case typeStr(ENotificationTypes.YOU_ARE_REMOVED):
             return {
                 text: "You are now removed from the device",
-                actions: "",
+                actions: NO_ACTION_STR,
             };
 
     }
 
-    return {actions: "", text: ""}
-    // [ENotificationTypes[ENotificationTypes.DEVICE_ADDED]]: {
-    //     text: "The device is successfully added",
-    //     actions: ["OK"]
-    // }
+    return {actions: NO_ACTION_STR, text: NO_ACTION_STR}
 }
-//2022-05-17 23:20:42.693+03

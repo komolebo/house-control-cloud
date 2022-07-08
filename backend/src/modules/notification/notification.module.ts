@@ -9,6 +9,7 @@ import {Users} from "../users/user.entity";
 @Module({
   providers: [NotificationService],
   controllers: [NotificationController],
+  exports: [NotificationService],
   imports: [
       DatabaseModule,
       SequelizeModule.forFeature([Notifications, Users]),

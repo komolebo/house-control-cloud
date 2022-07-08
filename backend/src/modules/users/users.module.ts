@@ -10,8 +10,8 @@ import {DatabaseModule} from "../../core/database/database.module";
 
 @Module({
   providers: [UsersService, ...usersProviders],
-  exports: [UsersService],
   controllers: [UsersController],
+  exports: [UsersService],
   imports: [
       DatabaseModule,
       SequelizeModule.forFeature([Devices, Users, Roles])

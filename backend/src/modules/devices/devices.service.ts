@@ -5,12 +5,14 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
-import validator from "validator";
+import {NotificationService} from "../notification/notification.service";
+import {ENotificationSeverity, ENotificationTypes} from "../notification/messages/ENotificationTypes";
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
-                @InjectModel(Users) private readonly  usersRepository: typeof Users) { }
+                @InjectModel(Users) private readonly  usersRepository: typeof Users,
+                private notificationService: NotificationService) { }
 
     async create(new_device: CreateDevice_Dto): Promise<Devices> {
         return await this.deviceRepository.create<Devices>(new_device);
@@ -102,9 +104,16 @@ export class DevicesService {
         })
         const users = deviceWithUsers.users;
         if(users.length) {
-            console.log("Device already owned")
+            console.log("Device already owned") // TODO
         } else {
-            return this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, RoleValues.Owner)
+            const res = await this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, RoleValues.Owner)
+            await this.notificationService.createNotification({
+                userId: thisUserId,
+                msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_ADDED],
+                deviceId: deviceWithUsers.id,
+                severity: ENotificationSeverity[ENotificationSeverity.INFO]
+            })
+            return res
         }
     }
 
