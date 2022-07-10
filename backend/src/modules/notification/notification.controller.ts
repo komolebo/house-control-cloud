@@ -1,10 +1,19 @@
 import {Controller, Delete, Get, Headers, Param, Post} from '@nestjs/common';
 import {NotificationService} from "./notification.service";
 import {Users} from "../users/user.entity";
+import {JwtService} from "@nestjs/jwt";
 
 @Controller('api/notification')
 export class NotificationController {
-    constructor(private notificationService: NotificationService) {}
+    constructor(private notificationService: NotificationService,
+                private jwtService: JwtService) {}
+
+    private parseHeaders(headers) {
+        const [, token] = headers.authorization.split ("Bearer ")
+        const decodeData = this.jwtService.decode(token);
+        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
+        return thisUser;
+    }
 
     @Get("list/:user_id")
     async getNotificationsPerUser(@Param('user_id') user_id: number) {
@@ -25,8 +34,7 @@ export class NotificationController {
     @Delete(":notif_id")
     async deleteNotificationById(@Headers() headers,
                                  @Param('notif_id') notif_id: number) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser: Users = this.parseHeaders(headers);
         return await this.notificationService.removeNotificationFromUser(notif_id, thisUser.id)
     }
 }

@@ -2,6 +2,7 @@ import {createContext, FC, useState} from "react";
 import jwtDecode from "jwt-decode";
 
 const USER_INFO = "USER_INFO"
+const USER_TOKEN = "USER_TOKEN"
 
 export interface IUserSetting {
     id: number;
@@ -10,19 +11,22 @@ export interface IUserSetting {
     phone: string;
 }
 
-
-function setUserInfo(jwtUserInfo: string) {
-    localStorage.setItem(USER_INFO, JSON.stringify(jwtDecode(jwtUserInfo)));
+function setUserInfo(jwtToken: string) {
+    localStorage.setItem(USER_INFO, JSON.stringify(jwtDecode(jwtToken)));
+}
+function setAuthToken(jwtToken: string) {
+    localStorage.setItem(USER_TOKEN, jwtToken);
 }
 function clearUser() {
     localStorage.removeItem(USER_INFO);
+    localStorage.removeItem(USER_TOKEN);
 }
 export function getUserInfo(): IUserSetting | null {
     const uInfoStr = localStorage.getItem(USER_INFO);
     return uInfoStr ? JSON.parse(uInfoStr) : null;
 }
 export function getAuthToken() {
-    return localStorage.getItem(USER_INFO);
+    return localStorage.getItem(USER_TOKEN);
 }
 export function isAuth(): boolean {
     return getAuthToken() !== null;
@@ -31,8 +35,9 @@ export function isAuth(): boolean {
 export const useAuth = () => {
     const [authorized, setAuthorized] = useState(isAuth());
 
-    const setAuthData = (jwtUserInfo: string) => {
-        setUserInfo(jwtUserInfo);
+    const setAuthData = (jwtToken: string) => {
+        setUserInfo(jwtToken);
+        setAuthToken(jwtToken);
         setAuthorized(isAuth());
     }
     const clearUserData = () => {

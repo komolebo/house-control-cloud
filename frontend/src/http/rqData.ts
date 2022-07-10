@@ -1,5 +1,5 @@
 import {host} from "./index";
-import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
+import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
 import axios from "axios";
 
 export function roleStrToId(role: string) {
@@ -18,7 +18,6 @@ export function roleStrToId(role: string) {
 export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) => void) {
     host.get("/api/devices/list/")
         .then(resp =>{
-            console.log("Fuck: ", resp)
             let devList: Array<TDevItem> = [];
 
             resp.data.forEach((dev: any) => {

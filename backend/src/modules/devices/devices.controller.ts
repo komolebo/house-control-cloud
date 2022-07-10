@@ -4,11 +4,20 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
 import { Headers } from '@nestjs/common';
 import {Users} from "../users/user.entity";
+import {JwtService} from "@nestjs/jwt";
 
 
 @Controller('api/devices')
 export class DevicesController {
-    constructor(private devicesService: DevicesService) {}
+    constructor(private devicesService: DevicesService,
+                private jwtService: JwtService) {}
+
+    private parseHeaders(headers) {
+        const [, token] = headers.authorization.split ("Bearer ")
+        const decodeData = this.jwtService.decode(token);
+        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
+        return thisUser;
+    }
 
     @Post('add')
     async addDevice(@Body() device: CreateDevice_Dto) {
@@ -32,24 +41,23 @@ export class DevicesController {
     @Post('access/:device_id')
     async reqAccessToDevice(@Headers() headers,
                             @Param('device_id') dev_hex: string) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.accessDeviceByHex(dev_hex, thisUser.id)
     }
+
+
 
     @Post('forget/:device_id')
     async reqUnsubscribeFromDevice(@Headers() headers,
                                    @Param('device_id') dev_hex: string) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.unsubscribeFromDeviceByHex(dev_hex, thisUser.id)
     }
 
     @Post('abandon/:device_id')
     async reqClearDeviceUsers(@Headers() headers,
                                    @Param('device_id') dev_hex: string) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.clearUsersOfDevice(dev_hex, thisUser.id)
     }
 
@@ -58,8 +66,7 @@ export class DevicesController {
                           @Param('device_id') devHex: string,
                           @Param('user_id') userId: number,
                           @Param('role') role: RoleValues) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.modifyRoleAccess(Number(userId), thisUser.id, devHex, role);
     }
 
@@ -67,8 +74,7 @@ export class DevicesController {
     async reqRemoveAccess(@Headers() headers,
                           @Param('device_id') devHex: string,
                           @Param('user_id') userId: number) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.removeRole(Number(userId), thisUser.id, devHex);
     }
 
@@ -77,15 +83,13 @@ export class DevicesController {
                           @Param('device_id') devHex: string,
                           @Param('user_id') userId: number,
                           @Param('role') role: string) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return this.devicesService.inviteUser(Number(userId), thisUser.id, devHex, role);
     }
 
     @Get('list')
     async getDevicesListPerUser(@Headers() headers) {
-        const [, userInfo] = headers.authorization.split("Bearer ")
-        const thisUser: Users  = JSON.parse(userInfo);
+        const thisUser = this.parseHeaders (headers);
         return await this.devicesService.getDevicesPerUser(thisUser.id);
     }
 

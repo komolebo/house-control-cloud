@@ -5,6 +5,8 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {Notifications} from "./notification.entity";
 import {DatabaseModule} from "../../core/database/database.module";
 import {Users} from "../users/user.entity";
+import {SocketModule} from "../../sockets/socket.module";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
   providers: [NotificationService],
@@ -13,6 +15,8 @@ import {Users} from "../users/user.entity";
   imports: [
       DatabaseModule,
       SequelizeModule.forFeature([Notifications, Users]),
+      SocketModule,
+      AuthModule
   ]
 })
 export class NotificationModule {}

@@ -6,7 +6,6 @@ import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
 import {NotificationService} from "../notification/notification.service";
-import {ENotificationSeverity, ENotificationTypes} from "../notification/messages/ENotificationTypes";
 
 @Injectable()
 export class DevicesService {

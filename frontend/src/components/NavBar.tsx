@@ -20,8 +20,9 @@ import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
-import {isNotificationPerUser} from "../web/http/rqData";
-
+import {isNotificationPerUser} from "../http/rqData";
+import io from 'socket.io-client';
+import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 
 const userInfo = getUserInfo();
 
@@ -30,6 +31,7 @@ export const NavBar: React.FC = () => {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
     const [notification, setNotification] = useState<boolean>(false);
+    const socket = useContext(SocketContext);
 
     const settingsMenu = [
         {name: 'Profile', handler: () => {}},
@@ -63,8 +65,20 @@ export const NavBar: React.FC = () => {
             })
     }
 
-    useEffect(() => {
+    const onNotification = (data: any) => {
+        console.log("NavBar onNotification")
         syncNotificationStatus();
+    }
+
+    useEffect(() => {
+        socket.on(IO_NOTIFICATION_KEY, onNotification);
+
+        syncNotificationStatus();
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socket.off(IO_NOTIFICATION_KEY, onNotification);
+        };
     }, [])
 
     return (

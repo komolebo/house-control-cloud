@@ -3,10 +3,11 @@ import {homePage} from "../styles/Home.css"
 import {hFont, helpText} from "../styles/common/fonts.css";
 import {DevContainer} from "./devices/DevContainer";
 import {NavBar} from "./NavBar";
+import {socket, SocketContext} from "../http/wssocket";
 
 const HomePage: FC = () => {
     return (
-        <div>
+        <SocketContext.Provider value={socket}>
             <NavBar/>
             <div id={homePage}>
                 <div className={hFont}>Home</div>
@@ -16,7 +17,7 @@ const HomePage: FC = () => {
 
                 <div>Bottom part</div>
             </div>
-        </div>
+        </SocketContext.Provider>
     )
 }
 

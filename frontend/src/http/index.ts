@@ -1,5 +1,5 @@
 import axios from "axios";
-import {getAuthToken} from "../../globals/UserAuthProvider";
+import {getAuthToken, getUserInfo} from "../globals/UserAuthProvider";
 
 const BACKEND_API_URL = "http://192.168.0.109:3000/"
 
@@ -14,6 +14,7 @@ export const host = axios.create({
 })
 
 function checkAuth() {
+    // const authToken = getAuthToken();
     const authToken = getAuthToken();
     if (authToken === null) {
         // This means that there ISN'T JWT and no user is logged in.

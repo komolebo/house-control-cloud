@@ -5,6 +5,7 @@ import {CreateNotification_Dto} from "./dto/create_notification__dto";
 import {Users} from "../users/user.entity";
 import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from "./messages/ENotificationTypes";
 import * as moment from 'moment'
+import {SocketService} from "../../sockets/socket.service";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -19,7 +20,8 @@ function notificationInterpretData(notification: Notifications) {
 @Injectable()
 export class NotificationService {
     constructor(@InjectModel(Notifications) private readonly notificationRepository: typeof Notifications,
-                @InjectModel(Users) private readonly userRepository: typeof Users) {}
+                @InjectModel(Users) private readonly userRepository: typeof Users,
+                private socketService: SocketService) {}
 
     async create(notification: CreateNotification_Dto) {
         // return await this.notificationRepository.create<Notifications>(notification);
@@ -36,7 +38,11 @@ export class NotificationService {
         })
         if (uObj && uObj.notifications.length) {
             const nObj = uObj.notifications[0];
-            return await nObj.destroy()
+            const objDestroy = await nObj.destroy()
+
+            this.socketService.dispatchNotificationMsg(userId);
+
+            return objDestroy
             // return await uObj.$remove("notifications", nObj)
         }
     }
@@ -79,8 +85,10 @@ export class NotificationService {
             where: {id: notificationDto.userId}, include: {model: Notifications}}
         )
 
-        const notification = await this.notificationRepository.create<Notifications>(notificationDto)
-
+        const notification = await this.notificationRepository.create<Notifications>(notificationDto);
+        if (notification) {
+            this.socketService.dispatchNotificationMsg (notificationDto.userId);
+        }
         return await user.$add("notifications", notification);
     }
 
@@ -102,7 +110,7 @@ export class NotificationService {
                                           deviceName: string) {
         return await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
             deviceId: deviceId,
             userId: userId,
             text: `You have now lost an access to the device '${deviceName}'`

@@ -9,8 +9,9 @@ import {imgHover} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
-import {deleteNotification, getNotificationsListPerUser} from "../web/http/rqData";
+import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
+import {IO_NOTIFICATION_KEY, socket} from "../http/wssocket";
 
 interface INotificationProp {
     onNotificationStatusChange: () => void
@@ -97,9 +98,21 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
                 } else {}
             })
     }
+    const onNotification = (data: any) => {
+        console.log("NotifyBar onNotification")
+        syncNotifications();
+    }
 
     useEffect(() => {
+        socket.on(IO_NOTIFICATION_KEY, onNotification);
+
         syncNotifications();
+
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socket.off(IO_NOTIFICATION_KEY, onNotification);
+        };
     }, [])
 
     return <div>
