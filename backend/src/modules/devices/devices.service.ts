@@ -6,12 +6,14 @@ import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
 import {NotificationService} from "../notification/notification.service";
+import {SocketService} from "../../sockets/socket.service";
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
                 @InjectModel(Users) private readonly  usersRepository: typeof Users,
-                private notificationService: NotificationService) { }
+                private notificationService: NotificationService,
+                private socketService: SocketService) { }
 
     async create(new_device: CreateDevice_Dto): Promise<Devices> {
         return await this.deviceRepository.create<Devices>(new_device);
@@ -134,7 +136,9 @@ export class DevicesService {
         // remove myself if you're not the single left OWNER
         const curUser = conn_users.find(el => el.id === thisUserId)
         if (curRole !== "OWNER" || ownersCount > 1) {
-            return await deviceWithUsers.$remove("users", curUser)
+            const res = await deviceWithUsers.$remove("users", curUser)
+            conn_users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
+            return res
         } else {}
     }
 
@@ -159,6 +163,7 @@ export class DevicesService {
                     this.notificationService.createNotificationYouLostAccess(
                         u.id, deviceWithUsers.id, deviceWithUsers.name
                     )
+                    this.socketService.dispatchDevUpdateMsg(u.id)
                 })
 
                 return res
@@ -189,6 +194,7 @@ export class DevicesService {
                 objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 const role = objUser["dataValues"]["Roles"]
                 role.set("role", newRole).save()
+                d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             }
         })
     }
@@ -207,6 +213,7 @@ export class DevicesService {
             if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
                 objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 d.$remove("users", objUser);
+                d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             }
         })
     }
@@ -222,14 +229,16 @@ export class DevicesService {
             const thisUser = d.users.find(el => el.id === thisUID);
             const usrAlreadyInvited = d.users.find(el => el.id === uId) !== undefined;
 
-            console.log(thisUser);
-            console.log(thisUser.get("Roles")["dataValues"].role);
-
             if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
                 !usrAlreadyInvited) {
                 this.usersRepository.findOne({where: {id: uId}})
                     .then(objUser => {
                         d.$add('users', objUser, {through: {role: role}});
+                        this.notificationService.createNotificationYouAreInvited(
+                            objUser.id, d.id, d.name, role)
+                        d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
+                        this.socketService.dispatchDevUpdateMsg(objUser.id)
+                        return
                     })
             }
         })

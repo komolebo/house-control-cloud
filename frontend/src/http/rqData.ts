@@ -32,7 +32,7 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
                     unsubscribable: dev.canUnsubscribe
                 })
             })
-            console.log("sync devices per user", devList);
+            console.log("fetch devices per user", devList);
             onThen(devList)
         })
 }

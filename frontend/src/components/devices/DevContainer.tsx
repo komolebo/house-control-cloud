@@ -12,8 +12,9 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {fetchConnUsersByDevice, fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
+import {fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
+import {IO_DEV_DATA_CHANGE_KEY, IO_NOTIFICATION_KEY, socket} from "../../http/wssocket";
 
 interface IState {
     ind: number;
@@ -23,6 +24,7 @@ interface IState {
 const userInfo = getUserInfo();
 
 export const DevContainer: FC = () => {
+    const [dataSync, setDataSync] = useState(false);
     const [values, setValues] = useState<IState>({
         ind: -1,
         devices: [],
@@ -37,44 +39,55 @@ export const DevContainer: FC = () => {
 
     const unsubscribeDevice = (devId: string) => {
         postUnsubscribeFromDevice(devId).then(resp => {
-            console.log("Unsubscribed: ", resp)
-            if (resp.status === 201) {
-                syncData();
-            }
+            // console.log("Unsubscribed: ")
+            setValues({...values, ind: values.ind - 1})
         })
     }
+    const onAddDevice = () => {
+        // syncData();
+    }
 
-    const checkUnsubscribe = (devId: number) => {
-        fetchConnUsersByDevice(devId, conn_list => {
-            let manyOwners = false;
-            console.log(conn_list);
-            conn_list.forEach(el => {
-                console.log(el.id !== getUserInfo()?.id, el.role === TDevRole.OWNER)
-                manyOwners ||= (el.id !== getUserInfo()?.id && el.role === TDevRole.OWNER);
-            })
-            setValues({
-                ...values,
-            })
-        })
+    const onRemoteDeviceChanged = () => {
+        setDataSync(true);
     }
 
     const syncData = () => {
         userInfo && fetchDevListByUser(userInfo.id, (devList: Array<TDevItem>) => {
             if (JSON.stringify(values.devices) !== JSON.stringify(devList)) {
                 console.log("Syncing data change: ", devList)
-                const devInd = devList.length ? 0 : -1;
 
+                // handle newInd change to avoid extra window switching
+                const newInd = values.ind < devList.length
+                    ? values.ind < 0
+                        ? 0
+                        : values.ind
+                    : devList.length
+                        ? 0
+                        : -1
                 setValues({
                     devices: devList,
-                    ind: devInd
+                    ind: newInd,
                 })
             }
         })
     }
 
     useEffect(() => {
+        socket.on(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
         syncData();
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socket.off(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
+        };
     }, [])
+
+    useEffect(() => {
+        if (dataSync) {
+            syncData();
+            setDataSync(false);
+        }
+    }, [dataSync])
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -131,7 +144,7 @@ export const DevContainer: FC = () => {
                 { values.devices[values.ind].role === TDevRole.OWNER &&
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
-                        onDevDataChanged={() => syncData()}/>
+                        onDevDataChanged={() => onAddDevice()}/>
                  }
             </div>
         </div>

@@ -9,6 +9,7 @@ import {DatabaseModule} from "../../core/database/database.module";
 import {PassportModule} from "@nestjs/passport";
 import {NotificationModule} from "../notification/notification.module";
 import {AuthModule} from "../auth/auth.module";
+import {SocketModule} from "../../sockets/socket.module";
 
 @Module ({
     providers: [DevicesService],
@@ -19,7 +20,8 @@ import {AuthModule} from "../auth/auth.module";
         PassportModule,
         DatabaseModule,
         SequelizeModule.forFeature ([Devices, Users, Roles]),
-        AuthModule
+        AuthModule,
+        SocketModule
     ]
 })
 

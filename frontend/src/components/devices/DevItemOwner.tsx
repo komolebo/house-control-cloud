@@ -10,6 +10,7 @@ import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice, postClearDeviceUsers, postInviteUser} from "../../http/rqData";
+import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -22,6 +23,7 @@ const userInfo = getUserInfo();
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                            onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
+    const [dataSync, setDataSync] = useState(false);
     const { showModal, hideModal } = useGlobalModalContext();
 
     const handleClrSettings = (devInfo: TDevItem) => {
@@ -33,17 +35,31 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
         })
     }
     const syncUsers = () => {
-        fetchConnUsersByDevice(devInfo.id, (uList) => {
-            console.log("fetchConnUsersByDevice 2")
+        fetchConnUsersByDevice(devInfo.id, uList => {
+            console.log("fetchConnUsersByDevice ", devInfo.name)
             if (JSON.stringify(uList) !== JSON.stringify(users)) {
                 setUsers(uList);
             }
         })
     }
 
+    const onRemoteDeviceChanged = () => {
+        setDataSync(true)
+    }
+
     useEffect(() => {
         syncUsers()
-    }, [devInfo])
+        setDataSync(false)
+    }, [devInfo, dataSync])
+
+    useEffect(() => {
+        socket.on(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socket.off(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
+        };
+    }, [])
 
     return <div id={devOwner}>
         <div className={h3Font}>Connected users: </div>
@@ -79,7 +95,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                     disabled={isIdMatched || conn_user.role === TDevRole.OWNER}
                                     onClick={() => showModal(MODAL_TYPE.ModifyUsrAccessModal, {
                                         onClose: () => {console.log("Modal onClose")},
-                                        onAct: () => syncUsers(),
+                                        onAct: () => {},
                                         data: {usrInfo: conn_user, devInfo: devInfo, userList: users}
                                     })}
                                     sx={styleHeights.lowBtn}
@@ -100,7 +116,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 endIcon={ <img src={logoInvite} alt={"Logo invite"}/>}
                 onClick={() => showModal(MODAL_TYPE.InviteUsrModal, {
                     onClose: () => {console.log("Modal onClose")},
-                    onAct: () => syncUsers(),
+                    onAct: () => {},
                     data: {devInfo: devInfo}
                 })}
                 variant={"outlined"} sx={{

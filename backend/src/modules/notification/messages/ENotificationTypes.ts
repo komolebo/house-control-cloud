@@ -23,6 +23,8 @@ export enum ENotificationTypes {
     ACCEPT_USER_ADD,
     ACCEPT_USER_REMOVE,
 
+    YOU_ARE_INVITED,
+
     SUBSCRIPTION_EXPIRED,
     SUBSCRIPTION_PROLONGED,
 

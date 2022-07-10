@@ -116,4 +116,17 @@ export class NotificationService {
             text: `You have now lost an access to the device '${deviceName}'`
         })
     }
+
+    async createNotificationYouAreInvited(userId: number,
+                                          deviceId: number,
+                                          deviceName: string,
+                                          newRole: string) {
+        return await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_INVITED],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            deviceId: deviceId,
+            userId: userId,
+            text: `You are invited to the device '${deviceName} with role '${newRole}'`
+        })
+    }
 }

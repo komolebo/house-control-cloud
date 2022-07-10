@@ -15,3 +15,4 @@ export const socket = socketio(SOCKET_URL, {
 export const SocketContext = createContext(socket);
 
 export const IO_NOTIFICATION_KEY = "notification"
+export const IO_DEV_DATA_CHANGE_KEY = "dev_update"
