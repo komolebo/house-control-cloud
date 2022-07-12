@@ -11,7 +11,7 @@
 }
 
 #history-table {
-    display: flex;
+    display: block;
     /*background-color: red;*/
     padding: 20px 30px;
     margin: 20px 0;
@@ -23,17 +23,16 @@
     border: 0;
     /*border: solid 1px red;*/
     /*background-color: #1065bb;*/
-    display: flex;
-    flex-direction: row;
+    /*display: flex;*/
+    /*flex-direction: row;*/
+    /*vertical-align: center;*/
     align-items: center;
-    justify-content: center;
-    vertical-align: center;
-    height: 50px;
+    height: 20px;
     /*max-height: 100px;*/
 }
 
 .history-item {
-    /*height: 10px;*/
+    height: 20px;
 
     /*background-color: #5e0000;*/
 }
