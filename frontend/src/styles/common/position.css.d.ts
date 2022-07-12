@@ -5,3 +5,6 @@ export const cntrVContent: string;
 export const flexc: string;
 export const flexr: string;
 export const floatr: string;
+export const floatl: string;
+export const flexG20: string;
+export const flexG1: string;

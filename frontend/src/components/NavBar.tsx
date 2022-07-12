@@ -21,8 +21,9 @@ import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
 import {isNotificationPerUser} from "../http/rqData";
-import io from 'socket.io-client';
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
+import {useNavigate} from "react-router-dom";
+import {HISTORY_PAGE} from "../utils/consts";
 
 const userInfo = getUserInfo();
 
@@ -32,11 +33,12 @@ export const NavBar: React.FC = () => {
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
     const [notification, setNotification] = useState<boolean>(false);
     const socket = useContext(SocketContext);
+    const navigate = useNavigate();
 
     const settingsMenu = [
-        {name: 'Profile', handler: () => {}},
-        {name: 'Account', handler: () => {}},
-        {name: 'Dashboard', handler: () => {}},
+        // {name: 'Profile', handler: () => {}},
+        // {name: 'Account', handler: () => {}},
+        {name: 'History', handler: () => navigate(HISTORY_PAGE)},
         {name: 'Logout', handler: () => clearUserData()},
     ];
 
@@ -65,12 +67,12 @@ export const NavBar: React.FC = () => {
             })
     }
 
-    const onNotification = (data: any) => {
-        console.log("NavBar onNotification")
-        syncNotificationStatus();
-    }
-
     useEffect(() => {
+        const onNotification = (data: any) => {
+            console.log("NavBar onNotification")
+            syncNotificationStatus();
+        }
+
         socket.on(IO_NOTIFICATION_KEY, onNotification);
 
         syncNotificationStatus();
@@ -79,6 +81,7 @@ export const NavBar: React.FC = () => {
             // unbind all event handlers used in this component
             socket.off(IO_NOTIFICATION_KEY, onNotification);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -110,6 +113,7 @@ export const NavBar: React.FC = () => {
                         <Popper id={'simple-popper'}
                                 open={Boolean(anchorElMsg)}
                                 anchorEl={anchorElMsg}
+                                style={{zIndex: 1}}
                         >
                             <NotifyBar
                                 onNotificationStatusChange={syncNotificationStatus}

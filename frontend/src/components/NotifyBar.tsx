@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from "react";
-import {Box, Button} from "@mui/material";
-import {h4Font, h4FontBlue, helpText} from "../styles/common/fonts.css";
+import {Box, Button, Paper, Select} from "@mui/material";
+import {h4Font, h4FontBlue, h5Font, helpText} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
 import logoBellGreen from "../assets/bell-green.svg"
 import logoBellRed from "../assets/bell-red.svg"
@@ -48,7 +48,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                 <div className={[h4Font].join(' ')}>
                     {item.text}
                 </div>
-                <div className={[helpText].join(' ')} style={{paddingTop: "10px", paddingBottom: "10px"}}>
+                <div className={[h5Font].join(' ')} style={{paddingTop: "10px", paddingBottom: "10px"}}>
                     {item.createdAt}
                 </div>
 
@@ -115,33 +115,36 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
         };
     }, [])
 
-    return <div>
-        {/* Notifications window */}
-        <Box sx={{ pt: 2, pb: 2, bgcolor: "#FFFFFF",
-            width: "410px", borderRadius: "12px",
-            boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
+    return  (
+    <Box sx={{
+        pt: 2, pb: 2, bgcolor: "white", opacity: 1,
+        width: "410px", borderRadius: "12px",
+        boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
+    }}
+    >
+        {/* Notifications header */}
+        <Box sx={{
+            p: 1, pl: 3, pr: 3, display: "flex", flexDirection: "row",
+            borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
+        }}>
+            <div className={h4FontBlue} style={{flexGrow: 3,}}>Notifications</div>
+            <div className={h4FontBlue}>{notifications.length}</div>
+        </Box>
+
+        {/* Notifications list */}
+        <Box
+            sx={{
+                mb: 2,
+                flexDirection: "column",
+                maxHeight: "600px",
+                overflowY: "auto",
             }}
         >
-            {/* Notifications header */}
-            <Box  sx={{ p: 1, pl: 3, pr: 3, display: "flex", flexDirection: "row",
-                        borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)"}}>
-                <div className={h4FontBlue} style={{flexGrow: 3,}}>Notifications</div>
-                <div className={h4FontBlue}>{notifications.length}</div>
-            </Box>
-
-            {/* Notifications list */}
-            <Box
-                sx={{mb: 2,
-                    flexDirection: "column",
-                    maxHeight: "600px",
-                    overflowY: "auto",}}
-            >
-                {notifications.map((el, i) => {
-                    return <div key={i}>
-                        <NotifyElement item={el} onDelete={handleRemoveElement} onAct={() => console.log("onAct")} />
-                    </div>
-                })}
-            </Box>
+            {notifications.map ((el, i) => {
+                return <div key={i}>
+                    <NotifyElement item={el} onDelete={handleRemoveElement} onAct={() => console.log ("onAct")}/>
+                </div>
+            })}
         </Box>
-    </div>;
+    </Box>)
 }

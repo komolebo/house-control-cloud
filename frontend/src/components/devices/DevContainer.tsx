@@ -14,7 +14,7 @@ import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
 import {fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
 import {getUserInfo} from "../../globals/UserAuthProvider";
-import {IO_DEV_DATA_CHANGE_KEY, IO_NOTIFICATION_KEY, socket} from "../../http/wssocket";
+import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 
 interface IState {
     ind: number;
@@ -80,6 +80,7 @@ export const DevContainer: FC = () => {
             // unbind all event handlers used in this component
             socket.off(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -87,6 +88,7 @@ export const DevContainer: FC = () => {
             syncData();
             setDataSync(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataSync])
 
     return <div id={devContainer}>

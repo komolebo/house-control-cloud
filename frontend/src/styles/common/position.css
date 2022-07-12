@@ -29,3 +29,13 @@
 .floatr {
     float: right;
 }
+.floatl {
+    float: left;
+}
+
+.flexG20 {
+    flex-grow: 20;
+}
+.flexG1 {
+    flex-grow: 1;
+}

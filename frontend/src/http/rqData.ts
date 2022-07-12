@@ -1,6 +1,5 @@
 import {host} from "./index";
 import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
-import axios from "axios";
 
 export function roleStrToId(role: string) {
     switch (role) {

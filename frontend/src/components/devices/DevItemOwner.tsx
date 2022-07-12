@@ -9,7 +9,7 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice, postClearDeviceUsers, postInviteUser} from "../../http/rqData";
+import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 
 interface IDevOwnerProps {
@@ -42,7 +42,6 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
             }
         })
     }
-
     const onRemoteDeviceChanged = () => {
         setDataSync(true)
     }
@@ -50,6 +49,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     useEffect(() => {
         syncUsers()
         setDataSync(false)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [devInfo, dataSync])
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {getAuthToken, getUserInfo} from "../globals/UserAuthProvider";
+import {getAuthToken} from "../globals/UserAuthProvider";
 
 const BACKEND_API_URL = "http://192.168.0.109:3000/"
 
