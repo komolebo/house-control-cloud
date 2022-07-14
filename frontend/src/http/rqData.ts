@@ -28,7 +28,8 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
                     active: dev.active,
                     id: dev.id,
                     status: 0,
-                    unsubscribable: dev.canUnsubscribe
+                    unsubscribable: dev.canUnsubscribe,
+                    version: dev.version
                 })
             })
             console.log("fetch devices per user", devList);

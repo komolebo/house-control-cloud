@@ -23,7 +23,7 @@ import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
 import {isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
-import {HISTORY_PAGE} from "../utils/consts";
+import {HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 
 const userInfo = getUserInfo();
 
@@ -90,7 +90,7 @@ export const NavBar: React.FC = () => {
             <Toolbar sx={styleHeights.toolbar}
                      className={navBar}
             >
-                <IconButton sx={{ ml: 4 }} >
+                <IconButton onClick={() => navigate(HOME_PAGE)} sx={{ ml: 4 }} >
                     <img src={logoHomeNet} alt={"HomeNet logo"}/>
                 </IconButton>
 

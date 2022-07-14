@@ -50,6 +50,13 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
         <div className={[h3Font].join(' ')}>IP</div>
         <div className={[h4Font, devItemDelim].join(' ')}>{dev.ip}</div>
 
+        {dev.version && (
+            <div>
+                <div className={[h3Font].join(' ')}>Version</div>
+                <div className={[h4Font, devItemDelim].join(' ')}>{dev.version}</div>
+            </div>
+        )}
+
         {editMode
             ? <Button variant={"contained"}
                       sx={{

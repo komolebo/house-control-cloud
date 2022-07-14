@@ -26,5 +26,8 @@
     "nodemon": "^2.0.16",
     "typescript": "^4.6.4",
     "typescript-eslint": "^0.0.1-alpha.0"
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
   }
 }

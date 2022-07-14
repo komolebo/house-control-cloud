@@ -1,6 +1,6 @@
 #history-page {
     padding: 32px 68px;
-    background-color: #FAFAFB;
+    background-color: #fafafb;
     flex-direction: column;
 }
 
@@ -12,7 +12,7 @@
 
 #history-table {
     display: block;
-    /*background-color: red;*/
+    /*background-color: rgba(22, 144, 233, 0.05);*/
     padding: 20px 30px;
     margin: 20px 0;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.04);
@@ -26,14 +26,15 @@
     /*display: flex;*/
     /*flex-direction: row;*/
     /*vertical-align: center;*/
-    align-items: center;
-    height: 20px;
+    /*align-items: center;*/
+    height: 15px;
     /*max-height: 100px;*/
 }
 
 .history-item {
-    height: 20px;
-
+    height: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     /*background-color: #5e0000;*/
 }
 
