@@ -27,14 +27,14 @@
     /*flex-direction: row;*/
     /*vertical-align: center;*/
     /*align-items: center;*/
-    height: 15px;
+    height: 40px;
     /*max-height: 100px;*/
 }
 
 .history-item {
-    height: 15px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    height: 40px;
+    padding: 5px 10px 1px 5px;
+    /*padding-bottom: 15px;*/
     /*background-color: #5e0000;*/
 }
 

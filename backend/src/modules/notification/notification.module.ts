@@ -7,6 +7,7 @@ import {DatabaseModule} from "../../core/database/database.module";
 import {Users} from "../users/user.entity";
 import {SocketModule} from "../../sockets/socket.module";
 import {AuthModule} from "../auth/auth.module";
+import {HistoryModule} from "../history/history.module";
 
 @Module({
   providers: [NotificationService],
@@ -16,6 +17,7 @@ import {AuthModule} from "../auth/auth.module";
       DatabaseModule,
       SequelizeModule.forFeature([Notifications, Users]),
       SocketModule,
+      HistoryModule,
       AuthModule
   ]
 })

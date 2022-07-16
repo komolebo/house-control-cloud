@@ -8,6 +8,7 @@ import {Users} from "../../modules/users/user.entity";
 import {Devices} from "../../modules/devices/device.entity";
 import {Roles} from "../../modules/devices/role.entity";
 import {Notifications} from "../../modules/notification/notification.entity";
+import {Histories} from "../../modules/history/history.entity";
 
 
 function getRealPathFromGenFiles(js_path: string) : string {
@@ -34,7 +35,7 @@ export const databaseProviders = [{
                 config = databaseConfig.development;
         }
         const sequelize: Sequelize = new Sequelize(config);
-        sequelize.addModels([Users, Roles, Devices, Notifications])
+        sequelize.addModels([Users, Roles, Devices, Notifications, Histories])
 
         const cur_dir = getRealPathFromGenFiles(__dirname);
 

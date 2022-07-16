@@ -6,6 +6,8 @@ import {Users} from "../users/user.entity";
 import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from "./messages/ENotificationTypes";
 import * as moment from 'moment'
 import {SocketService} from "../../sockets/socket.service";
+import {HistoryService} from "../history/history.service";
+import {THistoryMsgType} from "../history/dto/history_dto";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -21,7 +23,8 @@ function notificationInterpretData(notification: Notifications) {
 export class NotificationService {
     constructor(@InjectModel(Notifications) private readonly notificationRepository: typeof Notifications,
                 @InjectModel(Users) private readonly userRepository: typeof Users,
-                private socketService: SocketService) {}
+                private readonly historyService: HistoryService,
+                private readonly socketService: SocketService) {}
 
     async create(notification: CreateNotification_Dto) {
         // return await this.notificationRepository.create<Notifications>(notification);
@@ -67,19 +70,6 @@ export class NotificationService {
             })
     }
 
-    // @IsNotEmpty()
-    // readonly userId: number;
-    //
-    // @IsNotEmpty()
-    // readonly msgType: ENotificationTypes;
-    //
-    // @IsNotEmpty()
-    // readonly severity: ENotificationSeverity;
-    //
-    // readonly deviceId?: string;
-    //
-    // readonly sourceUserId?: number;
-
     private async createNotification(notificationDto: CreateNotification_Dto) {
         const user = await this.userRepository.findOne({
             where: {id: notificationDto.userId}, include: {model: Notifications}}
@@ -88,6 +78,12 @@ export class NotificationService {
         const notification = await this.notificationRepository.create<Notifications>(notificationDto);
         if (notification) {
             this.socketService.dispatchNotificationMsg (notificationDto.userId);
+            await this.historyService.createHistoryItem(notificationDto.userId, {
+                text: notificationDto.text,
+                type: THistoryMsgType[THistoryMsgType.Notification],
+                devId: notificationDto.deviceHex,
+                uId: notificationDto.sourceUserName,
+                })
         }
         return await user.$add("notifications", notification);
     }
@@ -95,30 +91,35 @@ export class NotificationService {
     async createNotificationYouAreAdded(userId: number,
                                         deviceId: number,
                                         deviceName: string,
+                                        devHex: string,
                                         newRole: string) {
         return await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_ADDED],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
             deviceId: deviceId,
             userId: userId,
-            text: `You are now added to the device '${deviceName}' with role '${newRole}'`
+            deviceHex: devHex,
+            text: `You are now added to the device \`${deviceName}\` with role '${newRole}'`
         })
     }
 
     async createNotificationYouLostAccess(userId: number,
                                           deviceId: number,
+                                          devHex: string,
                                           deviceName: string) {
         return await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.ERROR],
             deviceId: deviceId,
             userId: userId,
-            text: `You have now lost an access to the device '${deviceName}'`
+            deviceHex: devHex,
+            text: `You have now lost an access to the device \`${deviceName}\``
         })
     }
 
     async createNotificationYouAreInvited(userId: number,
                                           deviceId: number,
+                                          devHex: string,
                                           deviceName: string,
                                           newRole: string) {
         return await this.createNotification({
@@ -126,7 +127,8 @@ export class NotificationService {
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
             deviceId: deviceId,
             userId: userId,
-            text: `You are invited to the device '${deviceName} with role '${newRole}'`
+            deviceHex: devHex,
+            text: `You are invited to the device \`${deviceName}\` with role '${newRole}'`
         })
     }
 }

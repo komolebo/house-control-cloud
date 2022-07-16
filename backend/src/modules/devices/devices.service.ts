@@ -110,7 +110,7 @@ export class DevicesService {
             const newRole = RoleValues.Owner;
             const res = await this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, newRole)
             await this.notificationService.createNotificationYouAreAdded(
-                thisUserId, deviceWithUsers.id, deviceWithUsers.name, newRole)
+                thisUserId, deviceWithUsers.id, deviceWithUsers.name, deviceWithUsers.hex, newRole)
             return res
         }
     }
@@ -161,7 +161,7 @@ export class DevicesService {
                 // TODO check res
                 rmUsers.forEach(u => {
                     this.notificationService.createNotificationYouLostAccess(
-                        u.id, deviceWithUsers.id, deviceWithUsers.name
+                        u.id, deviceWithUsers.id, deviceWithUsers.hex, deviceWithUsers.name,
                     )
                     this.socketService.dispatchDevUpdateMsg(u.id)
                 })
@@ -235,7 +235,7 @@ export class DevicesService {
                     .then(objUser => {
                         d.$add('users', objUser, {through: {role: role}});
                         this.notificationService.createNotificationYouAreInvited(
-                            objUser.id, d.id, d.name, role)
+                            objUser.id, d.id, d.name, d.hex, role)
                         d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
                         this.socketService.dispatchDevUpdateMsg(objUser.id)
                         return

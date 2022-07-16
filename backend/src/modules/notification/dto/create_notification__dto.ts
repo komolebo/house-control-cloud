@@ -14,8 +14,9 @@ export class CreateNotification_Dto {
     readonly text: string;
 
     readonly deviceId?: number;
+    readonly deviceHex?: string;
 
-    readonly sourceUserId?: number;
-
+    readonly sourceUserId?: number; // to rename it later to targetUserId
+    readonly sourceUserName?: string;
 }
 

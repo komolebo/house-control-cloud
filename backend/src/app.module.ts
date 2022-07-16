@@ -9,6 +9,7 @@ import { DevicesModule } from './modules/devices/devices.module';
 import {SequelizeModule} from "@nestjs/sequelize";
 import { NotificationModule } from './modules/notification/notification.module';
 import { SocketModule } from './sockets/socket.module';
+import {HistoryModule} from "./modules/history/history.module";
 
 
 @Module({
@@ -30,6 +31,7 @@ import { SocketModule } from './sockets/socket.module';
       AuthModule,
       DevicesModule,
       NotificationModule,
+      HistoryModule,
       // SocketModule,
   ],
   controllers: [AppController],

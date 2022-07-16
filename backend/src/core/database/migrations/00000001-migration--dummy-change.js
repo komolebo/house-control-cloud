@@ -92,6 +92,34 @@ module.exports = {
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
+    await queryInterface.createTable("history", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      type: {
+        type: Sequelize.ENUM(
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "Devices",
+          "Account",
+          "Notification",
+          "None",
+          "TYPE_NUMBER"
+        ),
+        allowNull: false,
+      },
+      text: { type: Sequelize.STRING, allowNull: false },
+      uId: { type: Sequelize.STRING },
+      devId: { type: Sequelize.STRING },
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+      userId: { type: Sequelize.INTEGER, allowNull: true },
+    });
     await queryInterface.addConstraint("roles", {
       references: { table: "users", field: "id" },
       onDelete: "CASCADE",
@@ -116,6 +144,14 @@ module.exports = {
       type: "foreign key",
       name: "fk_notifications_sourceUserId_users",
     });
+    await queryInterface.addConstraint("history", {
+      references: { table: "users", field: "id" },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
+      fields: ["userId"],
+      type: "foreign key",
+      name: "fk_history_userId_users",
+    });
     await queryInterface.addConstraint("roles", {
       type: "unique",
       name: "roles_deviceId_userId_unique",
@@ -133,9 +169,11 @@ module.exports = {
       "notifications",
       "fk_notifications_sourceUserId_users"
     );
+    await queryInterface.removeConstraint("history", "fk_history_userId_users");
     await queryInterface.dropTable("users");
     await queryInterface.dropTable("roles");
     await queryInterface.dropTable("devices");
     await queryInterface.dropTable("notifications");
+    await queryInterface.dropTable("history");
   },
 };

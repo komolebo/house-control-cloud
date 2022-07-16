@@ -89,6 +89,7 @@ export function deleteAccess(devHex: string, userId: number) {
 }
 
 
+// Notifications
 export function getNotificationsListPerUser(userId: number) {
     return host.get("api/notification/list/" + userId)
 }
@@ -99,3 +100,8 @@ export function deleteNotification(notifId: number) {
     return host.delete("api/notification/" + notifId)
 }
 
+
+// History
+export function postGetHistoryPerUser() {
+    return host.get("api/history/list/")
+}
