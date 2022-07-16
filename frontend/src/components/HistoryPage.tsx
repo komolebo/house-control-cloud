@@ -65,6 +65,7 @@ interface IHistorySettingMenu {
 }
 
 interface IHistoryState {
+    filteredIndexes: Array<number>,
     editMode: boolean;
     msgType: string;
     from: Date | undefined | null,
@@ -81,6 +82,7 @@ const userInfo = getUserInfo();
 let historyData: Array<IHistoryItem> = []
 
 const initialState = {
+    filteredIndexes: [],
     editMode: false,
 
     // filters
@@ -106,18 +108,16 @@ const initialState = {
 };
 
 export const HistoryPage: FC = () => {
-    const [state, setState] = useState<IHistoryState>({...initialState});
-    let [filteredIndexes, setFilteredIndexes] = useState<Array<number>>([])
+    let [state, setState] = useState<IHistoryState>({...initialState});
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        filteredIndexes = []
         syncData();
     }, [])
 
     const initView = () => {
-        setFilteredIndexes(applyFilters())
+        setState({...state, filteredIndexes: applyFilters()})
     }
     const syncData = () => {
         userInfo && postGetHistoryPerUser().then(resp => {
@@ -185,6 +185,7 @@ export const HistoryPage: FC = () => {
         initView();
     }
     const handleClearFilters = () => {
+        state = {...initialState}
         initView();
     }
     const handleCheck = (e: ChangeEvent<HTMLInputElement>, filteredInd: number) => {
@@ -202,7 +203,7 @@ export const HistoryPage: FC = () => {
         updateView && setState({...state})
     }
     const handleOpenSettings = (event: React.MouseEvent<HTMLElement>, filteredInd: number) => {
-        const hDataInd = filteredIndexes[filteredInd]
+        const hDataInd = state.filteredIndexes[filteredInd]
         state.setting.setup[EHistorySetting.filterByDevice].show = Boolean(historyData[hDataInd].devId);
         state.setting.setup[EHistorySetting.filterByUser].show = Boolean(historyData[hDataInd].uId)
         setState({...state,
@@ -220,7 +221,7 @@ export const HistoryPage: FC = () => {
             }})
     }
     const handleDeleteByInd = () => {
-        const ind = filteredIndexes[state.setting.clickInd]
+        const ind = state.filteredIndexes[state.setting.clickInd]
 
         historyData[ind].text = "Deleted";
         initView();
@@ -370,7 +371,7 @@ export const HistoryPage: FC = () => {
             <table style={{width: "100%", border: 0}} >
                 <tbody>
                 {
-                    historyData.length ? filteredIndexes.map((hInd, i) => {
+                    historyData.length ? state.filteredIndexes.map((hInd, i) => {
                         return <tr id={historyTableRow} key={i}>
                             <td className={historyItem} style={{ width: 40, paddingRight: 5}}>
                                 <Checkbox
