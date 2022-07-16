@@ -27,6 +27,7 @@ export type IHistoryItem = {
 
 
 export function getIndexesFromArray(arr: Array<IHistoryItem>): Array<number> {
+    console.log("getIndexesFromArray ", arr.length)
     return arr.map((el, i) => i)
 }
 export function applyTypeFilter(indArr: Array<number>,
@@ -137,9 +138,9 @@ export const USER_FILTER_RESERV_WORD = "user: "
 export const HISTORY_DISPLAY_INITIAL_REC_NUM = 100;
 export const HISTORY_DB_SYNC_MORE_RATE = 2 // trice more messages to sync
 export const HISTORY_MSG_TYPES = [
+    THistoryMsgType[THistoryMsgType.None],
     THistoryMsgType[THistoryMsgType.Devices],
     THistoryMsgType[THistoryMsgType.Account],
     THistoryMsgType[THistoryMsgType.Notification],
-    THistoryMsgType[THistoryMsgType.None]]
-;
+    ];
 

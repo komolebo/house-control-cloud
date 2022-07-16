@@ -56,7 +56,6 @@ interface IShowHistorySettings {
     [key: number]: {
         show: boolean,
         name: string,
-        set: boolean
     }
 }
 interface IHistorySettingMenu {
@@ -74,15 +73,14 @@ interface IHistoryState {
     filterCriteria: number;
 
     selection: Array<number>; // contain indexes of filtered data
-    filteredIndexes: Array<number>;
     setting: IHistorySettingMenu
 }
 
 
 const userInfo = getUserInfo();
 let historyData: Array<IHistoryItem> = []
+
 const initialState = {
-    filteredIndexes: getIndexesFromArray(historyData),
     editMode: false,
 
     // filters
@@ -98,22 +96,28 @@ const initialState = {
         anchorElSetting: null,
         setup: {
             [EHistorySetting.delete]:
-                {show: true , name: "Delete item", set: false},
+                {show: true , name: "Delete item"},
             [EHistorySetting.filterByDevice]:
-                {show: false, name: "Filter by this device name", set: false},
+                {show: false, name: "Filter by this device"},
             [EHistorySetting.filterByUser]:
-                {show: false, name: "Filter by this user name", set: false}
+                {show: false, name: "Filter by this user"},
         }
     }
 };
 
 export const HistoryPage: FC = () => {
-    let [values, setValues] = useState<IHistoryState>({...initialState});
+    const [state, setState] = useState<IHistoryState>({...initialState});
+    let [filteredIndexes, setFilteredIndexes] = useState<Array<number>>([])
+
     const navigate = useNavigate();
 
+    useEffect(() => {
+        filteredIndexes = []
+        syncData();
+    }, [])
+
     const initView = () => {
-        values = {...initialState}
-        setValues({...values, filteredIndexes: applyFilters()});
+        setFilteredIndexes(applyFilters())
     }
     const syncData = () => {
         userInfo && postGetHistoryPerUser().then(resp => {
@@ -129,136 +133,119 @@ export const HistoryPage: FC = () => {
         })
     }
 
-    useEffect(() => {
-        syncData();
-    }, [])
-
     const applyFilters = (): Array<number> => {
-        let filteredIndexes = getIndexesFromArray(historyData);
+        let filterResult = getIndexesFromArray(historyData);
 
-        if (values.msgType !== THistoryMsgType[THistoryMsgType.None]) {
-            filteredIndexes = applyTypeFilter(filteredIndexes, historyData, values.msgType)
+        if (state.msgType !== THistoryMsgType[THistoryMsgType.None]) {
+            filterResult = applyTypeFilter(filterResult, historyData, state.msgType)
         }
-        if (values.keyword !== "") {
-            filteredIndexes = applyTextFilter(filteredIndexes, historyData, values.keyword)
+        if (state.keyword !== "") {
+            filterResult = applyTextFilter(filterResult, historyData, state.keyword)
         }
-        if (values.from) {
-            filteredIndexes = applyDateFromFilter(filteredIndexes, historyData, values.from)
+        if (state.from) {
+            filterResult = applyDateFromFilter(filterResult, historyData, state.from)
         }
-        if (values.to) {
-            filteredIndexes = applyDateToFilter(filteredIndexes, historyData, values.to)
+        if (state.to) {
+            filterResult = applyDateToFilter(filterResult, historyData, state.to)
         }
-        return filteredIndexes;
+        return filterResult;
     }
 
     const handleMsgTypeChange = (event: SelectChangeEvent) => {
         const msgType = event.target.value;
-        if(msgType !== values.msgType) {
-            values.msgType = msgType; // on purpose not in setValues
-            setValues({ ...values, filteredIndexes: applyFilters()})
+        if(msgType !== state.msgType) {
+            state.msgType = msgType; // on purpose not in setState
+            initView();
         }
     };
     const handleChangeDateFrom = (newValue: Date | undefined) => {
-        values.from = newValue
-        setValues({...values, from: newValue, filteredIndexes: applyFilters()});
+        state.from = newValue
+        initView();
     };
     const handleChangeDateTo = (newValue: Date | undefined) => {
-        values.to = newValue
-        setValues({...values, to: newValue, filteredIndexes: applyFilters()});
+        state.to = newValue
+        initView();
     };
     const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
-        values.keyword = e.target.value;
-        setValues({...values, keyword: values.keyword, filteredIndexes: applyFilters()})
+        state.keyword = e.target.value;
+        initView();
     }
     const handleSubmitKeyword = (e: any) => {
         if (e.key === 'Enter') {
             e.preventDefault()
-            setValues({...values, filteredIndexes: applyFilters()})
+            initView();
         }
     }
-    const handleFilterByThisDevice = (ind: number) => {
-        const id = historyData[ind].devId
-        values.keyword = id ? id.toString() : "";
-        setValues({...values, filteredIndexes: applyFilters()})
-    }
     const handleApplyKeyword = () => {
-        setValues({...values, filteredIndexes: applyFilters()})
+        initView();
     }
     const handleClearKeyword = () => {
-        values.keyword = "";
-        values.filterCriteria = 0;
-        setValues({...values, keyword: values.keyword, filteredIndexes: applyFilters()})
+        state.keyword = "";
+        state.filterCriteria = 0;
+        initView();
     }
     const handleClearFilters = () => {
         initView();
     }
     const handleCheck = (e: ChangeEvent<HTMLInputElement>, filteredInd: number) => {
-        console.log(filteredInd)
         if (e.target.checked) {
-            values.selection.push(filteredInd)
+            state.selection.push(filteredInd)
         } else {
-            values.selection = values.selection.filter(el => el !== filteredInd)
+            state.selection = state.selection.filter(el => el !== filteredInd)
         }
-        values.editMode = values.selection.length > 0;
-        setValues({...values})
+        state.editMode = state.selection.length > 0;
+        setState({...state})
     }
     const clearSelection = (updateView = true) => {
-        values.selection.splice(0,values.selection.length);
-        values.editMode = false
-        updateView && setValues({...values})
+        state.selection.splice(0,state.selection.length);
+        state.editMode = false
+        updateView && setState({...state})
     }
     const handleOpenSettings = (event: React.MouseEvent<HTMLElement>, filteredInd: number) => {
-        console.log("handleOpenSettings")
-        const hDataInd = values.filteredIndexes[filteredInd]
-        values.setting.setup[EHistorySetting.filterByDevice].show = Boolean(historyData[hDataInd].devId);
-        values.setting.setup[EHistorySetting.filterByUser].show = Boolean(historyData[hDataInd].uId)
-        setValues({...values,
+        const hDataInd = filteredIndexes[filteredInd]
+        state.setting.setup[EHistorySetting.filterByDevice].show = Boolean(historyData[hDataInd].devId);
+        state.setting.setup[EHistorySetting.filterByUser].show = Boolean(historyData[hDataInd].uId)
+        setState({...state,
             setting: {
-                setup: values.setting.setup,
+                setup: state.setting.setup,
                 clickInd: hDataInd,
                 anchorElSetting: event.currentTarget
             }})
     }
     const handleCloseSettings = () => {
-        console.log("handleCloseSettings")
-        setValues({...values, setting: {
-                ...values.setting,
+        setState({...state, setting: {
+                ...state.setting,
                 anchorElSetting: null,
                 clickInd: -1
             }})
     }
     const handleDeleteByInd = () => {
-        console.log("handleDeleteByInd")
-        const ind = values.filteredIndexes[values.setting.clickInd]
+        const ind = filteredIndexes[state.setting.clickInd]
 
         historyData[ind].text = "Deleted";
-        setValues({...values, filteredIndexes: applyFilters()})
+        initView();
     }
     const handleDeleteAll = () => {
-        console.log("handleDeleteByInd")
-        values.selection.map(ind => {
+        state.selection.map(ind => {
             historyData[ind].text = "Delete by list"
         })
-        values.selection = []
-        setValues({...values, filteredIndexes: applyFilters()})
+        state.selection = []
+        initView();
     }
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
-        console.log(values.setting.clickInd);
         clearSelection(false);
         const newWord = criteria === TFilterCriteria.By_user
             ? `${USER_FILTER_RESERV_WORD}${historyData[clickInd].uId}+`
             : `${BOARD_FILTER_RESERV_WORD}${historyData[clickInd].devId}+`
         if (newWord) {
-            values.keyword = values.keyword ? values.keyword + '+' + newWord : newWord;
-            values.filteredIndexes = applyFilters()
-            values.filterCriteria |= criteria;
-            setValues ({...values,
-                setting: {...values.setting, anchorElSetting: null}})
+            state.keyword = state.keyword ? state.keyword + '+' + newWord : newWord;
+            state.filterCriteria |= criteria;
+            state.setting.anchorElSetting = null;
+            initView()
         }
     }
 
-    console.log("Draw values", values)
     return <div id={historyPage}>
         <div className={hFont}>History</div>
         <div className={helpText}>Here you can view device actions history or your activitivity</div><br/>
@@ -270,14 +257,14 @@ export const HistoryPage: FC = () => {
             </div>
         </IconButton><br/><br/><br/>
 
-        {!values.editMode ?
+        {!state.editMode ?
             <div id={historyTableHead}>
             <FormControl sx={{width: 150}}>
                 <InputLabel id="demo-simple-select-label2">Filter</InputLabel>
                 <Select
                     labelId="label-simple-select-msgtype"
                     id="simple-select-msgtype"
-                    value={values.msgType !== THistoryMsgType[THistoryMsgType.None] ? values.msgType : ""}
+                    value={state.msgType !== THistoryMsgType[THistoryMsgType.None] ? state.msgType : ""}
                     label="Filter"
                     onChange={handleMsgTypeChange}
                 >
@@ -295,7 +282,7 @@ export const HistoryPage: FC = () => {
                     p: '2px 4px', ml: 3, mr: 3, display: 'flex',
                     alignItems: 'center',
                     flexGrow: 10,
-                    borderRadius: "6px",
+                    borderRadius: "6px ",
                     boxShadow: "5px 5px 15px rgba(0, 0, 0, 0.04)",
                     border: "solid 1px rgba(0, 0, 0, 0.25)",
                 }}
@@ -312,7 +299,7 @@ export const HistoryPage: FC = () => {
                     }}
                     sx={{ml: 1, flex: 1}}
                     placeholder="Search by keyword"
-                    value={values.keyword}
+                    value={state.keyword}
                     color={"info"}
                     onChange={handleChangeKeyword}
                     onKeyPress={handleSubmitKeyword}
@@ -329,9 +316,9 @@ export const HistoryPage: FC = () => {
                     <DesktopDatePicker
                         label="From"
                         inputFormat="MM/dd/yyyy"
-                        value={values.from}
+                        value={state.from}
                         onChange={date => handleChangeDateFrom(date ? date : undefined)}
-                        maxDate={values.to ? values.to : undefined}
+                        maxDate={state.to ? state.to : undefined}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
@@ -342,8 +329,8 @@ export const HistoryPage: FC = () => {
                     <DesktopDatePicker
                         label="To"
                         inputFormat="MM/dd/yyyy"
-                        value={values.to}
-                        minDate={values.from}
+                        value={state.to}
+                        minDate={state.from}
                         onChange={date => handleChangeDateTo(date ? date : undefined)}
                         renderInput={(params) => <TextField {...params} />}
                     />
@@ -366,7 +353,7 @@ export const HistoryPage: FC = () => {
                                 onClick={() => clearSelection()}>
                         <ClearIcon/>
                     </IconButton>
-                    <div className={[h4Font, cntrVContent].join(' ')}>Selected: {values.selection.length}</div>
+                    <div className={[h4Font, cntrVContent].join(' ')}>Selected: {state.selection.length}</div>
                 </div>
 
                 <div>
@@ -380,16 +367,16 @@ export const HistoryPage: FC = () => {
         }
 
         <div id={historyTable}>
-            <table style={{width: "100%", border: 0}}>
+            <table style={{width: "100%", border: 0}} >
                 <tbody>
                 {
-                    values.filteredIndexes.map((hInd, i) => {
+                    historyData.length ? filteredIndexes.map((hInd, i) => {
                         return <tr id={historyTableRow} key={i}>
-                            <td className={historyItem} style={{width: 40, paddingRight: 5}}>
+                            <td className={historyItem} style={{ width: 40, paddingRight: 5}}>
                                 <Checkbox
                                     className={historyItem} sx={{width: 40}}
                                     onChange={e => handleCheck(e, i)}
-                                    checked={values.selection.includes(i)}
+                                    checked={state.selection.includes(i)}
                                 />
                             </td>
 
@@ -417,35 +404,35 @@ export const HistoryPage: FC = () => {
                             </td>
 
                             <td className={[floatr, historyItem, cntrVContent].join(' ')}
-                                style={{width: 20,  padding: "0 10px"}}>
-                                <IconButton style={{padding: 0}}   onClick={e => handleOpenSettings(e, i)} >
+                                style={{padding: "0 10px"}}>
+
+                            <div style={{display: "flex", flexDirection: "row"}}>
+                                { historyData[hInd].devId && !(state.filterCriteria & TFilterCriteria.By_device) ?
+                                    <Chip
+                                        label={`${BOARD_FILTER_RESERV_WORD}${historyData[hInd].devId}`}
+                                        color="default"
+                                        variant={"outlined"}
+                                        sx={{opacity: 0.5, m: "0 2px"}}
+                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_device)}
+                                    /> : <></>
+                                }
+                                { historyData[hInd].uId && !(state.filterCriteria & TFilterCriteria.By_user) ?
+                                    <Chip
+                                        label={`${USER_FILTER_RESERV_WORD}${historyData[hInd].uId}`}
+                                        color="default"
+                                        variant={"outlined"}
+                                        sx={{opacity: 0.5, m: "0 2px"}}
+                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_user)}
+                                    /> : <></>
+                                }
+
+                                <IconButton style={{padding: 0, paddingLeft: 10}}   onClick={e => handleOpenSettings(e, i)} >
                                     <img src={logoSettings} alt={"Settings logo"}/>
                                 </IconButton>
-                            </td>
-                            <td  className={[floatr, historyItem].join(' ')}>
-                                { historyData[hInd].devId && !(values.filterCriteria & TFilterCriteria.By_device) ?
-                                    <Chip
-                                        label={`${BOARD_FILTER_RESERV_WORD}:${historyData[hInd].devId}`}
-                                        color="default"
-                                        variant={"outlined"}
-                                        sx={{opacity: 0.5}}
-                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_device)}
-                                    />
-                                    : <></>
-                                }
-                                &nbsp;
-                                { historyData[hInd].uId && !(values.filterCriteria & TFilterCriteria.By_user) ?
-                                    <Chip
-                                        label={`${USER_FILTER_RESERV_WORD}:${historyData[hInd].uId}`}
-                                        color="default"
-                                        variant={"outlined"}
-                                        sx={{opacity: 0.5}}
-                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_user)}
-                                    />
-                                : <></>}
+                            </div>
                             </td>
                         </tr>
-                    })
+                    }) : <></>
                 }
                 </tbody>
             </table>
@@ -454,7 +441,7 @@ export const HistoryPage: FC = () => {
                     // backgroundColor: "yellow",
                     border: "solid 0px rgba(0, 0, 0, 0.025)"}}
                 id="menu-appbar4"
-                anchorEl={values.setting.anchorElSetting}
+                anchorEl={state.setting.anchorElSetting}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -464,33 +451,33 @@ export const HistoryPage: FC = () => {
                     vertical: 'top',
                     horizontal: 'right',
                 }}
-                open={Boolean(values.setting.anchorElSetting)}
+                open={Boolean(state.setting.anchorElSetting)}
                 onClose={handleCloseSettings}
             >
-                <MenuItem key={values.setting.setup[EHistorySetting.delete].name}
+                <MenuItem key={state.setting.setup[EHistorySetting.delete].name}
                           onClick={() => {
                               handleDeleteByInd();
                               handleCloseSettings();
                           }}>
                     <Typography>Delete item</Typography>
                 </MenuItem>
-                { values.setting.setup[EHistorySetting.filterByDevice].show &&
-                    !(values.filterCriteria & TFilterCriteria.By_device) &&
+                { state.setting.setup[EHistorySetting.filterByDevice].show &&
+                    !(state.filterCriteria & TFilterCriteria.By_device) &&
                     <MenuItem onClick={() => {
-                            handleFilterBySelectedItem (values.setting.clickInd, TFilterCriteria.By_device);
+                            handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_device);
                             handleCloseSettings();
                         }
                     }>
-                        <Typography>{values.setting.setup[EHistorySetting.filterByDevice].name}</Typography>
+                        <Typography>{state.setting.setup[EHistorySetting.filterByDevice].name}</Typography>
                     </MenuItem>
                 }
-                { values.setting.setup[EHistorySetting.filterByUser].show &&
-                    !(values.filterCriteria & TFilterCriteria.By_user) &&
+                { state.setting.setup[EHistorySetting.filterByUser].show &&
+                    !(state.filterCriteria & TFilterCriteria.By_user) &&
                     <MenuItem onClick={() => {
-                        handleFilterBySelectedItem (values.setting.clickInd, TFilterCriteria.By_user);
+                        handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_user);
                         handleCloseSettings();
                     }}>
-                        <Typography>{values.setting.setup[EHistorySetting.filterByUser].name}</Typography>
+                        <Typography>{state.setting.setup[EHistorySetting.filterByUser].name}</Typography>
                     </MenuItem>
                 }
             </Menu>
