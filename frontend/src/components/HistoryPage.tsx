@@ -43,7 +43,7 @@ import {shorterMuiBtn} from "../styles/common/buttons.css";
 import {cntrContent, cntrVContent, flexG1, floatr} from "../styles/common/position.css";
 import moment from "moment";
 import logoSettings from "../assets/settings.svg";
-import {postGetHistoryPerUser} from "../http/rqData";
+import {postDeleteHistoryPerUser, postGetHistoryPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
 
 
@@ -124,9 +124,9 @@ export const HistoryPage: FC = () => {
             if(resp.status === 200 || resp.status === 201) {
                 console.log("history records:", resp.data)
                 historyData = [...resp.data]
+                historyData.reverse()
                 historyData.forEach(el => {
                     el.createdAt = new Date(el.createdAt)
-                    el.createdAt.setHours(0,0,0,0)
                 })
                 initView()
             }
@@ -160,10 +160,12 @@ export const HistoryPage: FC = () => {
     };
     const handleChangeDateFrom = (newValue: Date | undefined) => {
         state.from = newValue
+        state.from?.setHours(23, 59, 59)
         initView();
     };
     const handleChangeDateTo = (newValue: Date | undefined) => {
         state.to = newValue
+        state.to?.setHours(23, 59, 59)
         initView();
     };
     const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -224,14 +226,20 @@ export const HistoryPage: FC = () => {
         const ind = state.filteredIndexes[state.setting.clickInd]
 
         historyData[ind].text = "Deleted";
+        postDeleteHistoryPerUser([historyData[ind].id]).then(resp => {
+            console.log("history deleted")
+            syncData()
+        })
         initView();
     }
-    const handleDeleteAll = () => {
-        state.selection.map(ind => {
-            historyData[ind].text = "Delete by list"
+    const handleDeleteMultiple = () => {
+        postDeleteHistoryPerUser(state.selection.map(ind => historyData[ind].id)).then(resp => {
+            state.selection = []
+            state.editMode = false;
+            console.log("history deleted")
+            syncData()
         })
-        state.selection = []
-        initView();
+        // initView();
     }
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
@@ -360,7 +368,7 @@ export const HistoryPage: FC = () => {
                 <div>
                     <Button variant={"text"}
                             className={[shorterMuiBtn].join(' ')}
-                            onClick={handleDeleteAll}
+                            onClick={handleDeleteMultiple}
                     > Remove
                     </Button>
                 </div>
@@ -407,30 +415,30 @@ export const HistoryPage: FC = () => {
                             <td className={[floatr, historyItem, cntrVContent].join(' ')}
                                 style={{padding: "0 10px"}}>
 
-                            <div style={{display: "flex", flexDirection: "row"}}>
-                                { historyData[hInd].devId && !(state.filterCriteria & TFilterCriteria.By_device) ?
-                                    <Chip
-                                        label={`${BOARD_FILTER_RESERV_WORD}${historyData[hInd].devId}`}
-                                        color="default"
-                                        variant={"outlined"}
-                                        sx={{opacity: 0.5, m: "0 2px"}}
-                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_device)}
-                                    /> : <></>
-                                }
-                                { historyData[hInd].uId && !(state.filterCriteria & TFilterCriteria.By_user) ?
-                                    <Chip
-                                        label={`${USER_FILTER_RESERV_WORD}${historyData[hInd].uId}`}
-                                        color="default"
-                                        variant={"outlined"}
-                                        sx={{opacity: 0.5, m: "0 2px"}}
-                                        onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_user)}
-                                    /> : <></>
-                                }
+                                <div style={{display: "flex", flexDirection: "row"}}>
+                                    { historyData[hInd].devId && !(state.filterCriteria & TFilterCriteria.By_device) ?
+                                        <Chip
+                                            label={`${BOARD_FILTER_RESERV_WORD}${historyData[hInd].devId}`}
+                                            color="default"
+                                            variant={"outlined"}
+                                            sx={{opacity: 0.5, m: "0 2px"}}
+                                            onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_device)}
+                                        /> : <></>
+                                    }
+                                    { historyData[hInd].uId && !(state.filterCriteria & TFilterCriteria.By_user) ?
+                                        <Chip
+                                            label={`${USER_FILTER_RESERV_WORD}${historyData[hInd].uId}`}
+                                            color="default"
+                                            variant={"outlined"}
+                                            sx={{opacity: 0.5, m: "0 2px"}}
+                                            onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_user)}
+                                        /> : <></>
+                                    }
 
-                                <IconButton style={{padding: 0, paddingLeft: 10}}   onClick={e => handleOpenSettings(e, i)} >
-                                    <img src={logoSettings} alt={"Settings logo"}/>
-                                </IconButton>
-                            </div>
+                                    <IconButton style={{padding: 0, paddingLeft: 10}}   onClick={e => handleOpenSettings(e, i)} >
+                                        <img src={logoSettings} alt={"Settings logo"}/>
+                                    </IconButton>
+                                </div>
                             </td>
                         </tr>
                     }) : <></>

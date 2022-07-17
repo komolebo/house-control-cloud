@@ -5,12 +5,15 @@ import { UsersService } from '../users/users.service';
 import {createEvalAwarePartialHost} from "ts-node/dist/repl";
 import {UserDto, UserPwdDto} from "../users/dto/user.dto";
 import {Users} from "../users/user.entity";
+import {HistoryService} from "../history/history.service";
+import {THistoryMsgType} from "../history/dto/history_dto";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UsersService,
         private readonly jwtService: JwtService,
+        private readonly historyService: HistoryService
     ) { }
 
     async validateUser(email: string, password: string) {
@@ -36,6 +39,10 @@ export class AuthService {
         const { password, ...result } = user;
         const token = await this.generateToken(user);
 
+        await this.historyService.createHistoryItem(user.id, {
+            type: THistoryMsgType[THistoryMsgType.Account],
+            text: "Signed in"
+        })
         return { user: result, token: token, status: HttpStatus.ACCEPTED };
     }
 
@@ -54,6 +61,10 @@ export class AuthService {
         // generate token
         const token = await this.generateToken(result);
 
+        await this.historyService.createHistoryItem(user.id, {
+            type: THistoryMsgType[THistoryMsgType.Account],
+            text: "Successfully registered in HomeNET"
+        })
         // return the user and the token
         return { user: result, token };
     }

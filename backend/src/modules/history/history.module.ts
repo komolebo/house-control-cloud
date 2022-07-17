@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { HistoryController } from './history.controller';
 import {UsersModule} from "../users/users.module";
@@ -15,8 +15,7 @@ import {AuthModule} from "../auth/auth.module";
     imports: [
         DatabaseModule,
         SequelizeModule.forFeature ([Users, Histories]),
-        UsersModule,
-        AuthModule
+        forwardRef(() => AuthModule)
     ]
 })
 export class HistoryModule {

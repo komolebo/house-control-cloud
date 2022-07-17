@@ -105,3 +105,11 @@ export function deleteNotification(notifId: number) {
 export function postGetHistoryPerUser() {
     return host.get("api/history/list/")
 }
+export function postDeleteHistoryPerUser(idArr: Array<number>) {
+    console.log("Deleting", idArr)
+    return host.delete("api/history/", {
+        data: {
+            "id": idArr
+        }
+    })
+}

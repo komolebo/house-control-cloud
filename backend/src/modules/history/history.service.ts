@@ -25,4 +25,22 @@ export class HistoryService {
         const historyItem = await this.historyRepository.create<Histories>(createHistoryDto);
         return await user.$add("history", historyItem);
     }
+
+    async deleteHistoryItems(userId: number, rawDelArr: Array<number>) {
+        if (!rawDelArr.length) return;
+
+        const user = await this.userRepository.findOne({
+            where: {id: userId}, include: {model: Histories}}
+        )
+
+        // verify all the IDs belong to userId
+        let delArr = []
+        rawDelArr.forEach(delId => {
+            if (user.history.find(hItem => hItem.id === delId)) {
+                delArr.push(delId)
+            }
+        })
+
+        return await this.historyRepository.destroy({ where: {id: delArr }})
+    }
 }

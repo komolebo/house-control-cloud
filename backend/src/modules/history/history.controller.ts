@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Headers, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Headers, Post} from '@nestjs/common';
 import {DevicesService} from "../devices/devices.service";
 import {JwtService} from "@nestjs/jwt";
 import {Users} from "../users/user.entity";
@@ -17,8 +17,16 @@ export class HistoryController {
     }
 
     @Get('list')
-    async getDevicesListPerUser(@Headers() headers) {
+    async getHistoryPerUser(@Headers() headers) {
         const thisUser = this.parseHeaders (headers);
         return await this.historyService.getHistoryOfUser(thisUser.id);
+    }
+
+    @Delete('')
+    async deleteHistoryList(@Headers() headers,
+                            @Body() body) {
+        const keys = body['id'];
+        const thisUser = this.parseHeaders(headers);
+        return await this.historyService.deleteHistoryItems(thisUser.id, keys)
     }
 }
