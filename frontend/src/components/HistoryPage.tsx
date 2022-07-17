@@ -8,6 +8,7 @@ import {
     Chip,
     FormControl,
     IconButton,
+    InputAdornment,
     InputBase,
     InputLabel,
     Menu,
@@ -18,22 +19,21 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import logoBackToHome from "../assets/arrow-left-back-home.svg";
 import logoHistoryNotification from "../assets/history-item-notification.svg";
 import logoHistoryAccount from "../assets/history-item-account.svg";
 import logoHistoryDevice from "../assets/history-item-device.svg";
-import {HOME_PAGE} from "../utils/consts";
-import {useNavigate} from "react-router-dom";
+import {HISTORY_PAGE} from "../utils/consts";
 import {
     applyDateFromFilter,
     applyDateToFilter,
+    applyIdFilters,
     applyTextFilter,
-    applyTypeFilter, BOARD_FILTER_RESERV_WORD,
+    applyTypeFilter,
     getIndexesFromArray,
     HISTORY_MSG_TYPES,
     IHistoryItem,
     TFilterCriteria,
-    THistoryMsgType, USER_FILTER_RESERV_WORD
+    THistoryMsgType
 } from "../globals/HistoryData";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -45,6 +45,7 @@ import moment from "moment";
 import logoSettings from "../assets/settings.svg";
 import {postDeleteHistoryPerUser, postGetHistoryPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
+import {NavSeq} from "./NavSeq";
 
 
 enum EHistorySetting {
@@ -71,7 +72,8 @@ interface IHistoryState {
     from: Date | undefined | null,
     to: Date | undefined | null,
     keyword: string,
-    filterCriteria: number;
+    filterDevId: string;
+    filterUid: string;
 
     selection: Array<number>; // contain indexes of filtered data
     setting: IHistorySettingMenu
@@ -80,6 +82,8 @@ interface IHistoryState {
 
 const userInfo = getUserInfo();
 let historyData: Array<IHistoryItem> = []
+export const BOARD_FILTER_HELP_WORD = "board:"
+export const USER_FILTER_HELP_WORD = "user:"
 
 const initialState = {
     filteredIndexes: [],
@@ -90,7 +94,8 @@ const initialState = {
     from: null,
     to: null,
     keyword: "",
-    filterCriteria: 0,
+    filterDevId: "",
+    filterUid: "",
 
     selection: [],
     setting: {
@@ -109,8 +114,6 @@ const initialState = {
 
 export const HistoryPage: FC = () => {
     let [state, setState] = useState<IHistoryState>({...initialState});
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         syncData();
@@ -148,6 +151,9 @@ export const HistoryPage: FC = () => {
         if (state.to) {
             filterResult = applyDateToFilter(filterResult, historyData, state.to)
         }
+        if (state.filterUid || state.filterDevId) {
+            filterResult = applyIdFilters(filterResult, historyData, state.filterUid, state.filterDevId)
+        }
         return filterResult;
     }
 
@@ -183,8 +189,7 @@ export const HistoryPage: FC = () => {
     }
     const handleClearKeyword = () => {
         state.keyword = "";
-        state.filterCriteria = 0;
-        initView();
+        initView()
     }
     const handleClearFilters = () => {
         state = {...initialState}
@@ -244,27 +249,39 @@ export const HistoryPage: FC = () => {
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
         clearSelection(false);
-        const newWord = criteria === TFilterCriteria.By_user
-            ? `${USER_FILTER_RESERV_WORD}${historyData[clickInd].uId}+`
-            : `${BOARD_FILTER_RESERV_WORD}${historyData[clickInd].devId}+`
-        if (newWord) {
-            state.keyword = state.keyword ? state.keyword + '+' + newWord : newWord;
-            state.filterCriteria |= criteria;
-            state.setting.anchorElSetting = null;
-            initView()
+        // const newWord = criteria === TFilterCriteria.By_user
+        //     ? `${USER_FILTER_RESERV_WORD}${historyData[clickInd].uId} `
+        //     : `${BOARD_FILTER_RESERV_WORD}${historyData[clickInd].devId} `
+        // if (newWord) {
+        //     state.keyword = (state.keyword ? state.keyword + ' ' + newWord : newWord)
+        //     state.filterCriteria |= criteria;
+        //     state.setting.anchorElSetting = null;
+        //     initView()
+        // }
+        if (criteria === TFilterCriteria.By_user) {
+            const val = historyData[clickInd].uId;
+            state.filterUid = val ? val.toString() : "";
+        } else if (criteria === TFilterCriteria.By_device) {
+            const val = historyData[clickInd].devId;
+            state.filterDevId = val ? val.toString() : "";
         }
+        initView()
+    }
+
+    const handleClearIdFilter = (criteria: TFilterCriteria) => {
+        if (criteria & TFilterCriteria.By_device) {
+            state.filterDevId = "";
+        } else if (criteria & TFilterCriteria.By_user) {
+            state.filterUid = "";
+        }
+        initView();
     }
 
     return <div id={historyPage}>
         <div className={hFont}>History</div>
         <div className={helpText}>Here you can view device actions history or your activitivity</div><br/>
 
-        <IconButton color="inherit" onClick={() => navigate(HOME_PAGE)}>
-            <img src={logoBackToHome} alt={"Back to home"} />
-            <div className={h5Font}>
-                &nbsp;Home
-            </div>
-        </IconButton><br/><br/><br/>
+        <NavSeq currentPage={HISTORY_PAGE}/><br/>
 
         {!state.editMode ?
             <div id={historyTableHead}>
@@ -313,6 +330,26 @@ export const HistoryPage: FC = () => {
                     onChange={handleChangeKeyword}
                     onKeyPress={handleSubmitKeyword}
                     // onKeyDown={handleSubmitKeyword}
+                    startAdornment={
+                        <InputAdornment position="end" sx={{mr: 1}}>
+                            {state.filterDevId ?
+                                <Chip
+                                    label={state.filterDevId}
+                                    color={"primary"}
+                                    variant="outlined"
+                                    onDelete={() => handleClearIdFilter(TFilterCriteria.By_device)}
+                                /> : <></>
+                            }
+                            {state.filterUid ?
+                                <Chip sx={{ml: 1}}
+                                      label={state.filterUid}
+                                      color={"primary"}
+                                      variant="outlined"
+                                      onDelete={() => handleClearIdFilter(TFilterCriteria.By_user)}
+                                /> : <></>
+                            }
+                        </InputAdornment>
+                    }
                 />
                 <IconButton onClick={handleClearKeyword}
                             sx={{p: '10px'}}>
@@ -416,18 +453,18 @@ export const HistoryPage: FC = () => {
                                 style={{padding: "0 10px"}}>
 
                                 <div style={{display: "flex", flexDirection: "row"}}>
-                                    { historyData[hInd].devId && !(state.filterCriteria & TFilterCriteria.By_device) ?
+                                    { historyData[hInd].devId && !state.filterDevId ?
                                         <Chip
-                                            label={`${BOARD_FILTER_RESERV_WORD}${historyData[hInd].devId}`}
+                                            label={`${BOARD_FILTER_HELP_WORD}${historyData[hInd].devId}`}
                                             color="default"
                                             variant={"outlined"}
                                             sx={{opacity: 0.5, m: "0 2px"}}
                                             onClick={() => handleFilterBySelectedItem(hInd, TFilterCriteria.By_device)}
                                         /> : <></>
                                     }
-                                    { historyData[hInd].uId && !(state.filterCriteria & TFilterCriteria.By_user) ?
+                                    { historyData[hInd].uId && !state.filterUid ?
                                         <Chip
-                                            label={`${USER_FILTER_RESERV_WORD}${historyData[hInd].uId}`}
+                                            label={`${USER_FILTER_HELP_WORD}${historyData[hInd].uId}`}
                                             color="default"
                                             variant={"outlined"}
                                             sx={{opacity: 0.5, m: "0 2px"}}
@@ -471,7 +508,7 @@ export const HistoryPage: FC = () => {
                     <Typography>Delete item</Typography>
                 </MenuItem>
                 { state.setting.setup[EHistorySetting.filterByDevice].show &&
-                    !(state.filterCriteria & TFilterCriteria.By_device) &&
+                    !(state.filterDevId) &&
                     <MenuItem onClick={() => {
                             handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_device);
                             handleCloseSettings();
@@ -481,7 +518,7 @@ export const HistoryPage: FC = () => {
                     </MenuItem>
                 }
                 { state.setting.setup[EHistorySetting.filterByUser].show &&
-                    !(state.filterCriteria & TFilterCriteria.By_user) &&
+                    !(state.filterUid) &&
                     <MenuItem onClick={() => {
                         handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_user);
                         handleCloseSettings();

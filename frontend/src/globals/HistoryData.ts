@@ -41,22 +41,8 @@ export function applyTypeFilter(indArr: Array<number>,
 export function applyTextFilter(indArr: Array<number>,
                                 arrData: Array<IHistoryItem>,
                                 text: string) {
-    const words: Array<string> = text.split('+')
     return indArr.map(ind => {
-        let matchAll = true;
-        words.forEach(word => {
-            if (word.includes(BOARD_FILTER_RESERV_WORD)) {
-                const devId = word.split(BOARD_FILTER_RESERV_WORD)[1]
-                matchAll &&= (devId === arrData[ind].devId);
-            } else if (word.includes(USER_FILTER_RESERV_WORD)) {
-                const uId = word.split(USER_FILTER_RESERV_WORD)[1];
-                matchAll &&= (uId === arrData[ind].uId)
-            }
-            else {
-                matchAll &&= arrData[ind].text.toLowerCase().includes(word.toLowerCase())
-            }
-        })
-        return matchAll ? ind : -1
+        return arrData[ind].text.toLowerCase().includes(text.toLowerCase()) ? ind : -1
     }).filter(newInd => newInd !== -1)
 }
 export function applyDateFromFilter(indArr: Array<number>,
@@ -73,6 +59,21 @@ export function applyDateToFilter(indArr: Array<number>,
         console.log("date: ", arrData[ind].createdAt.toTimeString());
         console.log("dateTo: ", dateTo.toTimeString());
         return arrData[ind].createdAt <= dateTo ? ind : -1
+    }).filter(newInd => newInd !== -1)
+}
+export function applyIdFilters(indArr: Array<number>,
+                               arrData: Array<IHistoryItem>,
+                               uId: string,
+                               devId: string) {
+    return indArr.map(ind => {
+        let uOk = true, dOk = true;
+        if (uId) {
+            uOk = arrData[ind].uId === uId;
+        }
+        if (devId) {
+            dOk = arrData[ind].devId === devId;
+        }
+        return uOk && dOk ? ind : -1
     }).filter(newInd => newInd !== -1)
 }
 
@@ -133,8 +134,6 @@ export const historyData: Array<IHistoryItem> = [
     // },
 ]
 
-export const BOARD_FILTER_RESERV_WORD = "board: "
-export const USER_FILTER_RESERV_WORD = "user: "
 export const HISTORY_DISPLAY_INITIAL_REC_NUM = 100;
 export const HISTORY_DB_SYNC_MORE_RATE = 2 // trice more messages to sync
 export const HISTORY_MSG_TYPES = [

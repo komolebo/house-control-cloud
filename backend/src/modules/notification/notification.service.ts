@@ -99,7 +99,7 @@ export class NotificationService {
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
-            text: `You are now added to the device \`${deviceName}\` with role '${newRole}'`
+            text: `You are added to device \`${deviceName}\`, role: '${newRole}'`
         })
     }
 
@@ -113,7 +113,7 @@ export class NotificationService {
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
-            text: `You have now lost an access to the device \`${deviceName}\``
+            text: `You lost an access to device \`${deviceName}\``
         })
     }
 
@@ -128,7 +128,7 @@ export class NotificationService {
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
-            text: `You are invited to the device \`${deviceName}\` with role '${newRole}'`
+            text: `You are invited to device \`${deviceName}\`, role: '${newRole}'`
         })
     }
 }
