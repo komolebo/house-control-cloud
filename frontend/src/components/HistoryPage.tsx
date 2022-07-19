@@ -316,14 +316,14 @@ export const HistoryPage: FC = () => {
             >
                 <IconButton onClick={handleApplyKeyword}
                     // type="submit"
-                            sx={{pl: '10px'}}>
+                            sx={{pl: 1}}>
                     <SearchIcon/>
                 </IconButton>
                 <InputBase
                     onSubmit={e => {
                         e.preventDefault ();
                     }}
-                    sx={{ml: 1, flex: 1}}
+                    sx={{flex: 1}}
                     placeholder="Search by keyword"
                     value={state.keyword}
                     color={"info"}
