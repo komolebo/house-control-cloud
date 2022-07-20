@@ -1,0 +1,31 @@
+.common-page {
+    padding: 32px 68px;
+    background-color: #FAFAFB;
+}
+
+.common-casket {
+    padding: 30px;
+    width: 49%;
+    background-color: white;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    position: relative;
+}
+
+.simple-casket {
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    position: relative;
+    width: 100%;
+    border-collapse: separate;
+    line-height: 0;
+}
+.simple-casket-ro {
+    height: 2px;
+    width: 10px;
+}
+.simple-casket-tr {
+    border: 2px solid red;
+}

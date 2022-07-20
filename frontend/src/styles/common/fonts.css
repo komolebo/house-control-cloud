@@ -74,3 +74,8 @@
     font-family: Verdana, serif;
     font-size: 15px;
 }
+
+.editable-size {
+    height: 24px;
+    padding: 13px 13px;
+}

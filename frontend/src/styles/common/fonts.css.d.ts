@@ -11,3 +11,4 @@ export const fontLgrey: string;
 export const cntrTxt: string;
 export const casualSmall: string;
 export const casualMid: string;
+export const editableSize: string;

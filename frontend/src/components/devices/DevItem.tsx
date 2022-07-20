@@ -1,11 +1,12 @@
 import React, {FC, useEffect, useState} from "react";
-import {devItem, devItemDelim} from "../../styles/DeviceItem.css"
+import {devItemDelim} from "../../styles/DeviceItem.css"
 import {h3Font, h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField} from "@mui/material";
 import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
+import {commonCasket} from "../../styles/common/pages.css";
 
 
 export interface IProps {
@@ -27,7 +28,7 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
         setEditMode(false);
     }
 
-    return <div id={devItem}>
+    return <div className={commonCasket}>
         <div className={[h3Font].join(' ')}>Name</div>
         {editMode
             ? <div className={[h4Font, devItemDelim].join(' ')}>

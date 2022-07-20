@@ -90,7 +90,6 @@ const LoginPage: FC = () => {
                     sx={{width: "100%"}}
                     id="outlined-multiline-flexible"
                     label="Email"
-                    maxRows={4}
                     value={values.email}
                     onChange={e => setValues({...values, email: e.target.value})}
                     onKeyUp={e => handleKeyUp(e, false)}

@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FC, useEffect, useState} from "react";
 import {fontLgrey, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
-import {historyItem, historyPage, historyTable, historyTableHead, historyTableRow} from "../styles/HistoryPage.css"
+import {historyItem, historyTable, historyTableHead, historyTableRow} from "../styles/HistoryPage.css"
 import {
     Box,
     Button,
@@ -46,6 +46,7 @@ import logoSettings from "../assets/settings.svg";
 import {postDeleteHistoryPerUser, postGetHistoryPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
 import {NavSeq} from "./NavSeq";
+import {commonPage} from "../styles/common/pages.css";
 
 
 enum EHistorySetting {
@@ -277,7 +278,7 @@ export const HistoryPage: FC = () => {
         initView();
     }
 
-    return <div id={historyPage}>
+    return <div className={commonPage}>
         <div className={hFont}>History</div>
         <div className={helpText}>Here you can view device actions history or your activitivity</div><br/>
 

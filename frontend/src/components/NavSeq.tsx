@@ -1,5 +1,5 @@
 import React, {FC} from "react";
-import {HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
+import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 import {IconButton} from "@mui/material";
 import logoBackToHome from "../assets/arrow-right.svg";
 import {h5Font, helpText} from "../styles/common/fonts.css";
@@ -21,6 +21,10 @@ export const NavSeq: FC<IProp> = ({currentPage}) => {
             case HISTORY_PAGE:
                 return [
                     {name: "History", path: HISTORY_PAGE},
+                ]
+            case ACCOUNT_PAGE:
+                return [
+                    {name: "Account", path: ACCOUNT_PAGE},
                 ]
             default:
                 return []

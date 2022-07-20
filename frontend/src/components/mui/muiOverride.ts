@@ -47,6 +47,7 @@ theme = createTheme(theme, {
                 }
             }
         },
+
         // MuiInputLabel: {
         //     styleOverrides: {
         //         root: {

@@ -7,7 +7,7 @@ export const styleHeights = {
         height: '32px',
     },
     toolbar: {
-        height: "100px"
+        height: "90px"
     }
 };
 export const PopperStyle = {

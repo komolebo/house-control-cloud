@@ -1,4 +1,3 @@
-export const historyPage: string;
 export const historyTableHead: string;
 export const historyTable: string;
 export const historyTableRow: string;

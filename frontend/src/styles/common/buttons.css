@@ -86,4 +86,8 @@
 }
 .low-mui-btn {
     height: 24px;
+    width: 20px;
+    margin: 0;
+    padding: 0;
+    background-color: #5e0000;
 }

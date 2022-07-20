@@ -23,7 +23,7 @@ import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
 import {isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
-import {HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
+import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 
 const userInfo = getUserInfo();
 
@@ -38,6 +38,7 @@ export const NavBar: React.FC = () => {
     const settingsMenu = [
         // {name: 'Profile', handler: () => {}},
         // {name: 'Account', handler: () => {}},
+        {name: 'Account', handler: () => navigate(ACCOUNT_PAGE)},
         {name: 'History', handler: () => navigate(HISTORY_PAGE)},
         {name: 'Logout', handler: () => clearUserData()},
     ];

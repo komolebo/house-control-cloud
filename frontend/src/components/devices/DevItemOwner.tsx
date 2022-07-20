@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {devOwner, devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
+import {devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Button} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
@@ -11,6 +11,7 @@ import {styleHeights} from "../../styles/common/customMuiStyle";
 import {getUserInfo} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
+import {commonCasket} from "../../styles/common/pages.css";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -61,7 +62,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
         };
     }, [])
 
-    return <div id={devOwner}>
+    return <div className={commonCasket} style={{marginLeft: "30px"}}>
         <div className={h3Font}>Connected users: </div>
 
         <div id={devOwnerTop}>
