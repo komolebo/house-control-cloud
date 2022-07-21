@@ -7,6 +7,8 @@ import {Roles} from "../devices/role.entity";
 import {Devices} from "../devices/device.entity";
 import {Users} from "./user.entity";
 import {DatabaseModule} from "../../core/database/database.module";
+import {Preference} from "./preference.entity";
+import {Blacklist} from "./blacklist.entity";
 
 @Module({
   providers: [UsersService, ...usersProviders],
@@ -14,7 +16,7 @@ import {DatabaseModule} from "../../core/database/database.module";
   exports: [UsersService],
   imports: [
       DatabaseModule,
-      SequelizeModule.forFeature([Devices, Users, Roles])
+      SequelizeModule.forFeature([Devices, Users, Roles, Preference, Blacklist])
   ]
 })
 export class UsersModule {}

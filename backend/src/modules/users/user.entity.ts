@@ -1,8 +1,10 @@
-import {Table, Column, Model, DataType, BelongsToMany, HasMany} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, BelongsToMany, HasMany, HasOne} from 'sequelize-typescript';
 import {Roles} from "../devices/role.entity";
 import {Devices} from "../devices/device.entity";
 import {Notifications} from "../notification/notification.entity";
 import {Histories} from "../history/history.entity"
+import {Preference} from "./preference.entity";
+import {Blacklist} from "./blacklist.entity";
 
 
 @Table({tableName: 'users'})
@@ -44,6 +46,9 @@ export class Users extends Model<Users> {
     @HasMany(() => Notifications)
     notifications: Notifications[]
 
-    @HasMany(() => Histories, { foreignKey: 'userId'})
+    @HasMany(() => Histories, 'userId')
     history: Histories[]
+
+    @HasOne(() => Preference, "prefId")
+    preference: Preference
 }
