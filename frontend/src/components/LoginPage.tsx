@@ -30,7 +30,7 @@ import {Visibility, VisibilityOff} from "@mui/icons-material";
 interface IState {
     showPassword: boolean;
     warning: string;
-    email: string;
+    login: string;
     password: string;
     rememberMe: boolean;
 }
@@ -42,17 +42,17 @@ const LoginPage: FC = () => {
     const [values, setValues] = useState<IState>({
         showPassword: false,
         warning: "",
-        email: "",
+        login: "",
         password: "",
         rememberMe: false
     })
 
     const signIn = () => {
-        login(values.email, values.password).then(
+        login(values.login, values.password).then(
             ({data}) => {
                 switch (data.status) {
                     case 401:
-                        setValues({...values, warning: "Wrong email or password"})
+                        setValues({...values, warning: "Wrong login or password"})
                         break;
                     case 202:
                         setValues({...values, warning: ""})
@@ -65,7 +65,7 @@ const LoginPage: FC = () => {
         ).catch(({response}) => {
             switch (response.status) {
                 case 422:
-                    setValues({...values, warning: "Email or password is invalid"})
+                    setValues({...values, warning: "Login or password is invalid"})
                     break;
             }
             console.log("catch: ", response);
@@ -89,9 +89,9 @@ const LoginPage: FC = () => {
                 <TextField
                     sx={{width: "100%"}}
                     id="outlined-multiline-flexible"
-                    label="Email"
-                    value={values.email}
-                    onChange={e => setValues({...values, email: e.target.value})}
+                    label="Login or email"
+                    value={values.login}
+                    onChange={e => setValues({...values, login: e.target.value})}
                     onKeyUp={e => handleKeyUp(e, false)}
                 />
             </div><br/>

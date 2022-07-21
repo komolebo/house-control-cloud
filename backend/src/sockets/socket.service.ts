@@ -57,7 +57,7 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
         this.logger.error (`Client disconnected: ${client.id}`);
         const uInfo = this.parseHeaders(client.handshake.headers.authorization);
         if(uInfo) {
-            this.logger.warn(`Removing user ${uInfo.name} with ID: ${uInfo.id}`)
+            this.logger.warn(`Removing user ${uInfo.full_name} with ID: ${uInfo.id}`)
             this.uMap[uInfo.id] = this.uMap[uInfo.id].filter(el => el !== client.id)
         }
     }
@@ -70,7 +70,7 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
                 this.uMap[uInfo.id] = []
             this.uMap[uInfo.id].push(client.id);
 
-            this.logger.warn(`Adding user ${uInfo.name} and clientId: ${client.id}, arr len now: ${this.uMap[uInfo.id].length}`)
+            this.logger.warn(`Adding user ${uInfo.full_name} and clientId: ${client.id}, arr len now: ${this.uMap[uInfo.id].length}`)
         }
     }
 

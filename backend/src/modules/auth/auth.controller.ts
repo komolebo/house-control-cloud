@@ -10,7 +10,7 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() user: UserDto) {
-        return await this.authService.login(user.email, user.password);
+        return await this.authService.login(user.login, user.password);
     }
 
     @UseGuards(DoesUserExist)

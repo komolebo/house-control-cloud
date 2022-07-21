@@ -21,6 +21,7 @@ interface IState {
     email: string;
     warnings: Array<string>;
     name: string;
+    login: string;
 }
 
 const SignupPage: FC = () => {
@@ -29,7 +30,8 @@ const SignupPage: FC = () => {
         password: "",
         email: "",
         warnings: [],
-        name: ""
+        name: "",
+        login: ""
     })
     const navigate = useNavigate();
     const {setAuthData} = useContext(UserAuthContext);
@@ -51,7 +53,7 @@ const SignupPage: FC = () => {
                     setValues({...values, warnings: response.data.response.message})
                     break;
                 default:
-                    setValues({...values, warnings: ["Unknown error happened"]})
+                    setValues({...values, warnings: ["Unknown error happened, please try later"]})
             }
         });
     }
@@ -66,7 +68,15 @@ const SignupPage: FC = () => {
             <TextField
                 sx={{width: "100%"}}
                 id="name-input-field"
-                label="Username"
+                label="Login"
+                value={values.login}
+                onChange={e => setValues({...values, login: e.target.value})}
+            /><br/><br/>
+
+            <TextField
+                sx={{width: "100%"}}
+                id="name-input-field"
+                label="Full name"
                 value={values.name}
                 onChange={e => setValues({...values, name: e.target.value})}
             /><br/><br/>

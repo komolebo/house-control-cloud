@@ -9,9 +9,15 @@ import {Histories} from "../history/history.entity"
 export class Users extends Model<Users> {
     @Column({
         type: DataType.STRING,
-        allowNull: true,
     })
-    name: string;
+    full_name: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true
+    })
+    login: string;
 
     @Column({
         type: DataType.STRING,

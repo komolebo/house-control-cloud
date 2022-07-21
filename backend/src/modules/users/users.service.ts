@@ -29,7 +29,7 @@ export class UsersService {
     }
 
     async deleteUser(user: UserDto): Promise<number> {
-        return await this.userRepository.destroy<Users>({ where: { email : user.email } });
+        return await this.userRepository.destroy<Users>({ where: { email : user.login } });
     }
 
     async deleteUserById(userId: number): Promise<number> {
@@ -40,15 +40,19 @@ export class UsersService {
         return await this.userRepository.findOne<Users>({ where: { email } });
     }
 
+    async findOneByLogin(login: string): Promise<Users> {
+        return await this.userRepository.findOne<Users>({ where: { login: login } });
+    }
+
     async findOneById(id: number): Promise<Users> {
         return await this.userRepository.findOne<Users>({ where: { id } });
     }
 
     async update(userDto: UserDto) {
-        await this.findOneByEmail(userDto.email)
+        await this.findOneByEmail(userDto.login)
             .then(user => {
                 // user.setDataValue('name', userDto.name);
-                user.setDataValue('email', userDto.email);
+                user.setDataValue('email', userDto.login);
                 // user.setDataValue('phone', userDto.phone);
                 user.save();
                 return user;

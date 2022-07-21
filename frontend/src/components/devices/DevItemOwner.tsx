@@ -77,8 +77,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 <tbody>
                 {users.map(conn_user => {
                     const isIdMatched = conn_user.id === userInfo?.id;
-                    return <tr key={conn_user.id}>
-                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.name}</td>
+                    return <tr key={conn_user.login}>
+                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.fullName}</td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
                             <ColorRoleLabel role={conn_user.role}/>
                             {/*<Chip label={TDevRole[conn_user.role]} color="default"  />*/}
@@ -89,7 +89,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                             {/*<Chip label={TDevRole[conn_user.role]} color="success" />*/}
                             {/*<Chip label={TDevRole[conn_user.role]} color="warning"  />*/}
                         </td>
-                        <td id={devOwnerConnusrProp} className={h4Font}>0x{conn_user.id}</td>
+                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.login}</td>
                         <td>
                             <Button variant={"outlined"}
                                     color={"info"}

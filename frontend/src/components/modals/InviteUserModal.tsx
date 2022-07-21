@@ -10,19 +10,24 @@ import {DEFAULT_ROLE, ROLES, TConnectedUser, TDevRole} from "../../globals/Devic
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {postInviteUser} from "../../http/rqData";
 
+type TInviteUsrInfo = {
+    login: string;
+    role: TDevRole;
+}
+
 interface IInvitElemProp {
-    onAction: (usrInf: TConnectedUser) => void
+    onAction: (usrInf: TInviteUsrInfo) => void
 }
 interface IDoneProp {
     onAction: () => void,
-    usrInfo: TConnectedUser | null
+    usrInfo: TInviteUsrInfo | null
 }
 
 const MIN_CHAR_ID = 1;
 
 const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
     const ROLE = usrInfo?.role ? TDevRole[usrInfo?.role] : "INVALID ROLE";
-    const NAME = usrInfo?.name ? usrInfo.name : "INVALID NAME";
+    const NAME = usrInfo?.login ? usrInfo.login : "INVALID NAME";
 
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
@@ -53,14 +58,17 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
     const {modalProps } = useGlobalModalContext();
     const {data} = modalProps;
 
-    const [userId, setUserId] = useState("");
+    const [userLogin, setUserLogin] = useState("");
     const [warning, setWarning] = useState("");
     const [role, setRole] = useState<number>(DEFAULT_ROLE);
 
     const handleInputChange = (e: any) => {
-        const re = /^[0-9\b,A-F]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setUserId(e.target.value)
+        const val = e.target.value;
+
+        const no_num = /^[a-zA-Z]/;
+        const re = /^[0-9\b,a-zA-Z]+$/;
+        if (val === '' || (no_num.test(val[0]) && re.test(val))) {
+            setUserLogin(val)
         }
     }
     const handleSelectChange = (e: SelectChangeEvent) => {
@@ -70,12 +78,11 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         }
     };
     const handleUserInvite = () => {
-        postInviteUser(data.devInfo.hex, Number(userId), TDevRole[role]).then(resp => {
+        postInviteUser(data.devInfo.hex, userLogin, TDevRole[role]).then(resp => {
             if (resp.status === 201) {
                 onAction({
-                    id: Number(userId),
                     role: role,
-                    name: "Unknown yet user"
+                    login: userLogin
                 });
             } else {
                 setWarning("User ID not found")
@@ -98,14 +105,14 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
         <TextField sx={{mb: 2}}
                    error={warning !== ""}
-                   label={"User ID"}
+                   label={"User's login"}
                    id="outlined-uncontrolled"
                    color={"info"}
                    fullWidth={true}
                    helperText={warning}
                    onChange={e => handleInputChange(e)}
                    inputProps={{ pattern: "[a-f]{1,15}" }}
-                   value={userId}
+                   value={userLogin}
         />
 
         <Box sx={{ minWidth: 120 }}>
@@ -130,7 +137,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
         <Box sx={{display: "flex", justifyContent: "center", mt: 3}}>
             <Button variant={"contained"}
-                    disabled={userId.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
+                    disabled={userLogin.length < MIN_CHAR_ID || role >= TDevRole.ROLES_NUMBER}
                     onClick={() => handleUserInvite()}
                     className={widerMuiBtn}
             >
@@ -145,9 +152,9 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
 export const InviteUserModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [userData, setUserData] = useState<TConnectedUser | null>(null);
+    const [userData, setUserData] = useState<TInviteUsrInfo | null>(null);
 
-    const setModeDone = (uData: TConnectedUser) => {
+    const setModeDone = (uData: TInviteUsrInfo) => {
         console.log("setModeDone", uData);
         setUserData(uData);
         modalProps.onAct(null);

@@ -17,6 +17,11 @@ import {TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import logoSettings from "../assets/settings.svg";
+import {getUserInfo} from "../globals/UserAuthProvider";
+
+let userInfo = getUserInfo();
+
+console.log(">>>>>>>>>>>>>>>", userInfo)
 
 interface IState {
     editMode: boolean;
@@ -25,10 +30,10 @@ interface IState {
 }
 
 const curUser: TUser = {
-    name: "Svetlana",
-    email: "Svetlana@gmail.com",
-    phone: "+380966551328",
-    login: "Svetik23",
+    full_name: userInfo ? userInfo?.full_name : "",
+    email: userInfo ? userInfo.email : "",
+    phone: userInfo ? userInfo.phone : "No phone entered",
+    login: userInfo ? userInfo.login : "",
     blockList: ["Petro11", "Oleh23", "Afanasiy", "Evkakiy"],
     emailVerified: true,
     phoneVerified: false
@@ -49,7 +54,7 @@ const AccountDataEditElement: FC = () => {
         <div className={cntrVContent}>
             <div style={{textAlign: "center"}}>
                 <img src={logoAva} alt={"Logo ava"}/>
-                <div className={h4Font}>Svetik23</div>
+                <div className={h4Font}>{curUser.login}</div>
             </div>
 
             <Button
@@ -103,17 +108,17 @@ const AccountDataEditElement: FC = () => {
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')} >
                         <TextField
-                            error={state.user.name.length === 0}
-                            label={state.user.name.length === 0 ? "Name cannot be empty" : ""}
+                            error={state.user.full_name.length === 0}
+                            label={state.user.full_name.length === 0 ? "Name cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
-                            defaultValue={curUser.name}
+                            defaultValue={curUser.full_name}
                             fullWidth={true}
-                            onChange={e => setState ({...state, user: {...state.user, name: e.target.value}})}
+                            onChange={e => setState ({...state, user: {...state.user, full_name: e.target.value}})}
                             size={"small"}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.name}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.full_name}</div>
                 }
             </div>
             {/*<br/>*/}
@@ -128,7 +133,7 @@ const AccountDataEditElement: FC = () => {
                             label={state.user.phone.length === 0 ? "Phone cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
-                            defaultValue={curUser.phone}
+                            defaultValue={state.user.phone}
                             fullWidth={true}
                             size={"small"}
                             onChange={e => setState ({...state, user: {...state.user, phone: e.target.value}})}
@@ -210,7 +215,7 @@ const AccountDataElementR = () => {
                 <tbody>
                 {
                     curUser.blockList.map((name, i) => {
-                        return <tr className={simpleCasketTr}>
+                        return <tr key={i} className={simpleCasketTr}>
                                 <td className={h4Font}>{name}</td>
                                 <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')} style={{}}>
                                     <IconButton>

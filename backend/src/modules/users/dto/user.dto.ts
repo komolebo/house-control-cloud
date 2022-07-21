@@ -14,12 +14,14 @@ export class FullUserDto {
 
     @IsNotEmpty()
     readonly name: string;
+
+    @IsNotEmpty()
+    readonly login: string;
 }
 
 export class UserDto {
     @IsNotEmpty()
-    @IsEmail()
-    readonly email: string;
+    readonly login: string;
 
     @IsNotEmpty()
     @MinLength(6)

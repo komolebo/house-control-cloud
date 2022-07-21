@@ -51,11 +51,11 @@ const DoneElement: FC<IModifyAccessDoneProp> = ({onAction, usrInfo,}) => {
         {usrInfo && (
             isUpdatePage
             ?   <div className={[helpText, cntrContent].join(' ')}>
-                    User '{usrInfo.name}' is now &nbsp;
+                    User '{usrInfo.fullName}' is now &nbsp;
                     <ColorRoleLabel role={usrInfo.role}/>
                 </div>
             :   <div className={[helpText, cntrContent].join(' ')}>
-                User '{usrInfo.name}' is disconnected from device:&nbsp;
+                User '{usrInfo.fullName}' is disconnected from device:&nbsp;
             </div>
         )}
         <br/><br/>
@@ -114,7 +114,7 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo}) 
         <div className={[h3Font].join(' ')}>User</div>
         <div style={{display: "flex", flexDirection: "row"}}>
             <div className={[h4Font, cntrVContent].join(' ')} style={{marginRight: 15}}>
-                {usrInfo.name}
+                {usrInfo.fullName}
             </div>
             <ColorRoleLabel role={usrInfo.role}/>
             {role !== usrInfo.role &&

@@ -218,8 +218,8 @@ export class DevicesService {
         })
     }
 
-    async inviteUser(uId: number, thisUID: number, devHex: string, role: string) {
-        console.log("inviteUser, uid=", uId, "hex=", devHex, " by req of:", thisUID, " role=", role);
+    async inviteUser(uLogin: string, thisUID: number, devHex: string, role: string) {
+        console.log("inviteUser, uLogin=", uLogin, "hex=", devHex, " by req of:", thisUID, " role=", role);
 
         // check if you are an owner for this device
         await this.deviceRepository.findOne({
@@ -227,11 +227,11 @@ export class DevicesService {
             include: {model: Users},
         }).then(d => {
             const thisUser = d.users.find(el => el.id === thisUID);
-            const usrAlreadyInvited = d.users.find(el => el.id === uId) !== undefined;
+            const usrAlreadyInvited = d.users.find(el => el.login === uLogin) !== undefined;
 
             if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
                 !usrAlreadyInvited) {
-                this.usersRepository.findOne({where: {id: uId}})
+                this.usersRepository.findOne({where: {login: uLogin}})
                     .then(objUser => {
                         d.$add('users', objUser, {through: {role: role}});
                         this.notificationService.createNotificationYouAreInvited(

@@ -21,10 +21,17 @@ export class AuthService {
         return null;
     }
 
-    public async login(email: string, pass: string) {
-        let user = await this.userService.findOneByEmail(email.toLocaleLowerCase());
+    public async login(login: string, pass: string) {
+        console.log("User login", login)
+
+        login = login.toLowerCase()
+
+        let user = await this.userService.findOneByLogin(login);
         if (!user) {
-            return new UnauthorizedException({message: 'User not exist'})
+            user = await this.userService.findOneByEmail(login)
+            if (!user) {
+                return new UnauthorizedException({message: 'User not exist'})
+            }
         }
 
         // find if user password match

@@ -129,7 +129,7 @@ export const NavBar: React.FC = () => {
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
                                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                             </IconButton>
-                            <Typography paddingTop={3}>{userInfo ? userInfo.name : "not_authorized"}</Typography>
+                            <Typography paddingTop={3}>{userInfo ? userInfo.full_name : "not_authorized"}</Typography>
                         </Box>
                     </Tooltip>
                     <Menu

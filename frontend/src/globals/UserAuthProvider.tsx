@@ -6,8 +6,9 @@ const USER_TOKEN = "USER_TOKEN"
 
 export interface IUserSetting {
     id: number;
-    name: string;
+    login: string;
     email: string;
+    full_name: string;
     phone: string;
 }
 
@@ -23,6 +24,7 @@ function clearUser() {
 }
 export function getUserInfo(): IUserSetting | null {
     const uInfoStr = localStorage.getItem(USER_INFO);
+    console.log(".........................", uInfoStr && JSON.parse(uInfoStr))
     return uInfoStr ? JSON.parse(uInfoStr) : null;
 }
 export function getAuthToken() {

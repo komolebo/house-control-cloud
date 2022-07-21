@@ -81,10 +81,10 @@ export class DevicesController {
     @Post('invite/:device_id/:user_id/:role')
     async reqInviteUser(@Headers() headers,
                           @Param('device_id') devHex: string,
-                          @Param('user_id') userId: number,
+                          @Param('user_id') userLogin: string,
                           @Param('role') role: string) {
         const thisUser = this.parseHeaders (headers);
-        return this.devicesService.inviteUser(Number(userId), thisUser.id, devHex, role);
+        return this.devicesService.inviteUser(userLogin, thisUser.id, devHex, role);
     }
 
     @Get('list')

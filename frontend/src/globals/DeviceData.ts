@@ -12,8 +12,9 @@ export enum TDevStatus {
 }
 
 export interface TConnectedUser {
-    name: string;
     id: number;
+    fullName: string;
+    login: string;
     role: TDevRole;
 }
 

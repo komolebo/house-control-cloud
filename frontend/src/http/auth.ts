@@ -10,7 +10,7 @@ export async function register(email: string, password: string, name: string) {
 
 export async function login(email: string, password: string) {
     return await host.post('auth/login', {
-        email: email,
+        login: email,
         password: password
     });
 }

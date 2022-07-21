@@ -44,9 +44,10 @@ export function fetchConnUsersByDevice(dev_id: number,
             const userList: Array<TConnectedUser> = []
             resp.data.forEach((u: any) => {
                 userList.push({
-                    name: u.name,
-                    id: u.id,
-                    role: roleStrToId(u.Roles.role)
+                    fullName: u.full_name,
+                    login: u.login,
+                    role: roleStrToId(u.Roles.role),
+                    id: u.id
                 })
             })
 
@@ -76,8 +77,8 @@ export function postUnsubscribeFromDevice(devHex: string) {
     return host.post("api/devices/forget/" + devHex)
 }
 
-export function postInviteUser(devHex: string, userId: number, role: string) {
-    return host.post(`api/devices/invite/${devHex}/${userId}/${role}`)
+export function postInviteUser(devHex: string, userLogin: string, role: string) {
+    return host.post(`api/devices/invite/${devHex}/${userLogin}/${role}`)
 }
 
 export function postClearDeviceUsers(devHex: string) {
