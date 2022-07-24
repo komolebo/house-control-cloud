@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import {privateRoutes, publicRoutes} from "./routes";
-import {UserAuthContext} from "./globals/UserAuthProvider";
+import {UserGlobalContext} from "./globals/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
 
 
 const App = () => {
-    const  {authorized} = useContext(UserAuthContext);
+    const  {authorized} = useContext(UserGlobalContext);
 
     return (
       <BrowserRouter>

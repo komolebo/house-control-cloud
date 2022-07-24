@@ -9,11 +9,11 @@ export type TUser = {
 }
 
 export type TUPref = {
-    phone_verified: boolean;
-    email_verified: boolean;
-    dark_mode: boolean;
-    profile_photo: string;
-    id: number;
+    phone_verified?: boolean;
+    email_verified?: boolean;
+    dark_mode?: boolean;
+    profile_photo?: string;
+    id?: number;
 }
 
 export type TBlItem = {

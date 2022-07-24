@@ -57,12 +57,12 @@ export const useUserGlobalInfo = () => {
     }
 }
 
-export const UserAuthContext = createContext({} as ReturnType<typeof useUserGlobalInfo>)
+export const UserGlobalContext = createContext({} as ReturnType<typeof useUserGlobalInfo>)
 
 export const UserAuthProvider: FC<any> = (props) => {
     return (
-        <UserAuthContext.Provider value={useUserGlobalInfo()}>
+        <UserGlobalContext.Provider value={useUserGlobalInfo()}>
             {props.children}
-        </UserAuthContext.Provider>
+        </UserGlobalContext.Provider>
     )
 }

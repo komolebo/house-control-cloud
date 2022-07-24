@@ -7,7 +7,7 @@ import {btn, wideMuiBtn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
-import {UserAuthContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {flexr, floatr, wide} from "../styles/common/position.css";
 import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
@@ -34,7 +34,7 @@ const SignupPage: FC = () => {
         login: ""
     })
     const navigate = useNavigate();
-    const {setAuthData} = useContext(UserAuthContext);
+    const {setAuthData} = useContext(UserGlobalContext);
 
     const signUp = async () => {
         await register(values.email, values.password, values.name).then(data => {

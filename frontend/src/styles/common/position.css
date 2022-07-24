@@ -39,3 +39,10 @@
 .flexG1 {
     flex-grow: 1;
 }
+
+.flex-cont-6 {
+    display: flex;
+    flex-wrap: wrap;
+}
+.child-flex-cont-6 {
+}

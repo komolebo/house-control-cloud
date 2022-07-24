@@ -19,7 +19,7 @@ import logoMsgYes from "../assets/nav-notification-yes.svg";
 import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
-import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
+import {getUserInfo, UserGlobalContext} from "../globals/UserAuthProvider";
 import {getPreferences, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
@@ -28,7 +28,7 @@ import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 const userInfo = getUserInfo();
 
 export const NavBar: React.FC = () => {
-    const {clearUserData, avatarSrc, setAvatarSrc} = useContext(UserAuthContext);
+    const {clearUserData, avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
     const [notification, setNotification] = useState<boolean>(false);
@@ -123,7 +123,7 @@ export const NavBar: React.FC = () => {
                         <Popper id={'simple-popper'}
                                 open={Boolean(anchorElMsg)}
                                 anchorEl={anchorElMsg}
-                                style={{zIndex: 1}}
+                                style={{zIndex: 2}}
                         >
                             <NotifyBar
                                 onNotificationStatusChange={syncNotificationStatus}

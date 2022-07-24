@@ -16,8 +16,9 @@ import {spaceNoPad, spaceTextEdit, spaceTextEditNoBottom} from "../styles/common
 import {TUPref, TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
-import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
+import {getUserInfo, UserGlobalContext} from "../globals/UserAuthProvider";
 import {getPreferences, postUnblockUser, postUpdateUserPref} from "../http/rqData";
+import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 
 let userInfo = getUserInfo();
 
@@ -47,8 +48,14 @@ const initialState = {
 }
 
 const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
-    const {avatarSrc} = useContext(UserAuthContext);
+    const {avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
+    const { showModal, hideModal } = useGlobalModalContext();
     const [state, setState] = useState<IState>(initialState)
+
+    const handleUpdateAvatar = (newAvaSrc: string) => {
+        setAvatarSrc(newAvaSrc);
+        onChange();
+    }
 
     return <div className={[commonCasket, flexG1].join(' ')}>
         <div className={h2Font}>Avatar</div>
@@ -56,13 +63,11 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
         <div className={cntrVContent}>
             <div style={{textAlign: "center"}}>
                 {/*<img src={"/avatars/avatar1.svg"} alt={"Logo ava"}/>*/}
-
                 <Avatar
                     sx={{
-                        // p: 4, m: "15px 5px",
+                        // m: "15px 5px",
                         width: 100, height: 100,
-                        p: "5px 0 0 0",
-                        // border: "1px solid blue"
+                        m: "5px 0 0 0",
                     }}
                     src={avatarSrc}
                 />
@@ -71,15 +76,19 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
             </div>
 
             <Button
-                onClick={() => {}}
+                onClick={() => showModal(MODAL_TYPE.ChooseAvatarModal, {
+                    onClose: () => {console.log("Modal onClose")},
+                    onAct: (data) => handleUpdateAvatar(data),
+                    data: { curAvatarSrc: avatarSrc }
+                })}
                 variant={"outlined"} sx={{ ml: 1 }}
                 className={[shortMuiBtn].join(' ')}
             >
-                Upload
+                Update
             </Button>
 
             <Button
-                onClick={() => {}}
+                onClick={() => handleUpdateAvatar("")}
                 color={"inherit"}
                 variant={"outlined"} sx={{ ml: 2 }}
                 className={[shortMuiBtn].join(' ')}
@@ -270,6 +279,7 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
 
 export const AccountPage: FC = () => {
     const [user, setUser] = useState<TUser>(curUser)
+    const {avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
 
     const syncPref = () => {
         getPreferences().then(resp => {
@@ -292,7 +302,7 @@ export const AccountPage: FC = () => {
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 
         <div style={{gap: 20, display: "flex"}}>
-            <AccountDataElementL user={user} onChange={() => {}}/>
+            <AccountDataElementL user={user} onChange={() => syncPref()}/>
             <AccountDataElementR user={user} onChange={() => syncPref()}/>
         </div>
     </div>

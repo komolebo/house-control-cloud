@@ -12,7 +12,7 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
 import {login} from "../http/auth";
 import {flexr, wide} from "../styles/common/position.css";
-import {UserAuthContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import logoHomeNet from "../assets/home-net-black.svg";
 import {
     Button,
@@ -38,7 +38,7 @@ interface IState {
 const LoginPage: FC = () => {
     const pwdFocusRef = useRef<any>();
     const navigate = useNavigate();
-    const {setAuthData} = useContext(UserAuthContext);
+    const {setAuthData} = useContext(UserGlobalContext);
     const [values, setValues] = useState<IState>({
         showPassword: false,
         warning: "",

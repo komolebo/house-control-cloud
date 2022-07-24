@@ -8,3 +8,5 @@ export const floatr: string;
 export const floatl: string;
 export const flexG20: string;
 export const flexG1: string;
+export const flexCont6: string;
+export const childFlexCont6: string;

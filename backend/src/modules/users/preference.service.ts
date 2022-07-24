@@ -62,10 +62,14 @@ export class PreferenceService {
             await this.createDefault(user)
         }
 
-        user.preference.setDataValue("phone_verified", prefDto.phone_verified)
-        user.preference.setDataValue("email_verified", prefDto.email_verified)
-        user.preference.setDataValue("dark_mode", prefDto.dark_mode)
-        user.preference.setDataValue("profile_photo", prefDto.profile_photo)
+        if (prefDto.phone_verified !== undefined)
+            user.preference.setDataValue("phone_verified", prefDto.phone_verified)
+        if (prefDto.email_verified !== undefined)
+            user.preference.setDataValue("email_verified", prefDto.email_verified)
+        if (prefDto.dark_mode !== undefined)
+            user.preference.setDataValue("dark_mode", prefDto.dark_mode)
+        if (prefDto.profile_photo !== undefined)
+            user.preference.setDataValue("profile_photo", prefDto.profile_photo)
         await user.preference.save()
         return user.preference
     }
