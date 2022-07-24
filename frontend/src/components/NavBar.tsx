@@ -20,7 +20,7 @@ import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
-import {isNotificationPerUser} from "../http/rqData";
+import {getPreferences, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
@@ -28,12 +28,21 @@ import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 const userInfo = getUserInfo();
 
 export const NavBar: React.FC = () => {
-    const {clearUserData} = useContext(UserAuthContext);
+    const {clearUserData, avatarSrc, setAvatarSrc} = useContext(UserAuthContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
     const [notification, setNotification] = useState<boolean>(false);
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getPreferences().then(resp => {
+            if (resp.status === 200 || resp.status === 201) {
+                setAvatarSrc(resp.data.prefs.profile_photo);
+                console.log(resp.data)
+            }
+        })
+    }, [])
 
     const settingsMenu = [
         // {name: 'Profile', handler: () => {}},
@@ -127,7 +136,7 @@ export const NavBar: React.FC = () => {
                     <Tooltip title="Open settings">
                         <Box display="flex">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                                <Avatar alt="Remy Sharp" src={avatarSrc} />
                             </IconButton>
                             <Typography paddingTop={3}>{userInfo ? userInfo.full_name : "not_authorized"}</Typography>
                         </Box>

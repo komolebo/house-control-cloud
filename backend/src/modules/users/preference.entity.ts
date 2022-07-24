@@ -30,9 +30,14 @@ export class Preference extends Model<Preference> {
     })
     dark_mode: boolean;
 
+    @Column({
+        type: DataType.STRING,
+    })
+    profile_photo: string;
+
     @HasMany(() => Blacklist, 'prefId')
     black_list: Blacklist[]
 
-    @BelongsTo(() => Users, "prefIf")
+    @BelongsTo(() => Users, "uId")
     user: Users
 }

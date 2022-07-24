@@ -9,13 +9,17 @@ import {Users} from "./user.entity";
 import {DatabaseModule} from "../../core/database/database.module";
 import {Preference} from "./preference.entity";
 import {Blacklist} from "./blacklist.entity";
+import {PreferenceService} from "./preference.service";
+import {PreferenceController} from "./preference.controller";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
-  providers: [UsersService, ...usersProviders],
-  controllers: [UsersController],
-  exports: [UsersService],
+  providers: [UsersService, PreferenceService, ...usersProviders],
+  controllers: [UsersController, PreferenceController],
+  exports: [UsersService, PreferenceService],
   imports: [
       DatabaseModule,
+      AuthModule,
       SequelizeModule.forFeature([Devices, Users, Roles, Preference, Blacklist])
   ]
 })

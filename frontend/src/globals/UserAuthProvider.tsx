@@ -24,7 +24,6 @@ function clearUser() {
 }
 export function getUserInfo(): IUserSetting | null {
     const uInfoStr = localStorage.getItem(USER_INFO);
-    console.log(".........................", uInfoStr && JSON.parse(uInfoStr))
     return uInfoStr ? JSON.parse(uInfoStr) : null;
 }
 export function getAuthToken() {
@@ -34,8 +33,9 @@ export function isAuth(): boolean {
     return getAuthToken() !== null;
 }
 
-export const useAuth = () => {
+export const useUserGlobalInfo = () => {
     const [authorized, setAuthorized] = useState(isAuth());
+    const [avatarSrc, setAvatarSrc] = useState<string>("")
 
     const setAuthData = (jwtToken: string) => {
         setUserInfo(jwtToken);
@@ -51,14 +51,17 @@ export const useAuth = () => {
         authorized,
         setAuthData,
         clearUserData,
+
+        avatarSrc,
+        setAvatarSrc
     }
 }
 
-export const UserAuthContext = createContext({} as ReturnType<typeof useAuth>)
+export const UserAuthContext = createContext({} as ReturnType<typeof useUserGlobalInfo>)
 
 export const UserAuthProvider: FC<any> = (props) => {
     return (
-        <UserAuthContext.Provider value={useAuth()}>
+        <UserAuthContext.Provider value={useUserGlobalInfo()}>
             {props.children}
         </UserAuthContext.Provider>
     )

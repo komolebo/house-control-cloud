@@ -12,11 +12,11 @@ import {HistoryModule} from "../history/history.module";
     imports: [
         DatabaseModule,
         PassportModule,
-        UsersModule,
         JwtModule.register ({
             secret: process.env.JWTKEY,
             signOptions: {expiresIn: process.env.TOKEN_EXPIRATION}
         }),
+        forwardRef(() => UsersModule),
         forwardRef(() => HistoryModule)
     ],
     providers: [

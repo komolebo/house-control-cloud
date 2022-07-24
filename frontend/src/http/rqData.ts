@@ -1,5 +1,6 @@
 import {host} from "./index";
 import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
+import {TUPref} from "../globals/AccountData";
 
 export function roleStrToId(role: string) {
     switch (role) {
@@ -113,4 +114,15 @@ export function postDeleteHistoryPerUser(idArr: Array<number>) {
             "id": idArr
         }
     })
+}
+
+// Preferences
+export function getPreferences() {
+    return host.get("api/user/preference/")
+}
+export function postUnblockUser(userId: number) {
+    return host.delete("api/user/preference/" + userId)
+}
+export function postUpdateUserPref(pref: TUPref) {
+    return host.post("api/user/preference/", pref)
 }

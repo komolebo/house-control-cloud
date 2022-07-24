@@ -12,6 +12,7 @@ import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/Notific
 import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
 import {getUserInfo} from "../globals/UserAuthProvider";
 import {IO_NOTIFICATION_KEY, socket} from "../http/wssocket";
+import moment from "moment";
 
 interface INotificationProp {
     onNotificationStatusChange: () => void
@@ -49,7 +50,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                     {item.text}
                 </div>
                 <div className={[h5Font].join(' ')} style={{paddingTop: "10px", paddingBottom: "10px"}}>
-                    {item.createdAt}
+                    {moment(item.createdAt).fromNow()}
                 </div>
 
                 {item.actions
@@ -93,7 +94,14 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
         userInfo && getNotificationsListPerUser(userInfo?.id)
             .then(resp => {
                 if (resp.status === 201 || 200) {
-                    setNotifications(resp.data);
+                    let notificationList: Array<TNotifyItem> = resp.data;
+                    notificationList = notificationList.sort(
+                        (a, b) => {
+                            const d1 = new Date(a.createdAt);
+                            const d2 = new Date(b.createdAt);
+                            return d2.getTime() - d1.getTime()
+                        })
+                    setNotifications(notificationList);
                     onNotificationStatusChange();
                 } else {}
             })

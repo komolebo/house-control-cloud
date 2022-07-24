@@ -128,10 +128,8 @@ export const HistoryPage: FC = () => {
             if(resp.status === 200 || resp.status === 201) {
                 console.log("history records:", resp.data)
                 historyData = [...resp.data]
-                historyData.reverse()
-                historyData.forEach(el => {
-                    el.createdAt = new Date(el.createdAt)
-                })
+                historyData.forEach(el => { el.createdAt = new Date(el.createdAt) })
+                historyData.sort((a,b)=> b.createdAt.getTime() - a.createdAt.getTime())
                 initView()
             }
         })

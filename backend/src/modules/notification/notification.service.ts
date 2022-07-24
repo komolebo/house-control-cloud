@@ -4,7 +4,6 @@ import {Notifications} from "./notification.entity";
 import {CreateNotification_Dto} from "./dto/create_notification__dto";
 import {Users} from "../users/user.entity";
 import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from "./messages/ENotificationTypes";
-import * as moment from 'moment'
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
@@ -15,7 +14,7 @@ function notificationInterpretData(notification: Notifications) {
     const explainInfo = ExplainNotificationMap(notifyObj.msgType, notifyObj);
     if (explainInfo) {
         notifyObj["actions"] = explainInfo.actions;
-        notifyObj.createdAt = moment(notifyObj.createdAt).fromNow();
+        // notifyObj.createdAt = moment(notifyObj.createdAt).fromNow();
     }
 }
 

@@ -49,6 +49,6 @@ export class Users extends Model<Users> {
     @HasMany(() => Histories, 'userId')
     history: Histories[]
 
-    @HasOne(() => Preference, "prefId")
+    @HasOne(() => Preference, "uId")
     preference: Preference
 }

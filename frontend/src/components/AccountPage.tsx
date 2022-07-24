@@ -1,11 +1,11 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {commonCasket, commonPage, simpleCasket, simpleCasketRo, simpleCasketTr} from '../styles/common/pages.css'
 import {h2Font, h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
-import logoAva from "../assets/avatars/avatar1.svg"
+import logoAva from "../../public/avatars/avatar1.svg"
 import {imgHover, lowMuiBtn, shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
-import {Button, FormControlLabel, IconButton, Switch, TextField} from "@mui/material";
+import {Avatar, Button, FormControlLabel, IconButton, Switch, TextField} from "@mui/material";
 import {cntrContent, cntrVContent, flexG1, floatl, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
@@ -13,20 +13,22 @@ import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
 import {spaceNoPad, spaceTextEdit, spaceTextEditNoBottom} from "../styles/common/spaces.css";
-import {TUser} from "../globals/AccountData";
+import {TUPref, TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
-import logoSettings from "../assets/settings.svg";
-import {getUserInfo} from "../globals/UserAuthProvider";
+import {getUserInfo, UserAuthContext} from "../globals/UserAuthProvider";
+import {getPreferences, postUnblockUser, postUpdateUserPref} from "../http/rqData";
 
 let userInfo = getUserInfo();
-
-console.log(">>>>>>>>>>>>>>>", userInfo)
 
 interface IState {
     editMode: boolean;
     user: TUser;
     blockListUnwrap: boolean;
+}
+interface IPropUser {
+    user: TUser,
+    onChange: () => void
 }
 
 const curUser: TUser = {
@@ -34,18 +36,18 @@ const curUser: TUser = {
     email: userInfo ? userInfo.email : "",
     phone: userInfo ? userInfo.phone : "No phone entered",
     login: userInfo ? userInfo.login : "",
-    blockList: ["Petro11", "Oleh23", "Afanasiy", "Evkakiy"],
-    emailVerified: true,
-    phoneVerified: false
+    blockList: [],
+    prefs: {} as TUPref
 }
 
 const initialState = {
-    editMode: false,
     user: curUser,
+    editMode: false,
     blockListUnwrap: false
 }
 
-const AccountDataEditElement: FC = () => {
+const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
+    const {avatarSrc} = useContext(UserAuthContext);
     const [state, setState] = useState<IState>(initialState)
 
     return <div className={[commonCasket, flexG1].join(' ')}>
@@ -53,8 +55,19 @@ const AccountDataEditElement: FC = () => {
 
         <div className={cntrVContent}>
             <div style={{textAlign: "center"}}>
-                <img src={logoAva} alt={"Logo ava"}/>
-                <div className={h4Font}>{curUser.login}</div>
+                {/*<img src={"/avatars/avatar1.svg"} alt={"Logo ava"}/>*/}
+
+                <Avatar
+                    sx={{
+                        // p: 4, m: "15px 5px",
+                        width: 100, height: 100,
+                        p: "5px 0 0 0",
+                        // border: "1px solid blue"
+                    }}
+                    src={avatarSrc}
+                />
+
+                <div className={h4Font}>{user.login}</div>
             </div>
 
             <Button
@@ -112,7 +125,7 @@ const AccountDataEditElement: FC = () => {
                             label={state.user.full_name.length === 0 ? "Name cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
-                            defaultValue={curUser.full_name}
+                            defaultValue={user.full_name}
                             fullWidth={true}
                             onChange={e => setState ({...state, user: {...state.user, full_name: e.target.value}})}
                             size={"small"}
@@ -154,7 +167,7 @@ const AccountDataEditElement: FC = () => {
                             label={state.user.email.length === 0 ? "Email cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
-                            defaultValue={curUser.email}
+                            defaultValue={user.email}
                             onChange={e => setState ({...state, user: {...state.user, email: e.target.value}})}
                             fullWidth={true}
                             size={"small"}
@@ -194,12 +207,35 @@ const AccountDataEditElement: FC = () => {
     </div>
 }
 
-const AccountDataElementR = () => {
+const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
     const [unwrap, setUnwrap] = useState(false);
+
+    const handleUnblockUser = (i: number) => {
+        postUnblockUser(user.blockList[i].id).then(res => {
+            console.log(res.status)
+            if (res.status) {
+                onChange();
+            }
+        })
+    }
+    const handleDarkModeChange = (e: any) => {
+        user.prefs.dark_mode = e.target.checked;
+        postUpdateUserPref(user.prefs).then(res => {
+            if (res.status === 201) {
+                onChange();
+            }
+        })
+    }
 
     return <div className={commonCasket}>
         <div style={{display: "flex", justifyContent: "flex-end"}}>
-            <FormControlLabel control={<Switch  />} label="Dark mode"/>
+            <FormControlLabel
+                control={
+                    <Switch value={user.prefs.dark_mode}
+                            onChange={handleDarkModeChange}
+                    />}
+                label="Dark mode"
+            />
         </div><br/>
 
         <IconButton className={floatr}
@@ -208,17 +244,17 @@ const AccountDataElementR = () => {
             <img src={unwrap ? logoCollapse : logoUncollapse} alt={"Collapse logo"}/>
         </IconButton>
         <div className={[h3Font].join(' ')}>Block list</div>
-        <div className={helpText}>{curUser.blockList.length} blocked users are forbidden to send you notification</div>
+        <div className={helpText}>{user.blockList.length} blocked users are forbidden to send you notification</div>
         <br/>
         { unwrap ?
             <table className={simpleCasket}>
                 <tbody>
                 {
-                    curUser.blockList.map((name, i) => {
+                    user.blockList.map((blEl, i) => {
                         return <tr key={i} className={simpleCasketTr}>
-                                <td className={h4Font}>{name}</td>
+                                <td className={h4Font}>{blEl.login}</td>
                                 <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')} style={{}}>
-                                    <IconButton>
+                                    <IconButton onClick={ () => handleUnblockUser(i) }>
                                         <img src={logoMinus} alt={"Minus user"}/>
                                     </IconButton>
                                 </td>
@@ -233,6 +269,22 @@ const AccountDataElementR = () => {
 }
 
 export const AccountPage: FC = () => {
+    const [user, setUser] = useState<TUser>(curUser)
+
+    const syncPref = () => {
+        getPreferences().then(resp => {
+            if (resp.status === 200) {
+                setUser({
+                    ...user, prefs: resp.data.prefs, blockList: resp.data.black_list
+                })
+            }
+        })
+    }
+
+    useEffect(() => {
+        syncPref()
+    }, [])
+
     return <div className={commonPage}>
         <div className={hFont}>Account</div>
         <div className={helpText}>Here you can view device actions history or your activity</div><br/>
@@ -240,8 +292,8 @@ export const AccountPage: FC = () => {
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 
         <div style={{gap: 20, display: "flex"}}>
-            <AccountDataEditElement/>
-            <AccountDataElementR/>
+            <AccountDataElementL user={user} onChange={() => {}}/>
+            <AccountDataElementR user={user} onChange={() => syncPref()}/>
         </div>
     </div>
 }
