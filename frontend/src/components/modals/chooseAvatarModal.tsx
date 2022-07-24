@@ -1,14 +1,15 @@
 import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
-import {Avatar, Box, Button} from "@mui/material";
+import {Avatar, Box, Button, IconButton, Toolbar} from "@mui/material";
 import {childFlexCont6, cntrContent, flexCont6} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, h5Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
 import {postUpdateUserPref} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import logoAvaSelect from "../../assets/ava-select.svg";
+import logoAvaAdd from "../../assets/ava-add.svg";
+import AvatarEditor from 'react-avatar-editor'
 
 interface AvatarChooseState {
     selected: number,
@@ -76,6 +77,9 @@ export const ChooseAvatarModal: FC = ({}) => {
             hideModal();
         })
     }
+    const handleFileUpload = (event: any) => {
+        // console.log(event.target.files[0].name);
+    };
 
     return (
         <div style={{display: "flex", flexDirection: "column" , maxWidth: "620px"}}>
@@ -89,9 +93,8 @@ export const ChooseAvatarModal: FC = ({}) => {
                 {avatarIndexes.map((avaInd) => {
                     const path = getDefaultAvatarPath(avaInd);
                     const isCurrentAvatar = path === curAvatarSrc;
-                    return <div style={{position: "relative"}}>
+                    return <div key={avaInd} style={{position: "relative"}}>
                         <Avatar
-                            key={avaInd}
                             alt="Remy Sharp"
                             src={path}
                             sx={
@@ -113,9 +116,31 @@ export const ChooseAvatarModal: FC = ({}) => {
                             ? <img src={logoAvaSelect} style={{position: "absolute", right: 10, top: 10}}/>
                             : <></>
                         }
-
                     </div>
                 })}
+
+                <label>
+                    <input
+                        accept=".png"
+                        style={{ display: "none" }}
+                        type="file"
+                        onChange={e => {
+                            console.log(e.target.files && e.target.files[0]);
+                        }}
+                    />
+                    <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}/>
+                </label>
+
+                <AvatarEditor
+                    image="http://example.com/initialimage.jpg"
+                    width={250}
+                    height={250}
+                    border={50}
+                    color={[255, 255, 255, 0.6]} // RGBA
+                    scale={1.2}
+                    rotate={0}
+                />
+
             </div><br/>
 
             <Button variant={"contained"}
