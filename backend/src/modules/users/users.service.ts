@@ -4,6 +4,7 @@ import { USER_REPOSITORY } from '../../core/constants/index1';
 import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
 import {UserDto} from "./dto/user.dto";
+import {Preference} from "./preference.entity";
 
 @Injectable()
 export class UsersService {
@@ -20,11 +21,20 @@ export class UsersService {
     }
 
     async getUsersPerDevice(deviceId: number) {
-        return await this.deviceRepository.findOne({where: {id: deviceId}})
+        return await this.deviceRepository.findOne({
+            where: {id: deviceId},
+            include: [{
+                model: Users,
+                include: [{
+                    model: Preference,
+                    attributes: ["profile_photo"]
+                }]
+            }]
+        })
             .then(device => {
                 if (!device) return;
 
-                return device.$get('users');
+                return device.users;
             })
     }
 

@@ -151,6 +151,7 @@ export class PreferenceService {
 
         const photo_profile_id = curUser.preference.profile_photo_id;
 
+        console.log("Uploading ", file)
         const result = await this.uploadImageToCloudinary(file, "avatars", photo_profile_id)
 
         // verify response

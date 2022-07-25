@@ -49,7 +49,8 @@ export function fetchConnUsersByDevice(dev_id: number,
                     fullName: u.full_name,
                     login: u.login,
                     role: roleStrToId(u.Roles.role),
-                    id: u.id
+                    id: u.id,
+                    urlPic: u.preference ? u.preference.profile_photo : ""
                 })
             })
 
@@ -138,6 +139,6 @@ export function postUnblockUser(userId: number) {
 export function postUpdateUserPref(pref: TUPref) {
     return host.post("api/user/preference/", pref)
 }
-export function postUploadAvatar(fileForm: FormData) {
+export function postUploadAvatar(fileForm: any) {
     return host.post("api/user/preference/upload", fileForm)
 }

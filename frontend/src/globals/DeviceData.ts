@@ -16,6 +16,7 @@ export interface TConnectedUser {
     fullName: string;
     login: string;
     role: TDevRole;
+    urlPic: string;
 }
 
 export interface TDevItem {

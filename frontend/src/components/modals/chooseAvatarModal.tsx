@@ -1,12 +1,12 @@
 import React, {FC, useRef, useState} from "react";
 import {ModalProps, useGlobalModalContext} from "./ModalProvider";
-import {Avatar as Ava, Box, Button, IconButton} from "@mui/material";
+import {Avatar as Ava, Box, Button} from "@mui/material";
 import {cntrContent, cntrVContent, flexCont6} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
-import {postUpdateUserPref, postUploadAvatar} from "../../http/rqData";
+import {DataURIToBlob, postUpdateUserPref, postUploadAvatar} from "../../http/rqData";
 import logoAvaSelect from "../../assets/ava-select.svg";
 import logoAvaAdd from "../../assets/ava-add.svg";
 import AvatarEdit from 'react-avatar-edit'
@@ -122,7 +122,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                     />
                     {
                         values.selected === avaInd && !isCurrentAvatar
-                            ? <img src={logoAvaSelect} style={{position: "absolute", right: 10, top: 10}}/>
+                            ? <img src={logoAvaSelect} style={{position: "absolute", right: 10, top: 10}} alt={"select"}/>
                             : <></>
                     }
                 </div>
@@ -160,7 +160,9 @@ const CropUploadedElement: FC<IPropCropElem> = ({
     const image = useRef(URL.createObjectURL(formData.get("file")))
 
     const handleUpdateAvatar = () => {
-        postUploadAvatar(formData).then(resp => {
+        const newForm = new FormData()
+        newForm.append("file", DataURIToBlob(values.preview))
+        postUploadAvatar(newForm).then(resp => {
             if (resp.status === 201 && resp.data.public_id) {
                 // URL.revokeObjectURL(image)
                 console.log("revokeObjectURL")
@@ -206,7 +208,7 @@ const CropUploadedElement: FC<IPropCropElem> = ({
                     />
                 </div>
                 <div className={cntrVContent} style={{flexGrow: 2, width: 150, height: 150}}>
-                    <img src={values.preview} alt="Preview"  style={{ width: 100, height: 100}}/>
+                    <img src={values.preview} alt="Preview"  />
                 </div>
             </div>
         </div>

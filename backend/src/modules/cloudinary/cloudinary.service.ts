@@ -10,11 +10,7 @@ export class CloudinaryService {
         file: Express.Multer.File, folder: string, profile_id: string | null
     ): Promise<UploadApiResponse | UploadApiErrorResponse> {
 
-        const options = profile_id
-            ? {public_id: profile_id}
-            : {folder: folder};
-
-        console.log(options, profile_id)
+        const options = profile_id ? {public_id: profile_id} : {folder: folder};
 
         return new Promise((resolve, reject) => {
             const upload = v2.uploader.upload_stream(options, (error, result) => {

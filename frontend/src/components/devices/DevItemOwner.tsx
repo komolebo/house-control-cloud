@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from "react";
 import {devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Button} from "@mui/material";
+import {Avatar, Button} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
@@ -12,6 +12,7 @@ import {getUserInfo} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {commonCasket} from "../../styles/common/pages.css";
+import {cntrVContent} from "../../styles/common/position.css";
 
 interface IDevOwnerProps {
     devInfo: TDevItem,
@@ -70,7 +71,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 <thead><tr style={{paddingTop: '100px', paddingBottom: '100px'}}>
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Name</th>
                     <th id={devOwnerConnusrProp} className={helpText} style={{textAlign: "left"}}>Status</th>
-                    <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>ID</th>
+                    {/*<th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>ID</th>*/}
                     <th id={devOwnerConnusrProp}  className={helpText} style={{textAlign: "left"}}>Action</th>
                 </tr></thead>
 
@@ -78,7 +79,12 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 {users.map(conn_user => {
                     const isIdMatched = conn_user.id === userInfo?.id;
                     return <tr key={conn_user.login}>
-                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.fullName}</td>
+                        <td id={devOwnerConnusrProp} className={h4Font}>
+                            <div style={{display: "flex"}} className={cntrVContent}>
+                                <Avatar alt="Remy Sharp" src={conn_user.urlPic} style={{width: 50, height: 50, marginRight: 10}} />
+                                {conn_user.fullName}
+                            </div>
+                        </td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
                             <ColorRoleLabel role={conn_user.role}/>
                             {/*<Chip label={TDevRole[conn_user.role]} color="default"  />*/}
@@ -89,7 +95,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                             {/*<Chip label={TDevRole[conn_user.role]} color="success" />*/}
                             {/*<Chip label={TDevRole[conn_user.role]} color="warning"  />*/}
                         </td>
-                        <td id={devOwnerConnusrProp} className={h4Font}>{conn_user.login}</td>
+                        {/*<td id={devOwnerConnusrProp} className={h4Font}>{conn_user.login}</td>*/}
                         <td>
                             <Button variant={"outlined"}
                                     color={"info"}
