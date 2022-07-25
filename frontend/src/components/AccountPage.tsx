@@ -67,7 +67,7 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                     sx={{
                         // m: "15px 5px",
                         width: 100, height: 100,
-                        m: "5px 0 0 0",
+                        m: "10px 0 0 0",
                     }}
                     src={avatarSrc}
                 />
@@ -77,7 +77,7 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
 
             <Button
                 onClick={() => showModal(MODAL_TYPE.ChooseAvatarModal, {
-                    onClose: () => {console.log("Modal onClose")},
+                    onClose: () => hideModal(),
                     onAct: (data) => handleUpdateAvatar(data),
                     data: { curAvatarSrc: avatarSrc }
                 })}
@@ -279,8 +279,6 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
 
 export const AccountPage: FC = () => {
     const [user, setUser] = useState<TUser>(curUser)
-    const {avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
-
     const syncPref = () => {
         getPreferences().then(resp => {
             if (resp.status === 200) {

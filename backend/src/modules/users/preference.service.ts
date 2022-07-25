@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {BadRequestException, Injectable} from "@nestjs/common";
 import {Users} from "./user.entity";
 import {InjectModel} from "@nestjs/sequelize";
 import {Preference} from "./preference.entity";
@@ -6,7 +6,10 @@ import {Blacklist} from "./blacklist.entity";
 import {UsersService} from "./users.service";
 import {createEvalAwarePartialHost} from "ts-node/dist/repl";
 import {forEachResolvedProjectReference} from "ts-loader/dist/instances";
-import {PreferenceDto} from "./dto/preference.dto";
+import {PreferenceDto, UploadAvatarDto} from "./dto/preference.dto";
+import {CloudinaryService} from "../cloudinary/cloudinary.service";
+import {Multer} from "multer";
+import {runInContext} from "vm";
 
 export enum TPreferenceAction {
     delete,
@@ -18,6 +21,7 @@ export enum TPreferenceAction {
 export class PreferenceService {
     constructor(@InjectModel (Preference) private readonly prefRepository: typeof Preference,
                 @InjectModel (Users) private readonly userRepository: typeof Users,
+                private cloudinary: CloudinaryService,
                 private readonly usersService: UsersService) {}
 
     async createDefault(user: Users) {
@@ -70,6 +74,8 @@ export class PreferenceService {
             user.preference.setDataValue("dark_mode", prefDto.dark_mode)
         if (prefDto.profile_photo !== undefined)
             user.preference.setDataValue("profile_photo", prefDto.profile_photo)
+        if (prefDto.profile_photo_id !== undefined)
+            user.preference.setDataValue("profile_photo_id", prefDto.profile_photo_id)
         await user.preference.save()
         return user.preference
     }
@@ -131,5 +137,34 @@ export class PreferenceService {
         const blacklist_Ids = preference.black_list.map(el => el.blockUserId)
         await Blacklist.destroy({ where: {blockUserId: blacklist_Ids} })
         return preference
+    }
+
+    async uploadAvatar(userId: number, file: Express.Multer.File) {
+        const curUser = await this.userRepository.findOne({
+            where: {id: userId}, include: [Preference]
+        })
+
+        if (!curUser) return;
+        if (!curUser.preference) {  // create default
+            await this.createDefault(curUser)
+        }
+
+        const photo_profile_id = curUser.preference.profile_photo_id;
+
+        const result = await this.uploadImageToCloudinary(file, "avatars", photo_profile_id)
+
+        // verify response
+        if (result.public_id && result.url) {
+            await this.updateUserPref(userId, {
+                profile_photo_id: result.public_id, profile_photo: result.url
+            })
+        }
+        return result
+    }
+
+    async uploadImageToCloudinary(file: Express.Multer.File, folder: string, profile_id: string | null) {
+        return await this.cloudinary.uploadImage(file, folder, profile_id).catch(() => {
+            throw new BadRequestException('Invalid file type.');
+        });
     }
 }

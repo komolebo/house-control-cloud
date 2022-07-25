@@ -11,4 +11,10 @@ export class PreferenceDto {
     dark_mode?: boolean;
 
     profile_photo?: string;
+
+    profile_photo_id?: string;
+}
+
+export class UploadAvatarDto {
+    avatar: File;
 }

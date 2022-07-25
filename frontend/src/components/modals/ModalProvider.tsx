@@ -26,7 +26,7 @@ export enum ModalPageState{
     CompleteState
 }
 
-type ModalProps = {
+export type ModalProps = {
     onClose: () => void,
     onAct: (data: any) => void
     data?: any,

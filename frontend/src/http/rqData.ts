@@ -2,6 +2,7 @@ import {host} from "./index";
 import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
 import {TUPref} from "../globals/AccountData";
 
+
 export function roleStrToId(role: string) {
     switch (role) {
         case "OWNER":
@@ -117,6 +118,17 @@ export function postDeleteHistoryPerUser(idArr: Array<number>) {
 }
 
 // Preferences
+export function DataURIToBlob(dataURI: string) {
+    const splitDataURI = dataURI.split(',')
+    const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
+    const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+
+    const ia = new Uint8Array(byteString.length)
+    for (let i = 0; i < byteString.length; i++)
+        ia[i] = byteString.charCodeAt(i)
+
+    return new Blob([ia], { type: mimeString })
+}
 export function getPreferences() {
     return host.get("api/user/preference/")
 }
@@ -125,4 +137,7 @@ export function postUnblockUser(userId: number) {
 }
 export function postUpdateUserPref(pref: TUPref) {
     return host.post("api/user/preference/", pref)
+}
+export function postUploadAvatar(fileForm: FormData) {
+    return host.post("api/user/preference/upload", fileForm)
 }

@@ -132,6 +132,7 @@ module.exports = {
       email_verified: { type: Sequelize.BOOLEAN },
       dark_mode: { type: Sequelize.BOOLEAN },
       profile_photo: { type: Sequelize.STRING },
+      profile_photo_id: { type: Sequelize.STRING },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       uId: { type: Sequelize.INTEGER, allowNull: true },
     });

@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.9.3",
     "@fontsource/roboto": "^4.5.7",
     "@mui/icons-material": "^5.8.4",
+    "@mui/lab": "^5.0.0-alpha.91",
     "@mui/material": "^5.8.6",
     "@mui/styled-engine-sc": "^5.8.0",
     "@mui/x-date-pickers": "^5.0.0-beta.0",
@@ -103,7 +104,10 @@
   },
   "devDependencies": {
     "@types/material-ui": "^0.21.12",
+    "@types/react-avatar-editor": "^12.0.0",
     "dts-css-modules-loader": "^2.0.0",
+    "react-avatar-edit": "^1.2.0",
+    "react-avatar-editor": "^13.0.0",
     "typings-for-css-modules-loader": "^1.7.0"
   },
   "jest": {

@@ -12,6 +12,7 @@ import {Blacklist} from "./blacklist.entity";
 import {PreferenceService} from "./preference.service";
 import {PreferenceController} from "./preference.controller";
 import {AuthModule} from "../auth/auth.module";
+import {CloudinaryModule} from "../cloudinary/cloudinary.module";
 
 @Module({
   providers: [UsersService, PreferenceService, ...usersProviders],
@@ -20,7 +21,8 @@ import {AuthModule} from "../auth/auth.module";
   imports: [
       DatabaseModule,
       AuthModule,
-      SequelizeModule.forFeature([Devices, Users, Roles, Preference, Blacklist])
+      SequelizeModule.forFeature([Devices, Users, Roles, Preference, Blacklist]),
+      CloudinaryModule
   ]
 })
 export class UsersModule {}

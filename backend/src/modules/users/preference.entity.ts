@@ -35,6 +35,11 @@ export class Preference extends Model<Preference> {
     })
     profile_photo: string;
 
+    @Column({
+        type: DataType.STRING,
+    })
+    profile_photo_id: string;
+
     @HasMany(() => Blacklist, 'prefId')
     black_list: Blacklist[]
 

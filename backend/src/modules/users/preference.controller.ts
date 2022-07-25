@@ -1,9 +1,10 @@
-import {Body, Controller, Delete, Get, Headers, Param, Post, Put} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Headers, Param, Post, Put, UploadedFile, UseInterceptors} from "@nestjs/common";
 import {UsersService} from "./users.service";
 import {Users} from "./user.entity";
 import {PreferenceService, TPreferenceAction} from "./preference.service";
 import {JwtService} from "@nestjs/jwt";
-import {PreferenceDto} from "./dto/preference.dto";
+import {PreferenceDto, UploadAvatarDto} from "./dto/preference.dto";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('api/user/preference')
 export class PreferenceController {
@@ -44,5 +45,13 @@ export class PreferenceController {
                               @Param('user_id') unblockId: number) {
         const thisUser: Users = this.parseHeaders(headers);
         return this.prefService.modifyBlockList(Number(thisUser.id), Number(unblockId), TPreferenceAction.delete)
+    }
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadUserAvatar(@Headers() headers,
+                           @UploadedFile() file: Express.Multer.File) {
+        const thisUser: Users = this.parseHeaders(headers);
+        return this.prefService.uploadAvatar(thisUser.id, file)
     }
 }

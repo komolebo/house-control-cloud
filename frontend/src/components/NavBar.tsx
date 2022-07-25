@@ -135,10 +135,10 @@ export const NavBar: React.FC = () => {
                 <Box sx={{mr: 6}}>
                     <Tooltip title="Open settings">
                         <Box display="flex">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
-                                <Avatar alt="Remy Sharp" src={avatarSrc} />
+                            <IconButton onClick={handleOpenUserMenu} sx={{p: 0, ml: 1, mr: 1}}>
+                                <Avatar alt="Remy Sharp" src={avatarSrc} style={{width: 50, height: 50}} />
                             </IconButton>
-                            <Typography paddingTop={3}>{userInfo ? userInfo.full_name : "not_authorized"}</Typography>
+                            <Typography paddingTop={2}>{userInfo ? userInfo.full_name : "not_authorized"}</Typography>
                         </Box>
                     </Tooltip>
                     <Menu
