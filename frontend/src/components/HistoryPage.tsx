@@ -246,18 +246,13 @@ export const HistoryPage: FC = () => {
         })
         // initView();
     }
+    const handleSelectAll = () => {
+        state.selection = state.filteredIndexes
+        initView()
+    }
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
         clearSelection(false);
-        // const newWord = criteria === TFilterCriteria.By_user
-        //     ? `${USER_FILTER_RESERV_WORD}${historyData[clickInd].uId} `
-        //     : `${BOARD_FILTER_RESERV_WORD}${historyData[clickInd].devId} `
-        // if (newWord) {
-        //     state.keyword = (state.keyword ? state.keyword + ' ' + newWord : newWord)
-        //     state.filterCriteria |= criteria;
-        //     state.setting.anchorElSetting = null;
-        //     initView()
-        // }
         if (criteria === TFilterCriteria.By_user) {
             const val = historyData[clickInd].uId;
             state.filterUid = val ? val.toString() : "";
@@ -407,6 +402,13 @@ export const HistoryPage: FC = () => {
                             className={[shorterMuiBtn].join(' ')}
                             onClick={handleDeleteMultiple}
                     > Remove
+                    </Button>
+                </div>
+                <div>
+                    <Button variant={"outlined"}
+                            className={[shorterMuiBtn].join(' ')}
+                            onClick={handleSelectAll}
+                    > Select all
                     </Button>
                 </div>
             </div>
