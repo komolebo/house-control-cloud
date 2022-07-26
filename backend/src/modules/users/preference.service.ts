@@ -163,9 +163,34 @@ export class PreferenceService {
         return result
     }
 
-    async uploadImageToCloudinary(file: Express.Multer.File, folder: string, profile_id: string | null) {
+    async removeAvatar(userId: number) {
+        const curUser = await this.userRepository.findOne({
+            where: {id: userId}, include: [Preference]
+        })
+
+        if (!curUser) return;
+        if (!curUser.preference) {
+            await this.createDefault(curUser);
+        }
+
+        const photo_profile_id = curUser.preference.profile_photo_id;
+
+        const result = await this.removeImageFromCloudinary(photo_profile_id);
+        console.log("Remove result is ", result)
+        if (result) {
+            await this.updateUserPref(userId, {
+                profile_photo_id: null, profile_photo: null
+            })
+        }
+        return result;
+    }
+
+    private async uploadImageToCloudinary(file: Express.Multer.File, folder: string, profile_id: string | null) {
         return await this.cloudinary.uploadImage(file, folder, profile_id).catch(() => {
             throw new BadRequestException('Invalid file type.');
         });
+    }
+    private async removeImageFromCloudinary(profile_id: string | null) {
+        return await this.cloudinary.removeImage (profile_id);
     }
 }

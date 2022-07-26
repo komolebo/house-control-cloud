@@ -3,22 +3,22 @@ import {commonCasket, commonPage, simpleCasket, simpleCasketRo, simpleCasketTr} 
 import {h2Font, h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
-import logoAva from "../../public/avatars/avatar1.svg"
-import {imgHover, lowMuiBtn, shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
+import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
 import {Avatar, Button, FormControlLabel, IconButton, Switch, TextField} from "@mui/material";
-import {cntrContent, cntrVContent, flexG1, floatl, floatr} from "../styles/common/position.css";
+import {cntrVContent, flexG1, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
 import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
-import {spaceNoPad, spaceTextEdit, spaceTextEditNoBottom} from "../styles/common/spaces.css";
+import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
 import {TUPref, TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import {getUserInfo, UserGlobalContext} from "../globals/UserAuthProvider";
-import {getPreferences, postUnblockUser, postUpdateUserPref} from "../http/rqData";
+import {getPreferences, postRemoveAvatar, postUnblockUser, postUpdateUserPref} from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
+import {LoadingButton} from "@mui/lab";
 
 let userInfo = getUserInfo();
 
@@ -26,6 +26,7 @@ interface IState {
     editMode: boolean;
     user: TUser;
     blockListUnwrap: boolean;
+    loadingRemoval: boolean;
 }
 interface IPropUser {
     user: TUser,
@@ -44,7 +45,8 @@ const curUser: TUser = {
 const initialState = {
     user: curUser,
     editMode: false,
-    blockListUnwrap: false
+    blockListUnwrap: false,
+    loadingRemoval: false
 }
 
 const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
@@ -55,6 +57,15 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
     const handleUpdateAvatar = (newAvaSrc: string) => {
         setAvatarSrc(newAvaSrc);
         onChange();
+    }
+    const handleRemoveAvatar = () => {
+        setState({...state, loadingRemoval: true})
+        postRemoveAvatar().then(res => {
+            console.log(res);
+            setAvatarSrc("");
+            onChange();
+            setState({...state, loadingRemoval: false})
+        })
     }
 
     return <div className={[commonCasket, flexG1].join(' ')}>
@@ -87,14 +98,17 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                 Update
             </Button>
 
-            <Button
-                onClick={() => handleUpdateAvatar("")}
+            <LoadingButton
+                endIcon={<></>}
+                onClick={() => handleRemoveAvatar()}
                 color={"inherit"}
                 variant={"outlined"} sx={{ ml: 2 }}
                 className={[shortMuiBtn].join(' ')}
+                loading={state.loadingRemoval}
+                loadingPosition="end"
             >
                 Remove
-            </Button>
+            </LoadingButton>
         </div><br/><br/>
 
         {state.editMode
@@ -185,7 +199,7 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                     : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.email}</div>
                 }
                 <div className={[colBlue, h5Font].join(' ')}>&nbsp; Verified &nbsp;
-                    <img src={logoVerified}/>
+                    <img src={logoVerified} alt="logo verified"/>
                 </div>
             </div>
         </div>
@@ -291,6 +305,7 @@ export const AccountPage: FC = () => {
 
     useEffect(() => {
         syncPref()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return <div className={commonPage}>

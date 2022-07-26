@@ -32,7 +32,7 @@ export class PreferenceController {
         return this.prefService.updateUserPref(Number(thisUser.id), body)
     }
 
-    @Put(':user_id')
+    @Put('block_list/:user_id')
     async appendBlockList(@Headers() headers,
                           @Param('user_id') uBlockId: number) {
         const thisUser: Users = this.parseHeaders(headers);
@@ -40,7 +40,7 @@ export class PreferenceController {
         return this.prefService.modifyBlockList(Number(thisUser.id), Number(uBlockId), TPreferenceAction.append)
     }
 
-    @Delete(':user_id')
+    @Delete('block_list/:user_id')
     async removeFromBlockList(@Headers() headers,
                               @Param('user_id') unblockId: number) {
         const thisUser: Users = this.parseHeaders(headers);
@@ -53,5 +53,11 @@ export class PreferenceController {
                            @UploadedFile() file: Express.Multer.File) {
         const thisUser: Users = this.parseHeaders(headers);
         return this.prefService.uploadAvatar(thisUser.id, file)
+    }
+
+    @Delete('upload/')
+    async removeUserAvatar(@Headers() headers) {
+        const thisUser: Users = this.parseHeaders(headers);
+        return this.prefService.removeAvatar(thisUser.id);
     }
 }

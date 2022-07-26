@@ -49,12 +49,12 @@ export class DevicesService {
         console.log(user_id)
         const curUser = await this.usersRepository.findOne({
             where: {id: user_id},
-            include: {model: Devices},
-            plain: true
+            include: [Devices],
         })
         if (!curUser) return;
 
         const devices = curUser.devices;
+
         let promises: Array<any> = [];
 
         devices.map((device) => {
@@ -100,17 +100,16 @@ export class DevicesService {
         console.log("Requesting access to ", hexId, " for user=", thisUserId)
         hexId = hexId.toLowerCase()
 
-        const deviceWithUsers = await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: {hex: hexId}, include: {model: Users}
         })
-        const users = deviceWithUsers.users;
-        if(users.length) {
+        if(device.users.length) {
             console.log("Device already owned") // TODO
         } else {
             const newRole = RoleValues.Owner;
-            const res = await this.bindDeviceWithUser(thisUserId, deviceWithUsers.id, true, newRole)
+            const res = await this.bindDeviceWithUser(thisUserId, device.id, true, newRole)
             await this.notificationService.createNotificationYouAreAdded(
-                thisUserId, deviceWithUsers.id, deviceWithUsers.name, deviceWithUsers.hex, newRole)
+                thisUserId, device.id, device.name, device.hex, newRole)
             return res
         }
     }
@@ -119,11 +118,11 @@ export class DevicesService {
         let curRole = null;
         let ownersCount = 0;
 
-        const deviceWithUsers = await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: {hex: hexId},
             include: {model: Users}
         })
-        const conn_users = deviceWithUsers.users;
+        const conn_users = device.users;
 
         conn_users.forEach(el => {
             const role = el.get("Roles")["dataValues"].role;
@@ -136,7 +135,7 @@ export class DevicesService {
         // remove myself if you're not the single left OWNER
         const curUser = conn_users.find(el => el.id === thisUserId)
         if (curRole !== "OWNER" || ownersCount > 1) {
-            const res = await deviceWithUsers.$remove("users", curUser)
+            const res = await device.$remove("users", curUser)
             conn_users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             return res
         } else {}

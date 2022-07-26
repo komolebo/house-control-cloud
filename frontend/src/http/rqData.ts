@@ -134,11 +134,14 @@ export function getPreferences() {
     return host.get("api/user/preference/")
 }
 export function postUnblockUser(userId: number) {
-    return host.delete("api/user/preference/" + userId)
+    return host.delete("api/user/preference/block_list/" + userId)
 }
 export function postUpdateUserPref(pref: TUPref) {
     return host.post("api/user/preference/", pref)
 }
 export function postUploadAvatar(fileForm: any) {
-    return host.post("api/user/preference/upload", fileForm)
+    return host.post("api/user/preference/upload/", fileForm)
+}
+export function postRemoveAvatar() {
+    return host.delete("api/user/preference/upload/")
 }
