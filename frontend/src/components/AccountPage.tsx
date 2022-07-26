@@ -79,6 +79,7 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                         // m: "15px 5px",
                         width: 100, height: 100,
                         m: "10px 0 0 0",
+                        border: "2px solid #1690E9"
                     }}
                     src={avatarSrc}
                 />
@@ -275,11 +276,16 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
                 {
                     user.blockList.map((blEl, i) => {
                         return <tr key={i} className={simpleCasketTr}>
-                                <td className={h4Font}>{blEl.login}</td>
-                                <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')} style={{}}>
+                                <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')}>
                                     <IconButton onClick={ () => handleUnblockUser(i) }>
                                         <img src={logoMinus} alt={"Minus user"}/>
                                     </IconButton>
+                                </td>
+                                <td className={[h4Font, cntrVContent, simpleCasketRo].join(' ')}>
+                                        <Avatar alt="Remy Sharp" src={blEl.urlPic}
+                                                style={{width: 40, height: 40, marginRight: 10, border: "2px solid #1690E9"}} />
+                                        {blEl.login}
+                                    {/*{blEl.login}*/}
                                 </td>
                             </tr>
                     })

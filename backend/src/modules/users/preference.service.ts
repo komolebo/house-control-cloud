@@ -44,12 +44,19 @@ export class PreferenceService {
             .then(res => {
                return res.map(bl_item => bl_item.blockUserId)
             })
-        const result = await this.userRepository.findAll({where: {id: black_list}})
+        const result = await this.userRepository.findAll({
+            where: {id: black_list},
+            include: [Preference]
+        })
             .then(users => {
-                return users.map(u => {return {
+
+                return users.map(u => {
+                    console.log(">>>>", u)
+                    return {
                     "name": u.full_name,
                     "login": u.login,
-                    "id": u.id
+                    "id": u.id,
+                    "urlPic": u.preference ? u.preference.profile_photo : ""
                 }})
             })
 

@@ -20,5 +20,6 @@ export type TBlItem = {
     name: string;
     login: string;
     id: number;
+    urlPic: string;
 }
 

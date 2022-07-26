@@ -81,7 +81,9 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                     return <tr key={conn_user.login}>
                         <td id={devOwnerConnusrProp} className={h4Font}>
                             <div style={{display: "flex"}} className={cntrVContent}>
-                                <Avatar alt="Remy Sharp" src={conn_user.urlPic} style={{width: 50, height: 50, marginRight: 10}} />
+                                <Avatar alt="Remy Sharp"
+                                        src={conn_user.urlPic}
+                                        style={{width: 50, height: 50, marginRight: 10, border: "2px solid #1690E9"}} />
                                 {conn_user.fullName}
                             </div>
                         </td>

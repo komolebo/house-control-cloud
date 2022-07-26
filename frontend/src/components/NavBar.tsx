@@ -136,7 +136,9 @@ export const NavBar: React.FC = () => {
                     <Tooltip title="Open settings">
                         <Box display="flex">
                             <IconButton onClick={handleOpenUserMenu} sx={{p: 0, ml: 1, mr: 1}}>
-                                <Avatar alt="Remy Sharp" src={avatarSrc} style={{width: 50, height: 50}} />
+                                <Avatar alt="Remy Sharp"
+                                        src={avatarSrc}
+                                        style={{width: 50, height: 50, border: "2px solid white"}} />
                             </IconButton>
                             <Typography paddingTop={2}>{userInfo ? userInfo.full_name : "not_authorized"}</Typography>
                         </Box>
