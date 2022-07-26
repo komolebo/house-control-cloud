@@ -5,6 +5,8 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
 import {UserDto} from "./dto/user.dto";
 import {Preference} from "./preference.entity";
+import {BlockList} from "net";
+import {Blacklist} from "./blacklist.entity";
 
 @Injectable()
 export class UsersService {
@@ -55,7 +57,12 @@ export class UsersService {
     }
 
     async findOneById(id: number): Promise<Users> {
-        return await this.userRepository.findOne<Users>({ where: { id } });
+        return await this.userRepository.findOne<Users>({
+            where: { id }, include: [{
+                model: Preference,
+                include: [Blacklist]
+            }]
+        });
     }
 
     async update(userDto: UserDto) {

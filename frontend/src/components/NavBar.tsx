@@ -37,7 +37,7 @@ export const NavBar: React.FC = () => {
     useEffect(() => {
         getPreferences().then(resp => {
             if (resp.status === 200 || resp.status === 201) {
-                setAvatarSrc(resp.data.prefs.profile_photo);
+                setAvatarSrc(resp.data.preference.profile_photo);
                 console.log(resp.data)
             }
         })

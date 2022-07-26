@@ -4,12 +4,8 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Preference} from "./preference.entity";
 import {Blacklist} from "./blacklist.entity";
 import {UsersService} from "./users.service";
-import {createEvalAwarePartialHost} from "ts-node/dist/repl";
-import {forEachResolvedProjectReference} from "ts-loader/dist/instances";
-import {PreferenceDto, UploadAvatarDto} from "./dto/preference.dto";
+import {PreferenceDto} from "./dto/preference.dto";
 import {CloudinaryService} from "../cloudinary/cloudinary.service";
-import {Multer} from "multer";
-import {runInContext} from "vm";
 
 export enum TPreferenceAction {
     delete,
@@ -29,7 +25,7 @@ export class PreferenceService {
         await user.$set('preference', newPref)
     }
 
-    async getPrefByUser(userId: number) {
+    async getPrefByUserId(userId: number) {
         const user = await this.userRepository.findOne({
             where: {id: userId},
             include: [Preference]
@@ -39,27 +35,40 @@ export class PreferenceService {
         if (!user.preference) {  // create default
             await this.createDefault(user)
         }
+        return user
+    }
 
-        const black_list = await user.preference.$get("black_list")
-            .then(res => {
-               return res.map(bl_item => bl_item.blockUserId)
-            })
-        const result = await this.userRepository.findAll({
-            where: {id: black_list},
+    async getBlackListByUserId(userId: number) {
+        const user = await this.userRepository.findOne({
+            where: {id: userId},
             include: [Preference]
         })
-            .then(users => {
 
-                return users.map(u => {
-                    return {
-                    "name": u.full_name,
-                    "login": u.login,
-                    "id": u.id,
-                    "urlPic": u.preference ? u.preference.profile_photo : ""
-                }})
+        if (!user || !user.preference) return
+
+        return this.getBlackListOfUser(user)
+    }
+
+    private async getBlackListOfUser(user: Users) {
+        const blackListIdList = await user.preference.$get ("black_list")
+            .then (res => {
+                return res.map (bl_item => bl_item.blockUserId)
             })
+        return await this.userRepository.findAll ({
+            where: {id: blackListIdList},
+            include: [Preference]
+        })
+            .then (users => {
 
-        return {"prefs": user.preference, "black_list": result}
+                return users.map (u => {
+                    return {
+                        "name": u.full_name,
+                        "login": u.login,
+                        "id": u.id,
+                        "urlPic": u.preference ? u.preference.profile_photo : ""
+                    }
+                })
+            });
     }
 
     async updateUserPref(userId: number, prefDto: PreferenceDto) {

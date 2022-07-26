@@ -21,8 +21,8 @@ export class PreferenceController {
 
     @Get()
     async getPreferenceByUser(@Headers() headers) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.getPrefByUser(Number(thisUser.id))
+        // const thisUser: Users = this.parseHeaders(headers);
+        return this.prefService.getPrefByUserId(Number(11))
     }
 
     @Post()
@@ -32,16 +32,22 @@ export class PreferenceController {
         return this.prefService.updateUserPref(Number(thisUser.id), body)
     }
 
-    @Put('block_list/:user_id')
-    async appendBlockList(@Headers() headers,
+    @Get('black_list')
+    async getBlackList(@Headers() headers) {
+        const thisUser: Users = this.parseHeaders(headers);
+        return this.prefService.getBlackListByUserId(Number(thisUser.id))
+    }
+
+    @Put('black_list/:user_id')
+    async appendBlackList(@Headers() headers,
                           @Param('user_id') uBlockId: number) {
         const thisUser: Users = this.parseHeaders(headers);
         console.log(uBlockId, thisUser)
         return this.prefService.modifyBlockList(Number(thisUser.id), Number(uBlockId), TPreferenceAction.append)
     }
 
-    @Delete('block_list/:user_id')
-    async removeFromBlockList(@Headers() headers,
+    @Delete('black_list/:user_id')
+    async removeFromBlackList(@Headers() headers,
                               @Param('user_id') unblockId: number) {
         const thisUser: Users = this.parseHeaders(headers);
         return this.prefService.modifyBlockList(Number(thisUser.id), Number(unblockId), TPreferenceAction.delete)

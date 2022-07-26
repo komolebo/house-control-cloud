@@ -16,6 +16,35 @@ export function roleStrToId(role: string) {
     }
 }
 
+
+// users
+export function fetchConnUsersByDevice(dev_id: number,
+                                       onThen: (data: Array<TConnectedUser>) => void) {
+    host.get("api/users/list/" + dev_id)
+        .then(resp => {
+            const userList: Array<TConnectedUser> = []
+            resp.data.forEach((u: any) => {
+                userList.push({
+                    fullName: u.full_name,
+                    login: u.login,
+                    role: roleStrToId(u.Roles.role),
+                    id: u.id,
+                    urlPic: u.preference ? u.preference.profile_photo : ""
+                })
+            })
+
+            userList.sort((a, b) => a.role - b.role)
+            console.log("sync users for device", userList);
+
+            onThen(userList);
+        })
+}
+export function getSelfFullInfo() {
+    return host.get("api/users/me")
+}
+
+
+// Devices
 export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) => void) {
     host.get("/api/devices/list/")
         .then(resp =>{
@@ -38,29 +67,6 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
             onThen(devList)
         })
 }
-
-export function fetchConnUsersByDevice(dev_id: number,
-                                       onThen: (data: Array<TConnectedUser>) => void) {
-    host.get("api/users/list/" + dev_id)
-        .then(resp => {
-            const userList: Array<TConnectedUser> = []
-            resp.data.forEach((u: any) => {
-                userList.push({
-                    fullName: u.full_name,
-                    login: u.login,
-                    role: roleStrToId(u.Roles.role),
-                    id: u.id,
-                    urlPic: u.preference ? u.preference.profile_photo : ""
-                })
-            })
-
-            userList.sort((a, b) => a.role - b.role)
-            console.log("sync users for device", userList);
-
-            onThen(userList);
-        })
-}
-
 export function postReqRoleAccess(dev_id: string,
                                   role: string, ) {
     return host.post("api/devices/access/" + dev_id)
@@ -69,25 +75,20 @@ export function postReqRoleAccess(dev_id: string,
             return resp
         })
 }
-
 export function postModifyAccess(devHex: string,
                                  userId: number,
                                  newRole: string) {
     return host.post(`api/devices/modify/${devHex}/${userId}/${newRole}`)
 }
-
 export function postUnsubscribeFromDevice(devHex: string) {
     return host.post("api/devices/forget/" + devHex)
 }
-
 export function postInviteUser(devHex: string, userLogin: string, role: string) {
     return host.post(`api/devices/invite/${devHex}/${userLogin}/${role}`)
 }
-
 export function postClearDeviceUsers(devHex: string) {
     return host.post("api/devices/abandon/" + devHex)
 }
-
 export function deleteAccess(devHex: string, userId: number) {
     return host.delete(`api/devices/${devHex}/${userId}`)
 }
@@ -134,7 +135,7 @@ export function getPreferences() {
     return host.get("api/user/preference/")
 }
 export function postUnblockUser(userId: number) {
-    return host.delete("api/user/preference/block_list/" + userId)
+    return host.delete("api/user/preference/black_list/" + userId)
 }
 export function postUpdateUserPref(pref: TUPref) {
     return host.post("api/user/preference/", pref)
@@ -144,4 +145,7 @@ export function postUploadAvatar(fileForm: any) {
 }
 export function postRemoveAvatar() {
     return host.delete("api/user/preference/upload/")
+}
+export function getBlackList() {
+    return host.get("api/user/preference/black_list")
 }

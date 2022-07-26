@@ -4,11 +4,12 @@ export type TUser = {
     phone: string;
     login: string;
 
-    prefs: TUPref
-    blockList: Array<TBlItem>;
+    preference: TUPref
 }
 
 export type TUPref = {
+    black_list?: Array<TBlItem>;
+
     phone_verified?: boolean;
     email_verified?: boolean;
     dark_mode?: boolean;

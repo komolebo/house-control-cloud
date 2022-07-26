@@ -12,36 +12,48 @@ import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
 import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
-import {TUPref, TUser} from "../globals/AccountData";
+import {TBlItem, TUPref, TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
-import {getPreferences, postRemoveAvatar, postUnblockUser, postUpdateUserPref} from "../http/rqData";
+import {
+    getBlackList,
+    getSelfFullInfo,
+    postRemoveAvatar,
+    postUnblockUser,
+    postUpdateUserPref
+} from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
 
 interface IState {
-    editMode: boolean;
-    user: TUser;
-    blockListUnwrap: boolean;
-    loadingRemoval: boolean;
+    user: TUser,
+    blackList: Array<TBlItem>
 }
-interface IPropUser {
+interface IPropBaseInfo {
     user: TUser,
     onChange: () => void
 }
-
-const initialState = {
-    user: {} as TUser,
-    editMode: false,
-    blockListUnwrap: false,
-    loadingRemoval: false
+interface IPropExtraInfo {
+    user: TUser,
+    onChange: () => void,
+    blackList: Array<TBlItem>
+}
+const initialState: IState = {
+    user: {...{} as TUser, preference: {} as TUPref},
+    blackList: []
 }
 
-const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
+const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     const {avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
     const { showModal, hideModal } = useGlobalModalContext();
-    const [state, setState] = useState<IState>(initialState)
+    const [state, setState] = useState({
+        loadingRemoval: false,
+        editMode: false,
+        name: user.full_name,
+        email: user.email,
+        phone: user.phone
+    })
 
     const handleUpdateAvatar = (newAvaSrc: string) => {
         setAvatarSrc(newAvaSrc);
@@ -134,17 +146,17 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')} >
                         <TextField
-                            error={state.user.full_name.length === 0}
-                            label={state.user.full_name.length === 0 ? "Name cannot be empty" : ""}
+                            error={user.full_name.length === 0}
+                            label={user.full_name.length === 0 ? "Name cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
                             defaultValue={user.full_name}
                             fullWidth={true}
-                            onChange={e => setState ({...state, user: {...state.user, full_name: e.target.value}})}
+                            onChange={e => setState ({...state, name: e.target.value})}
                             size={"small"}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.full_name}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.name}</div>
                 }
             </div>
             {/*<br/>*/}
@@ -155,17 +167,17 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')}>
                         <TextField
-                            error={state.user.phone.length === 0}
-                            label={state.user.phone.length === 0 ? "Phone cannot be empty" : ""}
+                            error={state.phone.length === 0}
+                            label={state.phone.length === 0 ? "Phone cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
-                            defaultValue={state.user.phone}
+                            defaultValue={state.phone}
                             fullWidth={true}
                             size={"small"}
-                            onChange={e => setState ({...state, user: {...state.user, phone: e.target.value}})}
+                            onChange={e => setState ({...state, phone: e.target.value})}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.phone}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.phone}</div>
                 }
                 <Button style={{height: 24 }} >
                     Verify
@@ -176,17 +188,17 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')}>
                         <TextField
-                            error={state.user.email.length === 0}
-                            label={state.user.email.length === 0 ? "Email cannot be empty" : ""}
+                            error={state.email.length === 0}
+                            label={state.email.length === 0 ? "Email cannot be empty" : ""}
                             id="outlined-uncontrolled"
                             color={"info"}
                             defaultValue={user.email}
-                            onChange={e => setState ({...state, user: {...state.user, email: e.target.value}})}
+                            onChange={e => setState ({...state, email: e.target.value})}
                             fullWidth={true}
                             size={"small"}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.email}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.email}</div>
                 }
                 <div className={[colBlue, h5Font].join(' ')}>&nbsp; Verified &nbsp;
                     <img src={logoVerified} alt="logo verified"/>
@@ -220,11 +232,12 @@ const AccountDataElementL: FC<IPropUser> = ({user, onChange}) => {
     </div>
 }
 
-const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
+const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) => {
     const [unwrap, setUnwrap] = useState(false);
 
     const handleUnblockUser = (i: number) => {
-        postUnblockUser(user.blockList[i].id).then(res => {
+        if (!user.preference || !blackList) return;
+        postUnblockUser(blackList[i].id).then(res => {
             console.log(res.status)
             if (res.status) {
                 onChange();
@@ -232,8 +245,8 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
         })
     }
     const handleDarkModeChange = (e: any) => {
-        user.prefs.dark_mode = e.target.checked;
-        postUpdateUserPref(user.prefs).then(res => {
+        user.preference.dark_mode = e.target.checked;
+        postUpdateUserPref(user.preference).then(res => {
             if (res.status === 201) {
                 onChange();
             }
@@ -244,7 +257,7 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
         <div style={{display: "flex", justifyContent: "flex-end"}}>
             <FormControlLabel
                 control={
-                    <Switch value={user.prefs.dark_mode}
+                    <Switch value={user.preference.dark_mode}
                             onChange={handleDarkModeChange}
                     />}
                 label="Dark mode"
@@ -257,13 +270,13 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
             <img src={unwrap ? logoCollapse : logoUncollapse} alt={"Collapse logo"}/>
         </IconButton>
         <div className={[h3Font].join(' ')}>Block list</div>
-        <div className={helpText}>{user.blockList.length} blocked users are forbidden to send you notification</div>
+        <div className={helpText}>{blackList.length} blocked users are forbidden to send you notification</div>
         <br/>
         { unwrap ?
             <table className={simpleCasket}>
                 <tbody>
                 {
-                    user.blockList.map((blEl, i) => {
+                    blackList.map((blEl, i) => {
                         return <tr key={i} className={simpleCasketTr}>
                                 <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')}>
                                     <IconButton onClick={ () => handleUnblockUser(i) }>
@@ -288,26 +301,35 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
 
 export const AccountPage: FC = () => {
     // let userInfo = getUserInfo();
-    const [user, setUser] = useState<TUser>(
-        {
-            ...{} as TUser,
-            prefs: {} as TUPref,
-            blockList: []
+    const [state, setState] = useState<IState>(initialState)
+
+    const initView = () => {
+        setState({...state})
+    }
+    const syncBlackListOnly = () => {
+        getBlackList().then(resp => {
+            if (resp.status === 200 || resp.status === 201) {
+                state.blackList = resp.data
+                initView();
+            }
         })
-    const syncPref = () => {
-        getPreferences().then(resp => {
-            if (resp.status === 200) {
-                setUser({
-                    ...user, prefs: resp.data.prefs, blockList: resp.data.black_list
-                })
+    }
+    const syncAllData = () => {
+        getSelfFullInfo().then(resp => {
+            if (resp.status === 200 || resp.status === 201) {
+                state.user = resp.data
+                syncBlackListOnly();
             }
         })
     }
 
     useEffect(() => {
-        syncPref()
+        syncAllData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    console.log("Drawing user", state.user)
+    console.log("Drawing blacklist", state.blackList)
 
     return <div className={commonPage}>
         <div className={hFont}>Account</div>
@@ -316,8 +338,8 @@ export const AccountPage: FC = () => {
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 
         <div style={{gap: 20, display: "flex"}}>
-            <AccountDataElementL user={user} onChange={() => syncPref()}/>
-            <AccountDataElementR user={user} onChange={() => syncPref()}/>
+            <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
+            <AccountDataElementR user={state.user} onChange={() => syncAllData()} blackList={state.blackList}/>
         </div>
     </div>
 }
