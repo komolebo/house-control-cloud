@@ -81,7 +81,6 @@ interface IHistoryState {
 }
 
 
-const userInfo = getUserInfo();
 let historyData: Array<IHistoryItem> = []
 export const BOARD_FILTER_HELP_WORD = "board:"
 export const USER_FILTER_HELP_WORD = "user:"
@@ -115,9 +114,11 @@ const initialState = {
 
 export const HistoryPage: FC = () => {
     let [state, setState] = useState<IHistoryState>({...initialState});
+    const userInfo = getUserInfo();
 
     useEffect(() => {
         syncData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const initView = () => {

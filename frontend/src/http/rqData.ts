@@ -34,7 +34,7 @@ export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) =
                     version: dev.version
                 })
             })
-            console.log("fetch devices per user", devList);
+            console.log("fetch devices per user", id, devList);
             onThen(devList)
         })
 }

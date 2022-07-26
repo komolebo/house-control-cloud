@@ -13,9 +13,10 @@ export const host = axios.create({
     },
 })
 
-function checkAuth() {
+export function updateTokenInHostHeaders() {
     // const authToken = getAuthToken();
     const authToken = getAuthToken();
+
     if (authToken === null) {
         // This means that there ISN'T JWT and no user is logged in.
         host.defaults.headers.common.Authorization = false;
@@ -24,6 +25,3 @@ function checkAuth() {
         host.defaults.headers.common.Authorization = `Bearer ${authToken}`;
     }
 }
-
-
-checkAuth()

@@ -4,14 +4,16 @@ import {privateRoutes, publicRoutes} from "./routes";
 import {UserGlobalContext} from "./globals/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
+import {updateTokenInHostHeaders} from "./http";
 
 
 const App = () => {
     const  {authorized} = useContext(UserGlobalContext);
+    updateTokenInHostHeaders()
 
     return (
       <BrowserRouter>
-         { authorized && <NavBar/> }
+         { authorized ? <NavBar/> : <></> }
           <Routes>
               {authorized
               ? privateRoutes.map(({path, Component}, i) =>

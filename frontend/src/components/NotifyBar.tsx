@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from "react";
-import {Box, Button, Paper, Select} from "@mui/material";
-import {h4Font, h4FontBlue, h5Font, helpText} from "../styles/common/fonts.css";
+import {Box, Button} from "@mui/material";
+import {h4Font, h4FontBlue, h5Font} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
 import logoBellGreen from "../assets/bell-green.svg"
 import logoBellRed from "../assets/bell-red.svg"
@@ -17,8 +17,6 @@ import moment from "moment";
 interface INotificationProp {
     onNotificationStatusChange: () => void
 }
-
-const userInfo = getUserInfo();
 
 
 const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
@@ -80,6 +78,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 
 export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) => {
     const [notifications, setNotifications] = useState<Array<TNotifyItem>>([])
+    const userInfo = getUserInfo();
 
     const handleRemoveElement = (id: number) => {
         deleteNotification(id).then(resp => {
@@ -121,6 +120,7 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
             // unbind all event handlers used in this component
             socket.off(IO_NOTIFICATION_KEY, onNotification);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return  (

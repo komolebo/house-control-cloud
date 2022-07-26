@@ -19,14 +19,12 @@ interface IDevOwnerProps {
     onDevDataChanged: () => void
 }
 
-const userInfo = getUserInfo();
-
-
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                            onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const [dataSync, setDataSync] = useState(false);
     const { showModal, hideModal } = useGlobalModalContext();
+    const userInfo = getUserInfo();
 
     const handleClrSettings = (devInfo: TDevItem) => {
         postClearDeviceUsers(devInfo.hex).then(resp => {

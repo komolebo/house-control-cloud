@@ -51,7 +51,6 @@ export class PreferenceService {
             .then(users => {
 
                 return users.map(u => {
-                    console.log(">>>>", u)
                     return {
                     "name": u.full_name,
                     "login": u.login,

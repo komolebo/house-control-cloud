@@ -25,8 +25,6 @@ import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 
-const userInfo = getUserInfo();
-
 export const NavBar: React.FC = () => {
     const {clearUserData, avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -34,6 +32,7 @@ export const NavBar: React.FC = () => {
     const [notification, setNotification] = useState<boolean>(false);
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
+    const userInfo = getUserInfo();
 
     useEffect(() => {
         getPreferences().then(resp => {
@@ -42,6 +41,7 @@ export const NavBar: React.FC = () => {
                 console.log(resp.data)
             }
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const settingsMenu = [

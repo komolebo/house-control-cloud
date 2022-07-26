@@ -12,15 +12,13 @@ import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
 import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
-import {TUPref, TUser} from "../globals/AccountData";
+import {TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
-import {getUserInfo, UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {getPreferences, postRemoveAvatar, postUnblockUser, postUpdateUserPref} from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
-
-let userInfo = getUserInfo();
 
 interface IState {
     editMode: boolean;
@@ -33,17 +31,8 @@ interface IPropUser {
     onChange: () => void
 }
 
-const curUser: TUser = {
-    full_name: userInfo ? userInfo?.full_name : "",
-    email: userInfo ? userInfo.email : "",
-    phone: userInfo ? userInfo.phone : "No phone entered",
-    login: userInfo ? userInfo.login : "",
-    blockList: [],
-    prefs: {} as TUPref
-}
-
 const initialState = {
-    user: curUser,
+    user: {} as TUser,
     editMode: false,
     blockListUnwrap: false,
     loadingRemoval: false
@@ -298,7 +287,8 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
 }
 
 export const AccountPage: FC = () => {
-    const [user, setUser] = useState<TUser>(curUser)
+    // let userInfo = getUserInfo();
+    const [user, setUser] = useState<TUser>({} as TUser)
     const syncPref = () => {
         getPreferences().then(resp => {
             if (resp.status === 200) {

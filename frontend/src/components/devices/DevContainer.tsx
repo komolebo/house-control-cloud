@@ -21,8 +21,6 @@ interface IState {
     devices: Array<TDevItem>;
 }
 
-const userInfo = getUserInfo();
-
 export const DevContainer: FC = () => {
     const [dataSync, setDataSync] = useState(false);
     const [values, setValues] = useState<IState>({
@@ -31,6 +29,7 @@ export const DevContainer: FC = () => {
     })
     const { showModal, hideModal } = useGlobalModalContext();
     const canUnsubscribe = values.ind >= 0 && values.devices[values.ind].unsubscribable;
+    const userInfo = getUserInfo();
 
     const handleDevInfoChange = (devName: string) => {
         values.devices[values.ind].name = devName;
