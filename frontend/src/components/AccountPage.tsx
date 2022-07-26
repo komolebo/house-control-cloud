@@ -12,7 +12,7 @@ import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
 import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
-import {TUser} from "../globals/AccountData";
+import {TUPref, TUser} from "../globals/AccountData";
 import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
@@ -288,7 +288,12 @@ const AccountDataElementR: FC<IPropUser> = ({user, onChange}) => {
 
 export const AccountPage: FC = () => {
     // let userInfo = getUserInfo();
-    const [user, setUser] = useState<TUser>({} as TUser)
+    const [user, setUser] = useState<TUser>(
+        {
+            ...{} as TUser,
+            prefs: {} as TUPref,
+            blockList: []
+        })
     const syncPref = () => {
         getPreferences().then(resp => {
             if (resp.status === 200) {
