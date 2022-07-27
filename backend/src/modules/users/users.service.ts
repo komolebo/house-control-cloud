@@ -3,7 +3,7 @@ import { Users } from './user.entity';
 import { USER_REPOSITORY } from '../../core/constants/index1';
 import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
-import {UserDto} from "./dto/user.dto";
+import {UpdateUserInfoDto, UserDto} from "./dto/user.dto";
 import {Preference} from "./preference.entity";
 import {BlockList} from "net";
 import {Blacklist} from "./blacklist.entity";
@@ -65,11 +65,16 @@ export class UsersService {
         });
     }
 
-    async update(userDto: UserDto) {
-        await this.findOneByEmail(userDto.login)
+    async update(userId: number, userDto: UpdateUserInfoDto) {
+        await this.findOneById(userId)
             .then(user => {
                 // user.setDataValue('name', userDto.name);
-                user.setDataValue('email', userDto.login);
+                if (userDto.email)
+                    user.setDataValue('email', userDto.email);
+                if (userDto.full_name)
+                    user.setDataValue('full_name', userDto.full_name);
+                if (userDto.phone)
+                    user.setDataValue('phone', userDto.phone);
                 // user.setDataValue('phone', userDto.phone);
                 user.save();
                 return user;

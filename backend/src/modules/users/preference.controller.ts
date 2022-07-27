@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, Headers, Param, Post, Put, UploadedFile, UseInterceptors} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Headers,
+    Param,
+    Patch,
+    Post,
+    Put,
+    UploadedFile,
+    UseInterceptors
+} from "@nestjs/common";
 import {UsersService} from "./users.service";
 import {Users} from "./user.entity";
 import {PreferenceService, TPreferenceAction} from "./preference.service";
@@ -25,10 +37,11 @@ export class PreferenceController {
         return this.prefService.getPrefByUserId(Number(11))
     }
 
-    @Post()
+    @Patch()
     async updateUserPreference(@Headers() headers,
                                @Body() body: PreferenceDto) {
         const thisUser: Users = this.parseHeaders(headers);
+        console.log(body)
         return this.prefService.updateUserPref(Number(thisUser.id), body)
     }
 

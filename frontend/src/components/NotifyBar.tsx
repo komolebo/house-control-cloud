@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {Box, Button} from "@mui/material";
 import {h4Font, h4FontBlue, h5Font} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
@@ -10,7 +10,7 @@ import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colo
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
 import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
-import {getUserInfo} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {IO_NOTIFICATION_KEY, socket} from "../http/wssocket";
 import moment from "moment";
 
@@ -78,7 +78,7 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
 
 export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) => {
     const [notifications, setNotifications] = useState<Array<TNotifyItem>>([])
-    const userInfo = getUserInfo();
+    const {userInfo} = useContext(UserGlobalContext)
 
     const handleRemoveElement = (id: number) => {
         deleteNotification(id).then(resp => {

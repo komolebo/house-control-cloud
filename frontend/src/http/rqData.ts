@@ -42,6 +42,9 @@ export function fetchConnUsersByDevice(dev_id: number,
 export function getSelfFullInfo() {
     return host.get("api/users/me")
 }
+export function patchUpdateUserInfo(data: any) {
+    return host.patch("api/users/me", data)
+}
 
 
 // Devices

@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useEffect, useState} from "react";
+import React, {ChangeEvent, FC, useContext, useEffect, useState} from "react";
 import {fontLgrey, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {historyItem, historyTable, historyTableHead, historyTableRow} from "../styles/HistoryPage.css"
 import {
@@ -44,7 +44,7 @@ import {cntrContent, cntrVContent, flexG1, floatr} from "../styles/common/positi
 import moment from "moment";
 import logoSettings from "../assets/settings.svg";
 import {postDeleteHistoryPerUser, postGetHistoryPerUser} from "../http/rqData";
-import {getUserInfo} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {NavSeq} from "./NavSeq";
 import {commonPage} from "../styles/common/pages.css";
 
@@ -114,7 +114,7 @@ const initialState = {
 
 export const HistoryPage: FC = () => {
     let [state, setState] = useState<IHistoryState>({...initialState});
-    const userInfo = getUserInfo();
+    const {userInfo} = useContext(UserGlobalContext)
 
     useEffect(() => {
         syncData();

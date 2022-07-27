@@ -1,6 +1,6 @@
-import {Body, Controller, Delete, Get, Headers, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Headers, Param, Patch, Post, Put} from '@nestjs/common';
 import {UsersService} from "./users.service";
-import {UserDto} from "./dto/user.dto";
+import {UpdateUserInfoDto, UserDto} from "./dto/user.dto";
 import {JwtService} from "@nestjs/jwt";
 import {Users} from "./user.entity";
 
@@ -27,20 +27,17 @@ export class UsersController {
         return await this.usersService.getUsersPerDevice(device_id);
     }
 
-    // @Get(':id')
-    // async getUser(@Param('id') id: number) {
-    //     return await this.usersService.findOneById(id);
-    // }
-
     @Get('me')
     async getSelfFullInfo(@Headers() headers) {
         const thisUser = this.parseHeaders (headers);
+        if (!thisUser) return
         return await this.usersService.findOneById(thisUser.id);
     }
-
-    @Put(':id')
-    async updateUser(@Body() user: UserDto) {
-        return await this.usersService.update(user);
+    @Patch('me')
+    async updateSelfInfo(@Headers() headers,
+                         @Body() body: UpdateUserInfoDto) {
+        const thisUser = this.parseHeaders (headers);
+        return await this.usersService.update(thisUser.id, body);
     }
 
     @Delete(':id')

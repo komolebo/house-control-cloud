@@ -19,6 +19,7 @@ import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {
     getBlackList,
     getSelfFullInfo,
+    patchUpdateUserInfo,
     postRemoveAvatar,
     postUnblockUser,
     postUpdateUserPref
@@ -29,6 +30,16 @@ import {LoadingButton} from "@mui/lab";
 interface IState {
     user: TUser,
     blackList: Array<TBlItem>
+}
+interface IBaseInfoState {
+    loadingRemoval: boolean,
+    editMode: boolean,
+    name: string,
+    email: string,
+    phone: string,
+    warningName: string;
+    warningEmail: string;
+    warningPhone: string;
 }
 interface IPropBaseInfo {
     user: TUser,
@@ -43,17 +54,28 @@ const initialState: IState = {
     user: {...{} as TUser, preference: {} as TUPref},
     blackList: []
 }
+const initialBaseInfoState: IBaseInfoState = {
+    loadingRemoval: false,
+    editMode: false,
+    email: "",
+    name: "",
+    phone: "",
+    warningName: "",
+    warningEmail: "",
+    warningPhone: "",
+}
 
 const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
-    const {avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
+    const {avatarSrc, setAvatarSrc, updateUserInfo} = useContext(UserGlobalContext);
     const { showModal, hideModal } = useGlobalModalContext();
-    const [state, setState] = useState({
-        loadingRemoval: false,
-        editMode: false,
-        name: user.full_name,
-        email: user.email,
-        phone: user.phone
-    })
+    let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
+
+    useEffect(() => {
+        setState({
+            ...state, name: user.full_name, email: user.email, phone: user.phone ? user.phone : ""
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user])
 
     const handleUpdateAvatar = (newAvaSrc: string) => {
         setAvatarSrc(newAvaSrc);
@@ -68,13 +90,58 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
             setState({...state, loadingRemoval: false})
         })
     }
+    const isDataEdited = () => {
+        return user.full_name !== state.name || user.email !== state.email || user.phone !== state.phone
+    }
+    const verifyName = (name: string) => {
+        if (!name.length) {
+            setState({...state, warningName: "Name cannot be empty"})
+            return false;
+        }
+        return true;
+    }
+    const verifyEmail = (email: string) => {
+        if (!email.length) {
+            setState({...state, warningEmail: "Email cannot be empty"})
+            return false;
+        }
+        return true
+    }
+    const verifyPhone = (phone: string) => {
+        if (!phone.length) {
+            setState({...state, warningPhone: "Phone cannot be empty"})
+            return false;
+        }
+        return true
+    }
+    const handleSave = () => {
+        const changedUserFields: { [key: string] : string } = {}
+        if (state.name !== user.full_name && verifyName(state.name)) {
+            changedUserFields["full_name"] = state.name
+        }
+        if (state.email !== user.email && verifyEmail(state.email)) {
+            changedUserFields["email"] = state.email
+        }
+        if (state.phone !== user.phone && verifyPhone(state.phone)) {
+            changedUserFields["phone"] = state.phone
+        }
+
+        if(Object.keys(changedUserFields).length) {
+            patchUpdateUserInfo(changedUserFields).then(resp => {
+                if (resp.status === 200 || resp.status === 201) {
+                    setState({...state, editMode: false})
+                    updateUserInfo(changedUserFields)
+                    onChange();
+                }
+            })
+        }
+    }
 
     return <div className={[commonCasket, flexG1].join(' ')}>
         <div className={h2Font}>Avatar</div>
 
         <div className={cntrVContent}>
             <div style={{textAlign: "center"}}>
-                {/*<img src={"/avatars/avatar1.svg"} alt={"Logo ava"}/>*/}
                 <Avatar
                     sx={{
                         // m: "15px 5px",
@@ -84,7 +151,6 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                     }}
                     src={avatarSrc}
                 />
-
                 <div className={h4Font}>{user.login}</div>
             </div>
 
@@ -114,17 +180,16 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         </div><br/><br/>
 
         {state.editMode
-            ?
-            <Button variant={"text"}
-                    onClick={() => setState({...state, editMode: false})}
+            ? <Button variant={"text"}
+                    onClick={() => setState({...state,
+                        editMode: false, warningName: "", warningPhone: "", warningEmail: ""})}
                     sx={{
                         right: 0, top: 10, position:'absolute',
                     }}
                     className={shorterMuiBtn}
             > Cancel
             </Button>
-            :
-            <Button variant={"text"}
+            : <Button variant={"text"}
                     size={"large"}
                     onClick={() => setState({...state, editMode: true})}
                     sx={{
@@ -138,72 +203,68 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
         {/* start elements */}
         <div style={{paddingBottom: 20, gap: 20, display: "flex"}} >
-            {/*<div className={[h3Font].join (' ')} style={{width: "47%"}}> Login*/}
-            {/*    <div className={[h4Font, spaceTextEdit].join (' ')}>{state.user.login}</div>*/}
-            {/*</div>*/}
-
             <div className={[h3Font].join (' ')} style={{width: "47%"}}> Name
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')} >
                         <TextField
-                            error={user.full_name.length === 0}
-                            label={user.full_name.length === 0 ? "Name cannot be empty" : ""}
-                            id="outlined-uncontrolled"
-                            color={"info"}
+                            error={state.warningName.length > 0}
+                            helperText={state.warningName}
                             defaultValue={user.full_name}
                             fullWidth={true}
-                            onChange={e => setState ({...state, name: e.target.value})}
+                            onChange={e => setState({...state, name: e.target.value})}
                             size={"small"}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.name}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.full_name}</div>
                 }
             </div>
-            {/*<br/>*/}
         </div>
 
         <div style={{paddingBottom: 20, gap: 20, display: "flex"}}>
-            <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Phone
-                {state.editMode
-                    ? <div className={[spaceNoPad].join (' ')}>
-                        <TextField
-                            error={state.phone.length === 0}
-                            label={state.phone.length === 0 ? "Phone cannot be empty" : ""}
-                            id="outlined-uncontrolled"
-                            color={"info"}
-                            defaultValue={state.phone}
-                            fullWidth={true}
-                            size={"small"}
-                            onChange={e => setState ({...state, phone: e.target.value})}
-                        />
-                    </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.phone}</div>
-                }
-                <Button style={{height: 24 }} >
-                    Verify
-                </Button>
-            </div>
-
             <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Email
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')}>
                         <TextField
-                            error={state.email.length === 0}
-                            label={state.email.length === 0 ? "Email cannot be empty" : ""}
-                            id="outlined-uncontrolled"
-                            color={"info"}
+                            error={state.warningEmail.length > 0}
+                            helperText={state.warningEmail}
                             defaultValue={user.email}
-                            onChange={e => setState ({...state, email: e.target.value})}
+                            onChange={e => setState({...state, email: e.target.value})}
                             fullWidth={true}
                             size={"small"}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{state.email}</div>
+                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.email}</div>
                 }
                 <div className={[colBlue, h5Font].join(' ')}>&nbsp; Verified &nbsp;
                     <img src={logoVerified} alt="logo verified"/>
                 </div>
             </div>
+
+            { state.editMode
+                ? <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Phone
+                    <div className={[spaceNoPad].join (' ')}>
+                        <TextField
+                            error={state.warningPhone.length > 0}
+                            helperText={state.warningPhone}
+                            defaultValue={state.phone ? state.phone : ""}
+                            fullWidth={true}
+                            size={"small"}
+                            onChange={e => setState({...state, phone: e.target.value})}
+                        />
+                    </div>
+                    <Button style={{height: 24 }} >
+                        Verify
+                    </Button>
+                </div>
+                : user.phone
+                    ? <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Phone
+                        <div className={[h4Font, spaceTextEdit].join (' ')}>{user.phone}</div>
+                        <Button style={{height: 24 }} >
+                            Verify
+                        </Button>
+                    </div>
+                    : <></>
+            }
         </div>
 
         <br/>
@@ -222,8 +283,8 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
             ? <div><br/>
                 <Button variant={"contained"}
                     // sx={{ mt: 2,}}
-                    // disabled={name.length === 0}
-                        onClick={() => {}}
+                        disabled={!isDataEdited()}
+                        onClick={handleSave}
                         className={wideMuiBtn}
                 > Save </Button>
             </div>
@@ -300,7 +361,6 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
 }
 
 export const AccountPage: FC = () => {
-    // let userInfo = getUserInfo();
     const [state, setState] = useState<IState>(initialState)
 
     const initView = () => {
@@ -328,8 +388,8 @@ export const AccountPage: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    console.log("Drawing user", state.user)
-    console.log("Drawing blacklist", state.blackList)
+    // console.log("Drawing user", state.user)
+    // console.log("Drawing blacklist", state.blackList)
 
     return <div className={commonPage}>
         <div className={hFont}>Account</div>

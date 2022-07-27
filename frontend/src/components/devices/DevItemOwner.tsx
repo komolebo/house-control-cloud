@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
 import {Avatar, Button} from "@mui/material";
@@ -8,7 +8,7 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
-import {getUserInfo} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {commonCasket} from "../../styles/common/pages.css";
@@ -24,7 +24,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
     const [dataSync, setDataSync] = useState(false);
     const { showModal, hideModal } = useGlobalModalContext();
-    const userInfo = getUserInfo();
+    const {userInfo} = useContext(UserGlobalContext)
 
     const handleClrSettings = (devInfo: TDevItem) => {
         postClearDeviceUsers(devInfo.hex).then(resp => {

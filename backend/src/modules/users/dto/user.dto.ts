@@ -28,6 +28,12 @@ export class UserDto {
     readonly password: string;
 }
 
+export class UpdateUserInfoDto {
+    full_name?: string;
+    email?: string;
+    phone?: string;
+}
+
 export class UserPwdDto {
     @IsNotEmpty()
     @MinLength(6)

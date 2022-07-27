@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem from "./DevItem";
 import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
@@ -13,7 +13,7 @@ import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
 import {fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
-import {getUserInfo} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 
 interface IState {
@@ -29,7 +29,7 @@ export const DevContainer: FC = () => {
     })
     const { showModal, hideModal } = useGlobalModalContext();
     const canUnsubscribe = values.ind >= 0 && values.devices[values.ind].unsubscribable;
-    const userInfo = getUserInfo();
+    const {userInfo} = useContext(UserGlobalContext)
 
     const handleDevInfoChange = (devName: string) => {
         values.devices[values.ind].name = devName;
@@ -83,12 +83,12 @@ export const DevContainer: FC = () => {
     }, [])
 
     useEffect(() => {
-        if (dataSync) {
-            syncData();
-            setDataSync(false);
-        }
+        // if (dataSync) {
+        syncData();
+        setDataSync(false);
+        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dataSync])
+    }, [dataSync, userInfo])
 
     return <div id={devContainer}>
         <div id={devContHead}>

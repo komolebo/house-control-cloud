@@ -1,7 +1,6 @@
-import {createContext, FC, useState} from "react";
-import jwtDecode from "jwt-decode";
+import {createContext, FC, useEffect, useState} from "react";
+import {getSelfFullInfo} from "../http/rqData";
 
-const USER_INFO = "USER_INFO"
 const USER_TOKEN = "USER_TOKEN"
 
 export interface IUserSetting {
@@ -11,20 +10,17 @@ export interface IUserSetting {
     full_name: string;
     phone: string;
 }
-
-function setUserInfo(jwtToken: string) {
-    localStorage.setItem(USER_INFO, JSON.stringify(jwtDecode(jwtToken)));
+export interface IUserModifySetting {
+    email?: string;
+    full_name?: string;
+    phone?: string;
 }
-function setAuthToken(jwtToken: string) {
+
+function setAuthTokenToStore(jwtToken: string) {
     localStorage.setItem(USER_TOKEN, jwtToken);
 }
-function clearUser() {
-    localStorage.removeItem(USER_INFO);
+function clearUserFromStore() {
     localStorage.removeItem(USER_TOKEN);
-}
-export function getUserInfo(): IUserSetting | null {
-    const uInfoStr = localStorage.getItem(USER_INFO);
-    return uInfoStr ? JSON.parse(uInfoStr) : null;
 }
 export function getAuthToken() {
     return localStorage.getItem(USER_TOKEN);
@@ -36,20 +32,42 @@ export function isAuth(): boolean {
 export const useUserGlobalInfo = () => {
     const [authorized, setAuthorized] = useState(isAuth());
     const [avatarSrc, setAvatarSrc] = useState<string>("")
+    const [userInfo, setUserInfo] = useState<IUserSetting | null>(null)
+
+    useEffect(() => {
+        if (authorized) {
+            getSelfFullInfo().then(resp => {
+                if (resp.status === 200 || resp.status === 201) {
+                    console.log("got userinfo =", resp.data)
+                    setUserInfo(resp.data)
+                }
+            })
+        }
+    }, [authorized])
 
     const setAuthData = (jwtToken: string) => {
-        setUserInfo(jwtToken);
-        setAuthToken(jwtToken);
+        setAuthTokenToStore(jwtToken);
         setAuthorized(isAuth());
     }
     const clearUserData = () => {
-        clearUser();
+        clearUserFromStore();
         setAuthorized(isAuth);
+    }
+    const updateUserInfo = (uNewInfo: IUserModifySetting) => {
+        if (userInfo) {
+            uNewInfo.full_name && (userInfo.full_name = uNewInfo.full_name)
+            uNewInfo.email && (userInfo.email = uNewInfo.email)
+            uNewInfo.phone && (userInfo.phone = uNewInfo.phone)
+            setUserInfo({...userInfo})
+        }
     }
 
     return {
         authorized,
         setAuthData,
+
+        userInfo,
+        updateUserInfo,
         clearUserData,
 
         avatarSrc,

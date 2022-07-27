@@ -34,7 +34,7 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
             ? <div className={[h4Font, devItemDelim].join(' ')}>
                 <TextField
                     error={name.length === 0}
-                    label={name.length === 0 ? "Name cannot be empty" : ""}
+                    helperText={name.length === 0 ? "Name cannot be empty" : ""}
                     id="outlined-uncontrolled"
                     color={"info"}
                     defaultValue={dev.name}

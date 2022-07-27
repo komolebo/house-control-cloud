@@ -7,9 +7,8 @@ import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
-import {postReqRoleAccess, roleStrToId} from "../../http/rqData";
+import {postReqRoleAccess} from "../../http/rqData";
 import {TDevRole} from "../../globals/DeviceData";
-import {getUserInfo} from "../../globals/UserAuthProvider";
 import {warnLabel} from "../../styles/common/labels.css";
 
 const MIN_CHAR_ID = 8;

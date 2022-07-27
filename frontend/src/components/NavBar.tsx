@@ -19,38 +19,48 @@ import logoMsgYes from "../assets/nav-notification-yes.svg";
 import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
-import {getUserInfo, UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {getPreferences, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 
 export const NavBar: React.FC = () => {
-    const {clearUserData, avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
+    const settingsMenu = [
+        {name: 'Account', handler: () => navigate(ACCOUNT_PAGE)},
+        {name: 'History', handler: () => navigate(HISTORY_PAGE)},
+        {name: 'Logout', handler: () => clearUserData()},
+    ];
+    const {clearUserData, avatarSrc, setAvatarSrc, userInfo} = useContext(UserGlobalContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [anchorElMsg, setAnchorElMsg] = useState<null | HTMLElement>(null);
     const [notification, setNotification] = useState<boolean>(false);
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
-    const userInfo = getUserInfo();
 
     useEffect(() => {
         getPreferences().then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 setAvatarSrc(resp.data.preference.profile_photo);
-                console.log(resp.data)
+                // console.log(resp.data)
             }
         })
+
+        const onNotification = (data: any) => {
+            console.log("NavBar onNotification")
+            syncNotificationStatus();
+        }
+
+        socket.on(IO_NOTIFICATION_KEY, onNotification);
+
+        syncNotificationStatus();
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socket.off(IO_NOTIFICATION_KEY, onNotification);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const settingsMenu = [
-        // {name: 'Profile', handler: () => {}},
-        // {name: 'Account', handler: () => {}},
-        {name: 'Account', handler: () => navigate(ACCOUNT_PAGE)},
-        {name: 'History', handler: () => navigate(HISTORY_PAGE)},
-        {name: 'Logout', handler: () => clearUserData()},
-    ];
 
     const handleOpenMsgMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElMsg(event.currentTarget);
@@ -76,23 +86,6 @@ export const NavBar: React.FC = () => {
                 }
             })
     }
-
-    useEffect(() => {
-        const onNotification = (data: any) => {
-            console.log("NavBar onNotification")
-            syncNotificationStatus();
-        }
-
-        socket.on(IO_NOTIFICATION_KEY, onNotification);
-
-        syncNotificationStatus();
-        return () => {
-            // before the component is destroyed
-            // unbind all event handlers used in this component
-            socket.off(IO_NOTIFICATION_KEY, onNotification);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     return (
         <div id={navBar}>
