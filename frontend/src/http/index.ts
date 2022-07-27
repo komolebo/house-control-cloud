@@ -14,7 +14,6 @@ export const host = axios.create({
 })
 
 export function updateTokenInHostHeaders() {
-    // const authToken = getAuthToken();
     const authToken = getAuthToken();
 
     if (authToken === null) {

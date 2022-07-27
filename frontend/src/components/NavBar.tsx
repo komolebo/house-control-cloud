@@ -42,7 +42,6 @@ export const NavBar: React.FC = () => {
         getPreferences().then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 setAvatarSrc(resp.data.preference.profile_photo);
-                // console.log(resp.data)
             }
         })
 

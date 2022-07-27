@@ -1,5 +1,6 @@
 import {createContext, FC, useEffect, useState} from "react";
 import {getSelfFullInfo} from "../http/rqData";
+import {updateTokenInHostHeaders} from "../http";
 
 const USER_TOKEN = "USER_TOKEN"
 
@@ -47,6 +48,7 @@ export const useUserGlobalInfo = () => {
 
     const setAuthData = (jwtToken: string) => {
         setAuthTokenToStore(jwtToken);
+        updateTokenInHostHeaders()
         setAuthorized(isAuth());
     }
     const clearUserData = () => {

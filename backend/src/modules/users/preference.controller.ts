@@ -33,8 +33,8 @@ export class PreferenceController {
 
     @Get()
     async getPreferenceByUser(@Headers() headers) {
-        // const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.getPrefByUserId(Number(11))
+        const thisUser: Users = this.parseHeaders(headers);
+        return this.prefService.getPrefByUserId(Number(thisUser.id))
     }
 
     @Patch()
@@ -74,7 +74,7 @@ export class PreferenceController {
         return this.prefService.uploadAvatar(thisUser.id, file)
     }
 
-    @Delete('upload/')
+    @Delete('upload')
     async removeUserAvatar(@Headers() headers) {
         const thisUser: Users = this.parseHeaders(headers);
         return this.prefService.removeAvatar(thisUser.id);
