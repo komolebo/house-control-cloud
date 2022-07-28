@@ -77,6 +77,9 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
+    const initView = () => {
+        setState({...state})
+    }
     const handleUpdateAvatar = (newAvaSrc: string) => {
         setAvatarSrc(newAvaSrc);
         onChange();
@@ -95,6 +98,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     }
     const verifyName = (name: string) => {
         if (!name.length) {
+            state.warningName = "Name cannot be empty"
             setState({...state, warningName: "Name cannot be empty"})
             return false;
         }
@@ -102,31 +106,39 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     }
     const verifyEmail = (email: string) => {
         if (!email.length) {
-            setState({...state, warningEmail: "Email cannot be empty"})
+            state.warningEmail = "Email cannot be empty"
             return false;
         }
         return true
     }
     const verifyPhone = (phone: string) => {
         if (!phone.length) {
-            setState({...state, warningPhone: "Phone cannot be empty"})
+            state.warningPhone = "Phone cannot be empty"
             return false;
         }
         return true
     }
     const handleSave = () => {
         const changedUserFields: { [key: string] : string } = {}
-        if (state.name !== user.full_name && verifyName(state.name)) {
-            changedUserFields["full_name"] = state.name
+        let validateOk = true;
+        if (state.name !== user.full_name) {
+            if (verifyName(state.name)) {
+                changedUserFields["full_name"] = state.name
+            } else { validateOk = false; }
         }
-        if (state.email !== user.email && verifyEmail(state.email)) {
-            changedUserFields["email"] = state.email
+        if (state.email !== user.email) {
+            if (verifyEmail(state.email)) {
+                changedUserFields["email"] = state.email
+            } else { validateOk = false; }
         }
-        if (state.phone !== user.phone && verifyPhone(state.phone)) {
-            changedUserFields["phone"] = state.phone
+        if (state.phone !== user.phone) {
+            if (verifyPhone(state.phone)) {
+                changedUserFields["phone"] = state.phone
+            } else { validateOk = false; }
         }
+        initView()
 
-        if(Object.keys(changedUserFields).length) {
+        if(validateOk && Object.keys(changedUserFields).length) {
             patchUpdateUserInfo(changedUserFields).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
                     setState({...state, editMode: false})

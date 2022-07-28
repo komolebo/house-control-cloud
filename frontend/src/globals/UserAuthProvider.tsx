@@ -39,7 +39,6 @@ export const useUserGlobalInfo = () => {
         if (authorized) {
             getSelfFullInfo().then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
-                    console.log("got userinfo =", resp.data)
                     setUserInfo(resp.data)
                 }
             })

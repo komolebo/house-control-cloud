@@ -24,3 +24,4 @@ export function updateTokenInHostHeaders() {
         host.defaults.headers.common.Authorization = `Bearer ${authToken}`;
     }
 }
+updateTokenInHostHeaders();
