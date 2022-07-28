@@ -67,7 +67,7 @@ const initialBaseInfoState: IBaseInfoState = {
 
 const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     const {avatarSrc, setAvatarSrc, updateUserInfo} = useContext(UserGlobalContext);
-    const { showModal, hideModal } = useGlobalModalContext();
+    const {showModal, hideModal} = useGlobalModalContext();
     let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
 
     useEffect(() => {
@@ -285,6 +285,11 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         <Button variant={"text"}
                 color={"error"}
                 endIcon={ <img src={logoDelete} alt={"Logo delete account"}/> }
+                onClick={() => showModal(MODAL_TYPE.DeleteAccountModal, {
+                    onClose: () => hideModal(),
+                    onAct: () => {},
+                    data: user
+                })}
         >
             Delete
         </Button>

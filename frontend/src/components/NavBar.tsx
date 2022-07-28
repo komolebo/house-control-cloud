@@ -45,6 +45,7 @@ export const NavBar: React.FC = () => {
             }
         })
         syncNotificationStatus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userInfo])
 
     useEffect(() => {

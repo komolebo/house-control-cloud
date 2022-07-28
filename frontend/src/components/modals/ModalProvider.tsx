@@ -8,7 +8,9 @@ import {ClearSettingsModal} from "./ClearSettingsModal";
 import {InviteUserModal} from "./InviteUserModal";
 import {ModifyAccessModal} from "./ModifyAccessModal";
 import {UnsubscribeUsrModal} from "./UnsubsribeUsrModal";
-import {ChooseAvatarModal} from "./chooseAvatarModal";
+import {DeleteAccountModal} from "./DeleteAccountModal";
+import {ChooseAvatarModal} from "./ChooseAvatarModal";
+import {floatr} from "../../styles/common/position.css";
 
 export enum MODAL_TYPE {
     AddDevModal,
@@ -17,6 +19,7 @@ export enum MODAL_TYPE {
     InviteUsrModal,
     UnsubscribeUsrModal,
     ChooseAvatarModal,
+    DeleteAccountModal,
     DefaultModal
 }
 
@@ -49,6 +52,7 @@ const MODAL_COMPONENTS: any = {
     [MODAL_TYPE.ModifyUsrAccessModal]: ModifyAccessModal,
     [MODAL_TYPE.UnsubscribeUsrModal]: UnsubscribeUsrModal,
     [MODAL_TYPE.ChooseAvatarModal]: ChooseAvatarModal,
+    [MODAL_TYPE.DeleteAccountModal]: DeleteAccountModal,
     [MODAL_TYPE.DefaultModal]: null,
 }
 
@@ -112,11 +116,10 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                         borderRadius: "15px",
                     }}
                 >
-                    <div>
+                    <div className={floatr} style={{width: 20, height: 20}}>
                         <img alt={"Logo close"}
                              src={logoClose} className={imgHover}
                              onClick={() => hideModal()}
-                             style={{float: "right"}}
                          />
                     </div>
                     {renderComponent()}

@@ -1,19 +1,17 @@
 import React, {FC, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {delimiter, loginPage, stickCntr, warnContainer} from "../styles/Login.css";
-import {mainLabel, point, preLabel, warnLabel} from "../styles/common/labels.css";
+import {point, preLabel, warnLabel} from "../styles/common/labels.css";
 import {hFont, underline} from "../styles/common/fonts.css";
-import {btn, wideMuiBtn} from "../styles/common/buttons.css";
+import {btn} from "../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
 import {register} from "../http/auth";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
-import {flexr, floatr, wide} from "../styles/common/position.css";
+import {flexr, wide} from "../styles/common/position.css";
 import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import logoHomeNet from "../assets/home-net-black.svg";
-import logoAddDev from "../assets/add-device2.svg";
-import {MODAL_TYPE} from "./modals/ModalProvider";
 
 interface IState {
     showPassword: boolean;
