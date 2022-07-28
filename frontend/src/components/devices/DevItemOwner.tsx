@@ -11,7 +11,6 @@ import {styleHeights} from "../../styles/common/customMuiStyle";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
-import {commonCasket} from "../../styles/common/pages.css";
 import {cntrVContent} from "../../styles/common/position.css";
 
 interface IDevOwnerProps {
@@ -61,7 +60,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
         };
     }, [])
 
-    return <div className={commonCasket} style={{marginLeft: "30px"}}>
+    return <div>
         <div className={h3Font}>Connected users: </div>
 
         <div id={devOwnerTop}>

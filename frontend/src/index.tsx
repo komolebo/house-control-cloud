@@ -13,10 +13,10 @@ if (rootEl === null) throw new Error('Root container missing in index.html')
 const root = createRoot(rootEl)
 root.render(
     <ThemeProvider theme={theme}>
-        <ModalProvider>
-            <UserAuthProvider>
+        <UserAuthProvider>
+            <ModalProvider>
                 <App/>
-            </UserAuthProvider>
-        </ModalProvider>
+            </ModalProvider>
+        </UserAuthProvider>
     </ThemeProvider>
 );

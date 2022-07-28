@@ -1,10 +1,14 @@
 import {host} from "./index"
 
-export async function register(email: string, password: string, name: string) {
+export async function register(login: string,
+                               password: string,
+                               email: string,
+                               name: string) {
     return await host.post('auth/signup', {
         email: email,
         password: password,
-        name: name
+        full_name: name,
+        login: login
     });
 }
 

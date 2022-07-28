@@ -5,11 +5,27 @@
 
 .common-casket {
     padding: 30px;
-    width: 49%;
+    /*width: 45%;*/
     background-color: white;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.07);
     border-radius: 12px;
     position: relative;
+}
+
+.casket {
+    padding: 30px;
+    background-color: white;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    position: relative;
+}
+.left-casket {
+    float: left;
+    width: 49%;
+}
+.right-casket {
+    float: right;
+    width: 49%;
 }
 
 .simple-casket {

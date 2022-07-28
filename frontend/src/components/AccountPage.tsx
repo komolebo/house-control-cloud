@@ -1,11 +1,17 @@
 import React, {FC, useContext, useEffect, useState} from "react";
-import {commonCasket, commonPage, simpleCasket, simpleCasketRo, simpleCasketTr} from '../styles/common/pages.css'
+import {
+    casket,
+    commonPage, leftCasket, rightCasket,
+    simpleCasket,
+    simpleCasketRo,
+    simpleCasketTr
+} from '../styles/common/pages.css'
 import {h2Font, h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
 import {Avatar, Button, FormControlLabel, IconButton, Switch, TextField} from "@mui/material";
-import {cntrVContent, flexG1, floatr} from "../styles/common/position.css";
+import {cntrVContent, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
 import logoUncollapse from "../assets/uncollapse.svg";
@@ -19,7 +25,7 @@ import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {
     getBlackList,
     getSelfFullInfo,
-    patchUpdateUserInfo,
+    patchUpdateSelfInfo,
     postRemoveAvatar,
     postUnblockUser,
     postUpdateUserPref
@@ -139,7 +145,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         initView()
 
         if(validateOk && Object.keys(changedUserFields).length) {
-            patchUpdateUserInfo(changedUserFields).then(resp => {
+            patchUpdateSelfInfo(changedUserFields).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
                     setState({...state, editMode: false})
                     updateUserInfo(changedUserFields)
@@ -149,7 +155,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         }
     }
 
-    return <div className={[commonCasket, flexG1].join(' ')}>
+    return <div className={casket}>
         <div className={h2Font}>Avatar</div>
 
         <div className={cntrVContent}>
@@ -331,7 +337,7 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
         })
     }
 
-    return <div className={commonCasket}>
+    return <div className={casket}>
         <div style={{display: "flex", justifyContent: "flex-end"}}>
             <FormControlLabel
                 control={
@@ -405,9 +411,6 @@ export const AccountPage: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // console.log("Drawing user", state.user)
-    // console.log("Drawing blacklist", state.blackList)
-
     return <div className={commonPage}>
         <div className={hFont}>Account</div>
         <div className={helpText}>Here you can view device actions history or your activity</div><br/>
@@ -415,8 +418,12 @@ export const AccountPage: FC = () => {
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 
         <div style={{gap: 20, display: "flex"}}>
-            <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
-            <AccountDataElementR user={state.user} onChange={() => syncAllData()} blackList={state.blackList}/>
+            <div className={leftCasket}>
+                <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
+            </div>
+            <div className={rightCasket}>
+                <AccountDataElementR user={state.user} onChange={() => syncAllData()} blackList={state.blackList}/>
+            </div>
         </div>
     </div>
 }

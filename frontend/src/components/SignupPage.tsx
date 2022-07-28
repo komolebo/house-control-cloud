@@ -35,7 +35,7 @@ const SignupPage: FC = () => {
     const {setAuthData} = useContext(UserGlobalContext);
 
     const signUp = async () => {
-        await register(values.email, values.password, values.name).then(data => {
+        await register(values.login, values.password, values.email, values.name).then(data => {
                 console.log("signed up, data: ", data);
                 setAuthData(data.data.token);
                 navigate(HOME_PAGE);

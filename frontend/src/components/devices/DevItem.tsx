@@ -6,7 +6,6 @@ import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
-import {commonCasket} from "../../styles/common/pages.css";
 
 
 export interface IProps {
@@ -28,7 +27,7 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
         setEditMode(false);
     }
 
-    return <div className={commonCasket}>
+    return <div >
         <div className={[h3Font].join(' ')}>Name</div>
         {editMode
             ? <div className={[h4Font, devItemDelim].join(' ')}>

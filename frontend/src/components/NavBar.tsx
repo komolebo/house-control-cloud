@@ -41,7 +41,8 @@ export const NavBar: React.FC = () => {
     useEffect(() => {
         getPreferences().then(resp => {
             if (resp.status === 200 || resp.status === 201) {
-                setAvatarSrc(resp.data.preference.profile_photo);
+                const preference = resp.data.preference
+                preference && setAvatarSrc(preference.profile_photo);
             }
         })
         syncNotificationStatus();

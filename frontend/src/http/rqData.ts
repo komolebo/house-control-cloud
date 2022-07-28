@@ -42,8 +42,11 @@ export function fetchConnUsersByDevice(dev_id: number,
 export function getSelfFullInfo() {
     return host.get("api/users/me")
 }
-export function patchUpdateUserInfo(data: any) {
+export function patchUpdateSelfInfo(data: any) {
     return host.patch("api/users/me", data)
+}
+export function deleteSelfAccount() {
+    return host.delete("api/users/me")
 }
 
 
@@ -141,7 +144,7 @@ export function postUnblockUser(userId: number) {
     return host.delete("api/user/preference/black_list/" + userId)
 }
 export function postUpdateUserPref(pref: TUPref) {
-    return host.post("api/user/preference/", pref)
+    return host.patch("api/user/preference/", pref)
 }
 export function postUploadAvatar(fileForm: any) {
     return host.post("api/user/preference/upload/", fileForm)

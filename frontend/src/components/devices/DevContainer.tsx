@@ -1,7 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem from "./DevItem";
-import {devContainer, devContContent, devContHead} from "../../styles/DevContainer.css"
+import {devContainer, devContHead} from "../../styles/DevContainer.css"
 import {Button} from "@mui/material";
 import logoAddDev from "../../assets/add-device2.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
@@ -15,6 +15,7 @@ import {floatr} from "../../styles/common/position.css";
 import {fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
+import {casket, leftCasket, rightCasket} from "../../styles/common/pages.css";
 
 interface IState {
     ind: number;
@@ -135,19 +136,26 @@ export const DevContainer: FC = () => {
         </div>
         { values.ind >= 0 &&
         <div>
-            <div className={h2Font}>Device information</div>
+            <div className={h2Font}>Device information</div><br/>
 
-            <div id={devContContent}>
-                <DevItem dev={values.devices[values.ind]} onDevDataChange={dev_info => {
-                    handleDevInfoChange(dev_info)
-                }}/>
+            <div className={leftCasket}>
+                <div className={casket}>
+                    <DevItem dev={values.devices[values.ind]} onDevDataChange={dev_info => {
+                        handleDevInfoChange(dev_info)
+                    }}/>
+                </div>
+            </div>
 
-                { values.devices[values.ind].role === TDevRole.OWNER &&
+            { values.devices[values.ind].role === TDevRole.OWNER &&
+            <div className={rightCasket}>
+                <div className={casket}>
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
-                        onDevDataChanged={() => onAddDevice()}/>
-                 }
+                        onDevDataChanged={() => onAddDevice()}
+                    />
+                </div>
             </div>
+             }
         </div>
         }
     </div>

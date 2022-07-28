@@ -1,26 +1,17 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Box, Button} from "@mui/material";
-import logoDone from "../../assets/done-big.svg";
+import {Button} from "@mui/material";
 import {cntrContent, cntrVContent, flexG1, flexr} from "../../styles/common/position.css";
-import logoBack from "../../assets/arrow-back.svg";
-import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
+import {useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/attention.svg";
 import logoDeleteAcc from "../../assets/delete-account-big.svg";
 import {TDevItem} from "../../globals/DeviceData";
-import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
+import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {colRedText} from "../../styles/common/colors.css";
 import {LoadingButton} from "@mui/lab";
+import {deleteSelfAccount} from "../../http/rqData";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
-
-interface IDelAccountElem {
-    devInfo: TDevItem,
-    onClear: () => void,
-    onClose: () => void
-}
-interface IPropDoneElem {
-    onDone: () => void
-}
 
 interface IProp {
     onClose: () => void,
@@ -28,38 +19,21 @@ interface IProp {
     devInfo: TDevItem
 }
 
-const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo job is done"}/>
-        </div><br/>
+export const DeleteAccountModal: FC<IProp> = () => {
+    const {modalProps } = useGlobalModalContext();
+    const {onClose} = modalProps;
+    const {clearUserData} = useContext(UserGlobalContext);
 
-        <div className={[h2Font, cntrContent].join(' ')}>
-            Account deleted completely
-        </div><br/>
-
-        <div className={[helpText, cntrContent].join(' ')}>
-            Register to access the device again
-        </div>
-        <br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onDone()}
-                    startIcon={<img src={logoBack} alt={"Logo get back"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
-}
-
-const ClrSettingElement: FC<IDelAccountElem> = ({devInfo, onClear, onClose}) => {
     const [loading, setLoading] = useState(false)
 
     const handleClear = () => {
         setLoading(true)
+        deleteSelfAccount().then(resp => {
+            if (resp.status === 200 || resp.status === 201) {
+                clearUserData()
+                onClose()
+            }
+        })
     }
 
     return <div>
@@ -117,33 +91,5 @@ const ClrSettingElement: FC<IDelAccountElem> = ({devInfo, onClear, onClose}) => 
                 > Cancel </Button>
             </div>
         </div>
-    </div>
-}
-
-export const DeleteAccountModal: FC<IProp> = () => {
-    const {modalProps } = useGlobalModalContext();
-    const {onAct, onClose, data} = modalProps;
-    let [pageState, setPageState] = useState(ModalPageState.ReqState)
-
-    const handleClear = () => {
-        // req to DB
-        // devInfo.users = [];
-        onAct(data);
-        setPageState(ModalPageState.DoneState);
-    }
-    const handleComplete = () => {
-        setPageState(ModalPageState.CompleteState);
-        onClose();
-    }
-
-    return <div>
-        {pageState === ModalPageState.ReqState
-            ? <ClrSettingElement
-                devInfo={data} onClear={() => handleClear()} onClose={onClose}
-            />
-            : <DoneElement
-                onDone={() => handleComplete()}
-            />
-        }
     </div>
 }
