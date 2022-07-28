@@ -1,5 +1,5 @@
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from "sequelize-typescript";
-import {Users} from "./user.entity";
+import {Users} from "../users/user.entity";
 import {Preference} from "./preference.entity";
 
 @Table({tableName: "blacklist"})

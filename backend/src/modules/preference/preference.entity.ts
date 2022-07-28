@@ -7,7 +7,7 @@ import {
     Table
 } from "sequelize-typescript";
 import {Blacklist} from "./blacklist.entity";
-import {Users} from "./user.entity";
+import {Users} from "../users/user.entity";
 import {Histories} from "../history/history.entity";
 
 @Table({tableName: 'preferences', updatedAt: false})
@@ -40,7 +40,12 @@ export class Preference extends Model<Preference> {
     })
     profile_photo_id: string;
 
-    @HasMany(() => Blacklist, 'prefId')
+    @HasMany(() => Blacklist, {
+        foreignKey: 'prefId',
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
     black_list: Blacklist[]
 
     @BelongsTo(() => Users, "uId")

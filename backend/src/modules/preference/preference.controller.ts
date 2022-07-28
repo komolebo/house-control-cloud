@@ -10,18 +10,17 @@ import {
     Put,
     UploadedFile,
     UseInterceptors
-} from "@nestjs/common";
-import {UsersService} from "./users.service";
-import {Users} from "./user.entity";
-import {PreferenceService, TPreferenceAction} from "./preference.service";
+} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
-import {PreferenceDto, UploadAvatarDto} from "./dto/preference.dto";
+import {Users} from "../users/user.entity";
+import {PreferenceDto} from "./dto/preference.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
+import {PreferenceService, TPreferenceAction} from "./preference.service";
+
 
 @Controller('api/user/preference')
 export class PreferenceController {
-    constructor(private usersService: UsersService,
-                private prefService: PreferenceService,
+    constructor(private prefService: PreferenceService,
                 private jwtService: JwtService) {}
 
     private parseHeaders(headers) {
@@ -77,6 +76,6 @@ export class PreferenceController {
     @Delete('upload')
     async removeUserAvatar(@Headers() headers) {
         const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.removeAvatar(thisUser.id);
+        return this.prefService.removeAvatarByUserId(thisUser.id);
     }
 }

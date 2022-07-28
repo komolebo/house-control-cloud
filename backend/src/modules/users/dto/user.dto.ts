@@ -13,7 +13,7 @@ export class FullUserDto {
     // readonly phone?: string;
 
     @IsNotEmpty()
-    readonly name: string;
+    readonly full_name: string;
 
     @IsNotEmpty()
     readonly login: string;

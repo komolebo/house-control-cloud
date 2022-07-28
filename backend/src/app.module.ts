@@ -10,6 +10,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import { NotificationModule } from './modules/notification/notification.module';
 import { SocketModule } from './sockets/socket.module';
 import {HistoryModule} from "./modules/history/history.module";
+import {PreferenceModule} from "./modules/preference/preference.module";
 
 
 @Module({
@@ -28,6 +29,7 @@ import {HistoryModule} from "./modules/history/history.module";
         }),
       DatabaseModule,
       UsersModule,
+      PreferenceModule,
       AuthModule,
       DevicesModule,
       NotificationModule,

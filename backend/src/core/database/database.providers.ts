@@ -9,8 +9,8 @@ import {Devices} from "../../modules/devices/device.entity";
 import {Roles} from "../../modules/devices/role.entity";
 import {Notifications} from "../../modules/notification/notification.entity";
 import {Histories} from "../../modules/history/history.entity";
-import {Preference} from "../../modules/users/preference.entity";
-import {Blacklist} from "../../modules/users/blacklist.entity";
+import {Preference} from "../../modules/preference/preference.entity";
+import {Blacklist} from "../../modules/preference/blacklist.entity";
 
 
 function getRealPathFromGenFiles(js_path: string) : string {

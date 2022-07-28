@@ -129,12 +129,12 @@ export class DevicesService {
             const uId = el.id;
 
             if (uId === thisUserId) curRole = role;
-            if (role === "OWNER") ownersCount += 1;
+            if (role === RoleValues.Owner) ownersCount += 1;
         })
 
         // remove myself if you're not the single left OWNER
         const curUser = conn_users.find(el => el.id === thisUserId)
-        if (curRole !== "OWNER" || ownersCount > 1) {
+        if (curRole !== RoleValues.Owner || ownersCount > 1) {
             const res = await device.$remove("users", curUser)
             conn_users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             return res
@@ -219,19 +219,18 @@ export class DevicesService {
 
     async inviteUser(uLogin: string, thisUID: number, devHex: string, role: string) {
         console.log("inviteUser, uLogin=", uLogin, "hex=", devHex, " by req of:", thisUID, " role=", role);
+        uLogin = uLogin.toLowerCase()
 
         // check if you are an owner for this device
         await this.deviceRepository.findOne({
             where: {hex: devHex},
             include: {model: Users},
         }).then(d => {
-            const thisUser = d.users.find(el => el.id === thisUID);
-            const usrAlreadyInvited = d.users.find(el => el.login === uLogin) !== undefined;
-
-            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
-                !usrAlreadyInvited) {
+            if (this.isUserAnOwner(thisUID, d) && !this.isUserLoginConnectedToDevice(uLogin, d)) {
                 this.usersRepository.findOne({where: {login: uLogin}})
                     .then(objUser => {
+                        if (!objUser) return;
+
                         d.$add('users', objUser, {through: {role: role}});
                         this.notificationService.createNotificationYouAreInvited(
                             objUser.id, d.id, d.name, d.hex, role)
@@ -241,5 +240,27 @@ export class DevicesService {
                     })
             }
         })
+    }
+
+    calcOwnersPerDevice(device: Devices) {
+        if (!device || !device.users) return 0;
+
+        let owners = 0;
+        device.users.forEach(u => owners += u.get('Roles')["dataValues"].role === RoleValues.Owner ? 1 : 0)
+
+        return owners;
+    }
+    isUserAnOwner(uId: number, device: Devices) {
+        if (!device || !device.users) return false;
+        const user = device.users.find(el => el.id === uId)
+        return user && user.get("Roles")["dataValues"].role === RoleValues.Owner
+    }
+    isUserIdConnectedToDevice(uId: number, device: Devices) {
+        if (!device || !device.users) return false;
+        return device.users.find (el => el.id === uId) !== undefined
+    }
+    isUserLoginConnectedToDevice(login: string, device: Devices) {
+        if (!device || !device.users) return false;
+        return device.users.find (el => el.login === login) !== undefined
     }
 }

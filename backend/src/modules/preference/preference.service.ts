@@ -1,24 +1,21 @@
-import {BadRequestException, Injectable} from "@nestjs/common";
-import {Users} from "./user.entity";
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Preference} from "./preference.entity";
-import {Blacklist} from "./blacklist.entity";
-import {UsersService} from "./users.service";
-import {PreferenceDto} from "./dto/preference.dto";
+import {Users} from "../users/user.entity";
 import {CloudinaryService} from "../cloudinary/cloudinary.service";
+import {PreferenceDto} from "./dto/preference.dto";
+import {Blacklist} from "./blacklist.entity";
 
 export enum TPreferenceAction {
     delete,
     append = 1,
 }
 
-
 @Injectable()
 export class PreferenceService {
     constructor(@InjectModel (Preference) private readonly prefRepository: typeof Preference,
                 @InjectModel (Users) private readonly userRepository: typeof Users,
-                private cloudinary: CloudinaryService,
-                private readonly usersService: UsersService) {}
+                private cloudinary: CloudinaryService) {}
 
     async createDefault(user: Users) {
         const newPref = await this.prefRepository.create()
@@ -100,7 +97,7 @@ export class PreferenceService {
             where: {id: userId},
             include: [Preference]
         })
-        const blockUser = await this.usersService.findOneById(blockedUserId)
+        const blockUser = await this.userRepository.findOne({where: {id: blockedUserId}})
 
         if (!user || !blockUser) return;
         if (!user.preference) {  // create default
@@ -178,7 +175,7 @@ export class PreferenceService {
         return result
     }
 
-    async removeAvatar(userId: number) {
+    async removeAvatarByUserId(userId: number) {
         const curUser = await this.userRepository.findOne({
             where: {id: userId}, include: [Preference]
         })
@@ -191,7 +188,6 @@ export class PreferenceService {
         const photo_profile_id = curUser.preference.profile_photo_id;
 
         const result = await this.removeImageFromCloudinary(photo_profile_id);
-        console.log("Remove result is ", result)
         if (result) {
             await this.updateUserPref(userId, {
                 profile_photo_id: null, profile_photo: null
@@ -205,7 +201,7 @@ export class PreferenceService {
             throw new BadRequestException('Invalid file type.');
         });
     }
-    private async removeImageFromCloudinary(profile_id: string | null) {
+    async removeImageFromCloudinary(profile_id: string | null) {
         return await this.cloudinary.removeImage (profile_id);
     }
 }

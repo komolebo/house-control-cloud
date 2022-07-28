@@ -13,7 +13,7 @@ import {SocketModule} from "../../sockets/socket.module";
 
 @Module ({
     providers: [DevicesService],
-    exports: [DevicesModule],
+    exports: [DevicesService],
     controllers: [DevicesController],
     imports: [
         NotificationModule,

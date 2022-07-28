@@ -58,6 +58,7 @@ export class AuthService {
         const pass = await this.hashPassword(user.password);
 
         user.email = user.email.toLowerCase()
+        user.login = user.login.toLowerCase()
 
         // create the user
         const newUser = await this.userService.create({ ...user, password: pass});
@@ -68,7 +69,7 @@ export class AuthService {
         // generate token
         const token = await this.generateToken(result);
 
-        await this.historyService.createHistoryItem(user.id, {
+        await this.historyService.createHistoryItem(newUser.id, {
             type: THistoryMsgType[THistoryMsgType.Account],
             text: "Successfully registered in HomeNET"
         })

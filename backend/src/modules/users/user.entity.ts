@@ -3,8 +3,8 @@ import {Roles} from "../devices/role.entity";
 import {Devices} from "../devices/device.entity";
 import {Notifications} from "../notification/notification.entity";
 import {Histories} from "../history/history.entity"
-import {Preference} from "./preference.entity";
-import {Blacklist} from "./blacklist.entity";
+import {Preference} from "../preference/preference.entity";
+import {Blacklist} from "../preference/blacklist.entity";
 
 
 @Table({tableName: 'users'})
@@ -43,12 +43,26 @@ export class Users extends Model<Users> {
     @BelongsToMany(() => Devices, () => Roles)
     devices: Devices[]
 
-    @HasMany(() => Notifications)
+    @HasMany(() => Notifications, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true,
+    })
     notifications: Notifications[]
 
-    @HasMany(() => Histories, 'userId')
+    @HasMany(() => Histories, {
+        foreignKey: "userId",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
     history: Histories[]
 
-    @HasOne(() => Preference, "uId")
+    @HasOne(() => Preference, {
+        foreignKey: "uId",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
     preference: Preference
 }

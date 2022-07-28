@@ -166,7 +166,7 @@ module.exports = {
     });
     await queryInterface.addConstraint("notifications", {
       references: { table: "users", field: "id" },
-      onDelete: "SET NULL",
+      onDelete: "CASCADE",
       onUpdate: "CASCADE",
       fields: ["sourceUserId"],
       type: "foreign key",
@@ -174,7 +174,7 @@ module.exports = {
     });
     await queryInterface.addConstraint("history", {
       references: { table: "users", field: "id" },
-      onDelete: "SET NULL",
+      onDelete: "CASCADE",
       onUpdate: "CASCADE",
       fields: ["userId"],
       type: "foreign key",
@@ -182,7 +182,7 @@ module.exports = {
     });
     await queryInterface.addConstraint("preferences", {
       references: { table: "users", field: "id" },
-      onDelete: "SET NULL",
+      onDelete: "CASCADE",
       onUpdate: "CASCADE",
       fields: ["uId"],
       type: "foreign key",

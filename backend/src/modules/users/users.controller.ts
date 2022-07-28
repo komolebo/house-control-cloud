@@ -40,8 +40,9 @@ export class UsersController {
         return await this.usersService.update(thisUser.id, body);
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: number) {
-        return await this.usersService.deleteUserById(id);
+    @Delete('me')
+    async delete(@Headers() headers) {
+        const thisUser = this.parseHeaders (headers);
+        return await this.usersService.deleteAccountById(thisUser.id);
     }
 }
