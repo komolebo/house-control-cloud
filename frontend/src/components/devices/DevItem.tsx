@@ -34,7 +34,7 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
                 <TextField
                     error={name.length === 0}
                     helperText={name.length === 0 ? "Name cannot be empty" : ""}
-                    id="outlined-uncontrolled"
+                    size={"small"}
                     color={"info"}
                     defaultValue={dev.name}
                     fullWidth={true}

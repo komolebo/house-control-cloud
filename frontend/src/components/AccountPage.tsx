@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useState} from "react";
+import React, {createRef, FC, ReactNode, useContext, useEffect, useRef, useState} from "react";
 import {
     casket,
     commonPage, leftCasket, rightCasket,
@@ -32,6 +32,7 @@ import {
 } from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
+import PhoneInputComponent, {DEFAULT_COUNTRY_CODE} from "./elements/PhoneInputComponent";
 
 interface IState {
     user: TUser,
@@ -77,9 +78,8 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
 
     useEffect(() => {
-        setState({
-            ...state, name: user.full_name, email: user.email, phone: user.phone ? user.phone : ""
-        })
+        clearInput()
+        initView()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
@@ -100,12 +100,18 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         })
     }
     const isDataEdited = () => {
-        return user.full_name !== state.name || user.email !== state.email || user.phone !== state.phone
+        return user.full_name !== state.name || user.email !== state.email ||
+            (user.phone !== state.phone && state.phone !== DEFAULT_COUNTRY_CODE)
+    }
+    const clearInput = () => {
+        state.name = user.full_name;
+        state.email = user.email;
+        state.phone = user.phone ? user.phone : DEFAULT_COUNTRY_CODE
+        state.warningEmail = state.warningName = state.warningPhone = ""
     }
     const verifyName = (name: string) => {
         if (!name.length) {
             state.warningName = "Name cannot be empty"
-            setState({...state, warningName: "Name cannot be empty"})
             return false;
         }
         return true;
@@ -115,17 +121,26 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
             state.warningEmail = "Email cannot be empty"
             return false;
         }
-        return true
+
+        const formatOk = email.match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
+        if (!formatOk) {
+            state.warningEmail = "Incorrect email format"
+            return false;
+        }
+        return true;
     }
     const verifyPhone = (phone: string) => {
-        if (!phone.length) {
-            state.warningPhone = "Phone cannot be empty"
+        if (phone.length !== 12) {
+            state.warningPhone = "Incorrect phone number format"
             return false;
         }
         return true
     }
     const handleSave = () => {
         const changedUserFields: { [key: string] : string } = {}
+        state.warningPhone = state.warningName = state.warningEmail = ""
         let validateOk = true;
         if (state.name !== user.full_name) {
             if (verifyName(state.name)) {
@@ -137,7 +152,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                 changedUserFields["email"] = state.email
             } else { validateOk = false; }
         }
-        if (state.phone !== user.phone) {
+        if (state.phone !== user.phone && state.phone !== DEFAULT_COUNTRY_CODE) {
             if (verifyPhone(state.phone)) {
                 changedUserFields["phone"] = state.phone
             } else { validateOk = false; }
@@ -156,8 +171,6 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     }
 
     return <div className={casket}>
-        <div className={h2Font}>Avatar</div>
-
         <div className={cntrVContent}>
             <div style={{textAlign: "center"}}>
                 <Avatar
@@ -199,8 +212,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
         {state.editMode
             ? <Button variant={"text"}
-                    onClick={() => setState({...state,
-                        editMode: false, warningName: "", warningPhone: "", warningEmail: ""})}
+                    onClick={() => {clearInput(); setState({...state, editMode: false})}}
                     sx={{
                         right: 0, top: 10, position:'absolute',
                     }}
@@ -246,7 +258,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             error={state.warningEmail.length > 0}
                             helperText={state.warningEmail}
                             defaultValue={user.email}
-                            onChange={e => setState({...state, email: e.target.value})}
+                            onChange={e => setState({...state, email: e.target.value.toLowerCase()})}
                             fullWidth={true}
                             size={"small"}
                         />
@@ -264,10 +276,16 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                         <TextField
                             error={state.warningPhone.length > 0}
                             helperText={state.warningPhone}
-                            defaultValue={state.phone ? state.phone : ""}
-                            fullWidth={true}
+                            // onChange={e => setState({...state, phone: e.target.value})}
+                            value={state.phone}
                             size={"small"}
-                            onChange={e => setState({...state, phone: e.target.value})}
+                            fullWidth={true}
+                            InputProps={{
+                                inputComponent: PhoneInputComponent,
+                                autoFocus: true,
+                                onChange: e => setState({...state, phone: e.target.value.replace(/[^\d]/g, '')}),
+                                // removeMaskOnSubmit: true
+                            }}
                         />
                     </div>
                     <Button style={{height: 24 }} >
