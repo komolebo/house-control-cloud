@@ -39,14 +39,14 @@ export function fetchConnUsersByDevice(dev_id: number,
             onThen(userList);
         })
 }
-export function getSelfFullInfo() {
-    return host.get("api/users/me")
+export function nestGetUserFullInfo(userId: number) {
+    return host.get("api/users/" + userId)
 }
-export function patchUpdateSelfInfo(data: any) {
-    return host.patch("api/users/me", data)
+export function nestPatchUpdateUserInfo(userId: number, data: any) {
+    return host.patch("api/users/" + userId, data)
 }
-export function deleteSelfAccount() {
-    return host.delete("api/users/me")
+export function deleteSelfAccount(userId: number) {
+    return host.delete("api/users/" + userId)
 }
 
 
@@ -113,12 +113,12 @@ export function deleteNotification(notifId: number) {
 
 
 // History
-export function postGetHistoryPerUser() {
-    return host.get("api/history/list/")
+export function nestPostGetHistoryPerUser(userId: number) {
+    return host.get("api/history/list/" + userId)
 }
-export function postDeleteHistoryPerUser(idArr: Array<number>) {
+export function nestDeleteUserHistory(userId: number, idArr: Array<number>) {
     console.log("Deleting", idArr)
-    return host.delete("api/history/", {
+    return host.delete("api/history/" + userId, {
         data: {
             "id": idArr
         }
@@ -137,21 +137,21 @@ export function DataURIToBlob(dataURI: string) {
 
     return new Blob([ia], { type: mimeString })
 }
-export function getPreferences() {
-    return host.get("api/user/preference/")
+export function nestGetPreference(userId: number) {
+    return host.get("api/user/preference/" + userId)
+}
+export function nestGetBlackList(userId: number) {
+    return host.get("api/user/preference/black_list/" + userId)
 }
 export function postUnblockUser(userId: number) {
     return host.delete("api/user/preference/black_list/" + userId)
 }
-export function postUpdateUserPref(pref: TUPref) {
-    return host.patch("api/user/preference/", pref)
+export function nestPatchUserPref(userId: number, pref: TUPref) {
+    return host.patch("api/user/preference/" + userId, pref)
 }
-export function postUploadAvatar(fileForm: any) {
-    return host.post("api/user/preference/upload/", fileForm)
+export function nestPostUploadAvatar(userId: number, fileForm: any) {
+    return host.post("api/user/preference/avatar/" + userId, fileForm)
 }
-export function postRemoveAvatar() {
-    return host.delete("api/user/preference/upload/")
-}
-export function getBlackList() {
-    return host.get("api/user/preference/black_list")
+export function nestPostRemoveAvatar(userId: number) {
+    return host.delete("api/user/preference/avatar/"+ userId)
 }

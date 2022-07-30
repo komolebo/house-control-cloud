@@ -78,6 +78,7 @@ export class PreferenceService {
             await this.createDefault(user)
         }
 
+        console.log("changing", prefDto.dark_mode)
         if (prefDto.phone_verified !== undefined)
             user.preference.setDataValue("phone_verified", prefDto.phone_verified)
         if (prefDto.email_verified !== undefined)

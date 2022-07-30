@@ -8,74 +8,63 @@ import {
     Patch,
     Post,
     Put,
-    UploadedFile,
+    UploadedFile, UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import {JwtService} from "@nestjs/jwt";
 import {Users} from "../users/user.entity";
 import {PreferenceDto} from "./dto/preference.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {PreferenceService, TPreferenceAction} from "./preference.service";
+import {ENDPOINT_PARAM_USER_ID, UserIsUser} from "../../core/guards/UserIsUser";
 
 
 @Controller('api/user/preference')
 export class PreferenceController {
-    constructor(private prefService: PreferenceService,
-                private jwtService: JwtService) {}
+    constructor(private prefService: PreferenceService) {}
 
-    private parseHeaders(headers) {
-        const [, token] = headers.authorization.split ("Bearer ")
-        const decodeData = this.jwtService.decode(token);
-        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
-        return thisUser;
+    @UseGuards(UserIsUser)
+    @Get(`:${ENDPOINT_PARAM_USER_ID}`)
+    async getPreferenceByUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return this.prefService.getPrefByUserId(Number(userId))
     }
 
-    @Get()
-    async getPreferenceByUser(@Headers() headers) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.getPrefByUserId(Number(thisUser.id))
-    }
-
-    @Patch()
-    async updateUserPreference(@Headers() headers,
+    @UseGuards(UserIsUser)
+    @Patch(`:${ENDPOINT_PARAM_USER_ID}`)
+    async updateUserPreference(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                                @Body() body: PreferenceDto) {
-        const thisUser: Users = this.parseHeaders(headers);
         console.log(body)
-        return this.prefService.updateUserPref(Number(thisUser.id), body)
+        return this.prefService.updateUserPref(Number(userId), body)
     }
 
-    @Get('black_list')
-    async getBlackList(@Headers() headers) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.getBlackListByUserId(Number(thisUser.id))
+    @UseGuards(UserIsUser)
+    @Get(`black_list/:${ENDPOINT_PARAM_USER_ID}`)
+    async getBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return this.prefService.getBlackListByUserId(Number(userId))
     }
 
-    @Put('black_list/:user_id')
-    async appendBlackList(@Headers() headers,
-                          @Param('user_id') uBlockId: number) {
-        const thisUser: Users = this.parseHeaders(headers);
-        console.log(uBlockId, thisUser)
-        return this.prefService.modifyBlockList(Number(thisUser.id), Number(uBlockId), TPreferenceAction.append)
+    @UseGuards(UserIsUser)
+    @Put(`black_list/:${ENDPOINT_PARAM_USER_ID}/:block_id`)
+    async appendBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                          @Param('block_id') uBlockId: number) {
+        return this.prefService.modifyBlockList(Number(userId), Number(uBlockId), TPreferenceAction.append)
     }
 
-    @Delete('black_list/:user_id')
-    async removeFromBlackList(@Headers() headers,
-                              @Param('user_id') unblockId: number) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.modifyBlockList(Number(thisUser.id), Number(unblockId), TPreferenceAction.delete)
+    @UseGuards(UserIsUser)
+    @Delete(`black_list/:${ENDPOINT_PARAM_USER_ID}/:block_id`)
+    async removeFromBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                              @Param('block_id') unblockId: number) {
+        return this.prefService.modifyBlockList(Number(userId), Number(unblockId), TPreferenceAction.delete)
     }
 
-    @Post('upload')
+    @Post(`avatar/:${ENDPOINT_PARAM_USER_ID}`)
     @UseInterceptors(FileInterceptor('file'))
-    async uploadUserAvatar(@Headers() headers,
+    async uploadUserAvatar(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                            @UploadedFile() file: Express.Multer.File) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.uploadAvatar(thisUser.id, file)
+        return this.prefService.uploadAvatar(userId, file)
     }
 
-    @Delete('upload')
-    async removeUserAvatar(@Headers() headers) {
-        const thisUser: Users = this.parseHeaders(headers);
-        return this.prefService.removeAvatarByUserId(thisUser.id);
+    @Delete(`avatar/:${ENDPOINT_PARAM_USER_ID}`)
+    async removeUserAvatar(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return this.prefService.removeAvatarByUserId(userId);
     }
 }

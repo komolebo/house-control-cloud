@@ -20,7 +20,7 @@ import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
-import {getPreferences, isNotificationPerUser} from "../http/rqData";
+import {nestGetPreference, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
@@ -39,7 +39,7 @@ export const NavBar: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        getPreferences().then(resp => {
+        userInfo && nestGetPreference(userInfo.id).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 const preference = resp.data.preference
                 preference && setAvatarSrc(preference.profile_photo);

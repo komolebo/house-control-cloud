@@ -11,7 +11,6 @@ import {Preference} from "../preference/preference.entity";
 import {Blacklist} from "../preference/blacklist.entity";
 import {AuthModule} from "../auth/auth.module";
 import {PreferenceModule} from "../preference/preference.module";
-import {DevicesService} from "../devices/devices.service";
 import {DevicesModule} from "../devices/devices.module";
 
 @Module({
@@ -22,7 +21,7 @@ import {DevicesModule} from "../devices/devices.module";
       DevicesModule,
       PreferenceModule,
       DatabaseModule,
-      AuthModule,
+      forwardRef(() => AuthModule),
       SequelizeModule.forFeature([Devices, Users, Roles, Preference, Blacklist]),
   ]
 })

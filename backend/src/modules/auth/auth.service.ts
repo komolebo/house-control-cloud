@@ -100,4 +100,11 @@ export class AuthService {
         const match = await bcrypt.compare(enteredPassword, dbPassword);
         return match;
     }
+
+    parseHeaders(authorization) {
+        const [, token] =authorization.split ("Bearer ")
+        const decodeData = this.jwtService.decode(token);
+        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
+        return thisUser;
+    }
 }

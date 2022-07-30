@@ -9,13 +9,14 @@ import {DatabaseModule} from "../../core/database/database.module";
 import {AuthModule} from "../auth/auth.module";
 
 @Module ({
-    providers: [HistoryService],
     controllers: [HistoryController],
+    providers: [HistoryService],
     exports: [HistoryService],
     imports: [
+        forwardRef(() => AuthModule),
+        forwardRef(() => UsersModule),
         DatabaseModule,
         SequelizeModule.forFeature ([Users, Histories]),
-        forwardRef(() => AuthModule)
     ]
 })
 export class HistoryModule {

@@ -1,6 +1,7 @@
 import {createContext, FC, useEffect, useState} from "react";
-import {getSelfFullInfo} from "../http/rqData";
+import {nestGetUserFullInfo} from "../http/rqData";
 import {updateTokenInHostHeaders} from "../http";
+import jwtDecode from "jwt-decode";
 
 const USER_TOKEN = "USER_TOKEN"
 
@@ -29,20 +30,28 @@ export function getAuthToken() {
 export function isAuth(): boolean {
     return getAuthToken() !== null;
 }
+const initUserInfoFromStore = () => {
+    const token = getAuthToken()
+    const user: IUserSetting | null = token ? jwtDecode(token) : null
+    return user ? user : null
+}
 
 export const useUserGlobalInfo = () => {
     const [authorized, setAuthorized] = useState(isAuth());
     const [avatarSrc, setAvatarSrc] = useState<string>("")
-    const [userInfo, setUserInfo] = useState<IUserSetting | null>(null)
+    const [userInfo, setUserInfo] = useState<IUserSetting | null>(
+        authorized ? initUserInfoFromStore() : null
+    )
 
     useEffect(() => {
-        if (authorized) {
-            getSelfFullInfo().then(resp => {
+        if (authorized && userInfo) {
+            nestGetUserFullInfo(userInfo.id).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
                     setUserInfo(resp.data)
                 }
             })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authorized])
 
     const setAuthData = (jwtToken: string) => {

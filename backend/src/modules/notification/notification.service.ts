@@ -33,7 +33,7 @@ export class NotificationService {
         return await this.notificationRepository.destroy({where: {id: notificationId}});
     }
 
-    async removeNotificationFromUser(notificationId: number, userId: number) {
+    async removeNotificationFromUser(userId: number, notificationId: number) {
         const uObj = await this.userRepository.findOne({
             where: {id: userId},
             include: {model: Notifications, where: {id: notificationId}}

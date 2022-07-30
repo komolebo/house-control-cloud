@@ -43,7 +43,7 @@ import {shorterMuiBtn} from "../styles/common/buttons.css";
 import {cntrContent, cntrVContent, flexG1, floatr} from "../styles/common/position.css";
 import moment from "moment";
 import logoSettings from "../assets/settings.svg";
-import {postDeleteHistoryPerUser, postGetHistoryPerUser} from "../http/rqData";
+import {nestDeleteUserHistory, nestPostGetHistoryPerUser} from "../http/rqData";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {NavSeq} from "./NavSeq";
 import {commonPage} from "../styles/common/pages.css";
@@ -125,7 +125,7 @@ export const HistoryPage: FC = () => {
         setState({...state, filteredIndexes: applyFilters()})
     }
     const syncData = () => {
-        userInfo && postGetHistoryPerUser().then(resp => {
+        userInfo && nestPostGetHistoryPerUser(userInfo.id).then(resp => {
             if(resp.status === 200 || resp.status === 201) {
                 console.log("history records:", resp.data)
                 historyData = [...resp.data]
@@ -231,18 +231,19 @@ export const HistoryPage: FC = () => {
         const ind = state.filteredIndexes[state.setting.clickInd]
 
         historyData[ind].text = "Deleted";
-        postDeleteHistoryPerUser([historyData[ind].id]).then(resp => {
+        userInfo && nestDeleteUserHistory(userInfo.id, [historyData[ind].id]).then(resp => {
             console.log("history deleted")
             syncData()
         })
         initView();
     }
     const handleDeleteMultiple = () => {
-        postDeleteHistoryPerUser(state.selection.map(ind => historyData[ind].id)).then(resp => {
-            state.selection = []
-            state.editMode = false;
-            console.log("history deleted")
-            syncData()
+        userInfo && nestDeleteUserHistory(userInfo.id, state.selection.map(ind => historyData[ind].id))
+            .then(resp => {
+                state.selection = []
+                state.editMode = false;
+                console.log("history deleted")
+                syncData()
         })
         // initView();
     }

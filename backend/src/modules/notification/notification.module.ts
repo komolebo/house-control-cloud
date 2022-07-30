@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import {SequelizeModule} from "@nestjs/sequelize";
@@ -8,17 +8,19 @@ import {Users} from "../users/user.entity";
 import {SocketModule} from "../../sockets/socket.module";
 import {AuthModule} from "../auth/auth.module";
 import {HistoryModule} from "../history/history.module";
+import {UsersModule} from "../users/users.module";
 
 @Module({
-  providers: [NotificationService],
   controllers: [NotificationController],
+  providers: [NotificationService],
   exports: [NotificationService],
   imports: [
+      forwardRef(() => UsersModule),
+      forwardRef(() => AuthModule),
       DatabaseModule,
       SequelizeModule.forFeature([Notifications, Users]),
       SocketModule,
       HistoryModule,
-      AuthModule
   ]
 })
 export class NotificationModule {}

@@ -1,4 +1,4 @@
-import React, {createRef, FC, ReactNode, useContext, useEffect, useRef, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {
     casket,
     commonPage, leftCasket, rightCasket,
@@ -6,7 +6,7 @@ import {
     simpleCasketRo,
     simpleCasketTr
 } from '../styles/common/pages.css'
-import {h2Font, h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
+import {h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
@@ -23,12 +23,12 @@ import {colBlue} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {
-    getBlackList,
-    getSelfFullInfo,
-    patchUpdateSelfInfo,
-    postRemoveAvatar,
+    nestGetBlackList,
+    nestGetUserFullInfo,
+    nestPatchUpdateUserInfo,
+    nestPostRemoveAvatar,
     postUnblockUser,
-    postUpdateUserPref
+    nestPatchUserPref
 } from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
@@ -73,7 +73,7 @@ const initialBaseInfoState: IBaseInfoState = {
 }
 
 const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
-    const {avatarSrc, setAvatarSrc, updateUserInfo} = useContext(UserGlobalContext);
+    const {avatarSrc, setAvatarSrc, updateUserInfo, userInfo} = useContext(UserGlobalContext);
     const {showModal, hideModal} = useGlobalModalContext();
     let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
 
@@ -92,7 +92,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     }
     const handleRemoveAvatar = () => {
         setState({...state, loadingRemoval: true})
-        postRemoveAvatar().then(res => {
+        userInfo && nestPostRemoveAvatar(userInfo.id).then(res => {
             console.log(res);
             setAvatarSrc("");
             onChange();
@@ -160,7 +160,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         initView()
 
         if(validateOk && Object.keys(changedUserFields).length) {
-            patchUpdateSelfInfo(changedUserFields).then(resp => {
+            nestPatchUpdateUserInfo(user.id, changedUserFields).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
                     setState({...state, editMode: false})
                     updateUserInfo(changedUserFields)
@@ -282,9 +282,8 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             fullWidth={true}
                             InputProps={{
                                 inputComponent: PhoneInputComponent,
-                                autoFocus: true,
+                                // autoFocus: true,
                                 onChange: e => setState({...state, phone: e.target.value.replace(/[^\d]/g, '')}),
-                                // removeMaskOnSubmit: true
                             }}
                         />
                     </div>
@@ -336,6 +335,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
 const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) => {
     const [unwrap, setUnwrap] = useState(false);
+    const dark_mode = Boolean(user.preference.dark_mode)
 
     const handleUnblockUser = (i: number) => {
         if (!user.preference || !blackList) return;
@@ -348,8 +348,10 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
     }
     const handleDarkModeChange = (e: any) => {
         user.preference.dark_mode = e.target.checked;
-        postUpdateUserPref(user.preference).then(res => {
-            if (res.status === 201) {
+        nestPatchUserPref(user.id, {
+            dark_mode: user.preference.dark_mode
+        }).then(res => {
+            if (res.status === 200) {
                 onChange();
             }
         })
@@ -359,7 +361,7 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
         <div style={{display: "flex", justifyContent: "flex-end"}}>
             <FormControlLabel
                 control={
-                    <Switch value={user.preference.dark_mode}
+                    <Switch checked={dark_mode}
                             onChange={handleDarkModeChange}
                     />}
                 label="Dark mode"
@@ -403,12 +405,13 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
 
 export const AccountPage: FC = () => {
     const [state, setState] = useState<IState>(initialState)
+    const {userInfo} = useContext(UserGlobalContext);
 
     const initView = () => {
         setState({...state})
     }
     const syncBlackListOnly = () => {
-        getBlackList().then(resp => {
+        userInfo && nestGetBlackList(userInfo.id).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 state.blackList = resp.data
                 initView();
@@ -416,7 +419,7 @@ export const AccountPage: FC = () => {
         })
     }
     const syncAllData = () => {
-        getSelfFullInfo().then(resp => {
+        userInfo && nestGetUserFullInfo(userInfo.id).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 state.user = resp.data
                 syncBlackListOnly();

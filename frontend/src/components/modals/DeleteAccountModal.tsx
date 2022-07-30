@@ -22,13 +22,13 @@ interface IProp {
 export const DeleteAccountModal: FC<IProp> = () => {
     const {modalProps } = useGlobalModalContext();
     const {onClose} = modalProps;
-    const {clearUserData} = useContext(UserGlobalContext);
+    const {userInfo, clearUserData} = useContext(UserGlobalContext);
 
     const [loading, setLoading] = useState(false)
 
     const handleClear = () => {
         setLoading(true)
-        deleteSelfAccount().then(resp => {
+        userInfo && deleteSelfAccount(userInfo.id).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 clearUserData()
                 onClose()

@@ -9,6 +9,13 @@ import {DatabaseModule} from "../../core/database/database.module";
 import {HistoryModule} from "../history/history.module";
 
 @Module ({
+    providers: [
+        AuthService,
+        // LocalStrategy,
+        JwtStrategy
+    ],
+    controllers: [AuthController],
+    exports: [JwtModule, AuthService],
     imports: [
         DatabaseModule,
         PassportModule,
@@ -18,13 +25,6 @@ import {HistoryModule} from "../history/history.module";
         }),
         forwardRef(() => UsersModule),
         forwardRef(() => HistoryModule)
-    ],
-    providers: [
-        AuthService,
-        // LocalStrategy,
-        JwtStrategy
-    ],
-    controllers: [AuthController],
-    exports: [JwtModule]
+    ]
 })
 export class AuthModule {}

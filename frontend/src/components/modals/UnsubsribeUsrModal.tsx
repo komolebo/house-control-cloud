@@ -1,13 +1,12 @@
 import React, {FC, useState} from "react";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
-import {Box, Button, ThemeProvider} from "@mui/material";
+import {Box, Button} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
-import {theme} from "../mui/muiOverride";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 
 interface IUnsubElemProp {

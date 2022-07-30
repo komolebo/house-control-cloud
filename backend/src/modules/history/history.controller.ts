@@ -1,32 +1,22 @@
-import {Body, Controller, Delete, Get, Headers, Post} from '@nestjs/common';
-import {DevicesService} from "../devices/devices.service";
-import {JwtService} from "@nestjs/jwt";
-import {Users} from "../users/user.entity";
+import {Body, Controller, Delete, Get, Param, UseGuards} from '@nestjs/common';
 import {HistoryService} from "./history.service";
+import {ENDPOINT_PARAM_USER_ID, UserIsUser} from "../../core/guards/UserIsUser";
 
 @Controller('api/history')
 export class HistoryController {
-    constructor(private jwtService: JwtService,
-                private historyService: HistoryService) {}
+    constructor(private historyService: HistoryService) {}
 
-    private parseHeaders(headers) {
-        const [, token] = headers.authorization.split ("Bearer ")
-        const decodeData = this.jwtService.decode(token);
-        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
-        return thisUser;
+    @UseGuards(UserIsUser)
+    @Get(`list/:${ENDPOINT_PARAM_USER_ID}`)
+    async getHistoryPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return await this.historyService.getHistoryOfUser(Number(userId));
     }
 
-    @Get('list')
-    async getHistoryPerUser(@Headers() headers) {
-        const thisUser = this.parseHeaders (headers);
-        return await this.historyService.getHistoryOfUser(thisUser.id);
-    }
-
-    @Delete('')
-    async deleteHistoryList(@Headers() headers,
+    @UseGuards(UserIsUser)
+    @Delete(`:${ENDPOINT_PARAM_USER_ID}`)
+    async deleteHistoryList(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                             @Body() body) {
         const keys = body['id'];
-        const thisUser = this.parseHeaders(headers);
-        return await this.historyService.deleteHistoryItems(thisUser.id, keys)
+        return await this.historyService.deleteHistoryItems(Number(userId), keys)
     }
 }

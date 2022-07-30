@@ -1,4 +1,4 @@
-import React, {FC, useRef, useState} from "react";
+import React, {FC, useContext, useRef, useState} from "react";
 import {ModalProps, useGlobalModalContext} from "./ModalProvider";
 import {Avatar as Ava, Box, Button} from "@mui/material";
 import {cntrContent, cntrVContent, flexCont6} from "../../styles/common/position.css";
@@ -6,11 +6,12 @@ import logoDone from "../../assets/done-big.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
-import {DataURIToBlob, postUpdateUserPref, postUploadAvatar} from "../../http/rqData";
+import {DataURIToBlob, nestPatchUserPref, nestPostUploadAvatar} from "../../http/rqData";
 import logoAvaSelect from "../../assets/ava-select.svg";
 import logoAvaAdd from "../../assets/ava-add.svg";
 import AvatarEdit from 'react-avatar-edit'
 import {LoadingButton} from '@mui/lab';
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
 enum EPageState {
     CHOOSE_DEFAULT,
@@ -63,6 +64,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
     const [values, setValues] = useState<IStateChooseDefElem>(initialStateChooseDef)
     const {data, onAct, onClose} = modalProps;
     const curAvatarSrc = data.curAvatarSrc;
+    const {userInfo} = useContext(UserGlobalContext);
 
     const handleSelect = (ind: number, isCurrent: boolean) => {
         setValues({...values,
@@ -79,7 +81,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
     };
     const handleSave = () => {
         const newAvatarSrc: string = getDefaultAvatarPath(values.selected)
-        postUpdateUserPref({
+        userInfo && nestPatchUserPref(userInfo.id, {
             profile_photo: newAvatarSrc
         }).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
@@ -156,13 +158,13 @@ const CropUploadedElement: FC<IPropCropElem> = ({
                                                 }) => {
     const [values, setValues] = useState<IStateCropElem>(initialStateCropElem)
     const {onAct} = modalProps;
-
     const image = useRef(URL.createObjectURL(formData.get("file")))
+    const {userInfo} = useContext(UserGlobalContext);
 
     const handleUpdateAvatar = () => {
         const newForm = new FormData()
         newForm.append("file", DataURIToBlob(values.preview))
-        postUploadAvatar(newForm).then(resp => {
+        userInfo && nestPostUploadAvatar(userInfo.id, newForm).then(resp => {
             if (resp.status === 201 && resp.data.public_id) {
                 // URL.revokeObjectURL(image)
                 console.log("revokeObjectURL")
