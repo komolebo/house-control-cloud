@@ -12,9 +12,7 @@ export const ENDPOINT_PARAM_DEVICE_ID = 'device_id'
 
 @Injectable()
 export class OwnerForDeviceGuard implements CanActivate {
-    constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
-                // private readonly deviceService: DevicesService,
-                private authService: AuthService
+    constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices
     ){}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {

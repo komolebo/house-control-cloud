@@ -1,19 +1,18 @@
-import {HttpCode, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
+import {HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import {createEvalAwarePartialHost} from "ts-node/dist/repl";
-import {UserDto, UserPwdDto} from "../users/dto/user.dto";
+import {JwtService} from '@nestjs/jwt';
+import {UsersService} from '../users/users.service';
+import {UserPwdDto} from "../users/dto/user.dto";
 import {Users} from "../users/user.entity";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
+import {InjectModel} from "@nestjs/sequelize";
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly userService: UsersService,
-        private readonly jwtService: JwtService,
-        private readonly historyService: HistoryService
+    constructor(@InjectModel(Users) private userRepository: typeof Users,
+                private readonly jwtService: JwtService,
+                private readonly historyService: HistoryService
     ) { }
 
     async validateUser(email: string, password: string) {
@@ -26,9 +25,9 @@ export class AuthService {
 
         login = login.toLowerCase()
 
-        let user = await this.userService.findOneByLogin(login);
+        let user = await this.userRepository.findOne({where: {login: login}});
         if (!user) {
-            user = await this.userService.findOneByEmail(login)
+            user = await this.userRepository.findOne({where: {email: login}})
             if (!user) {
                 return new UnauthorizedException({message: 'User not exist'})
             }
@@ -61,7 +60,7 @@ export class AuthService {
         user.login = user.login.toLowerCase()
 
         // create the user
-        const newUser = await this.userService.create({ ...user, password: pass});
+        const newUser = await this.userRepository.create({ ...user, password: pass});
 
         // tslint:disable-next-line: no-string-literal
         const { password, ...result } = newUser['dataValues'];
@@ -78,7 +77,7 @@ export class AuthService {
     }
 
     public async updatePwd(userId: number, pass: UserPwdDto) {
-        const user : Users = await this.userService.findOneById(userId);
+        const user : Users = await this.userRepository.findOne({where: {id: userId}});
         const hash_pass: string = await this.hashPassword(pass.password);
 
         await user.setDataValue('password', hash_pass);
@@ -101,10 +100,10 @@ export class AuthService {
         return match;
     }
 
-    parseHeaders(authorization) {
+    parseHeaders(authorization): Users | null {
+        if (!authorization) return null;
         const [, token] =authorization.split ("Bearer ")
         const decodeData = this.jwtService.decode(token);
-        const thisUser: Users = JSON.parse (JSON.stringify(decodeData));
-        return thisUser;
+        return JSON.parse (JSON.stringify (decodeData));
     }
 }

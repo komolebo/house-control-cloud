@@ -54,24 +54,20 @@ export class DevicesService {
         if (!curUser) return;
 
         const devices = curUser.devices;
-
-        let promises: Array<any> = [];
-
-        devices.map((device) => {
+        for (const device of devices) {
             device["dataValues"]["canUnsubscribe"] = true;
             if (device.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                promises.push(device.$get("users").then(conn_users => {
-                    let manyOwners = false;
-                    conn_users.forEach(u => {
-                        if (u.id !== user_id && u.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                            manyOwners = true;
-                        }
-                    })
-                    device["dataValues"]["canUnsubscribe"] = manyOwners
-                }));
+                const conn_users = await device.$get("users")
+                let manyOwners = false;
+
+                for (const u of conn_users) {
+                    if (u.id !== user_id && u.get("Roles")["dataValues"].role === RoleValues.Owner) {
+                        manyOwners = true;
+                    }
+                }
+                device["dataValues"]["canUnsubscribe"] = manyOwners;
             }
-        })
-        await Promise.all(promises)
+        }
 
         return devices
     }
@@ -134,9 +130,8 @@ export class DevicesService {
         // remove myself if you're not the single left OWNER
         const curUser = conn_users.find(el => el.id === thisUserId)
         if (curRole !== RoleValues.Owner || ownersCount > 1) {
-            const res = await device.$remove("users", curUser)
-            conn_users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
-            return res
+            await device.$remove("users", curUser);
+            return device
         } else {}
     }
 
@@ -161,7 +156,6 @@ export class DevicesService {
                     this.notificationService.createNotificationYouLostAccess(
                         u.id, deviceWithUsers.id, deviceWithUsers.hex, deviceWithUsers.name,
                     )
-                    this.socketService.dispatchDevUpdateMsg(u.id)
                 })
 
                 return res
@@ -190,7 +184,6 @@ export class DevicesService {
             if (objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 const role = objUser["dataValues"]["Roles"]
                 role.set("role", newRole).save()
-                d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             }
         })
     }
@@ -209,7 +202,6 @@ export class DevicesService {
             if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
                 objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 d.$remove("users", objUser);
-                d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
             }
         })
     }
@@ -231,8 +223,6 @@ export class DevicesService {
                         d.$add('users', objUser, {through: {role: role}});
                         this.notificationService.createNotificationYouAreInvited(
                             objUser.id, d.id, d.name, d.hex, role)
-                        d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
-                        this.socketService.dispatchDevUpdateMsg(objUser.id)
                         return
                     })
             }

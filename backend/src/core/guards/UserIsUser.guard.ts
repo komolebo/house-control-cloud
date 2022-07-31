@@ -10,7 +10,6 @@ export const ENDPOINT_PARAM_USER_ID = 'user_id'
 @Injectable()
 export class UserIsUserGuard implements CanActivate {
     constructor(@InjectModel(Users) private readonly userRepository: typeof Users,
-                private readonly userService: UsersService,
                 private authService: AuthService
     ){}
 
@@ -23,7 +22,7 @@ export class UserIsUserGuard implements CanActivate {
         const userFromToken = this.authService.parseHeaders(request.headers.authorization)
         const paramUserId = request.params[ENDPOINT_PARAM_USER_ID];
 
-        return userFromToken && paramUserId && this.userService.findOneById(userFromToken.id)
+        return userFromToken && paramUserId && this.userRepository.findOne({where: {id: userFromToken.id}})
             .then((user: Users) => {
                 let hasPermission = false;
 

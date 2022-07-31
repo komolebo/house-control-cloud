@@ -1,10 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { UsersService } from '../../modules/users/users.service';
+import {InjectModel} from "@nestjs/sequelize";
+import {Users} from "../../modules/users/user.entity";
 
 @Injectable()
 export class UserNotExistGuard implements CanActivate {
-    constructor(private readonly userService: UsersService) {}
+    constructor(@InjectModel(Users) private userRepository: typeof Users) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
@@ -12,12 +13,12 @@ export class UserNotExistGuard implements CanActivate {
     }
 
     async validateRequest(request) {
-        const emailExist = await this.userService.findOneByEmail(request.body.email);
+        const emailExist = await this.userRepository.findOne({where: {email: request.body.email}});
         if (emailExist) {
             throw new ForbiddenException('This email already exists');
         }
 
-        const loginExist = await this.userService.findOneByLogin(request.body.email)
+        const loginExist = await this.userRepository.findOne({where: {login: request.body.login}})
         if (loginExist) {
             throw new ForbiddenException('This login already exists');
         }

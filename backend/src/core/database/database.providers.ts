@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants/index1';
+import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../globals/db_constants';
 import { databaseConfig } from './database.config';
 import * as path from 'path';
 import { generateMigration } from "sequelize-typescript-model-migration";

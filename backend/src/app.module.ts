@@ -8,9 +8,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import {SequelizeModule} from "@nestjs/sequelize";
 import { NotificationModule } from './modules/notification/notification.module';
-import { SocketModule } from './sockets/socket.module';
 import {HistoryModule} from "./modules/history/history.module";
 import {PreferenceModule} from "./modules/preference/preference.module";
+import {SocketModule} from "./sockets/socket.module";
 
 
 @Module({
@@ -34,7 +34,7 @@ import {PreferenceModule} from "./modules/preference/preference.module";
       DevicesModule,
       NotificationModule,
       HistoryModule,
-      // SocketModule,
+      SocketModule
   ],
   controllers: [AppController],
   providers: [AppService],

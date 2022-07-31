@@ -7,14 +7,18 @@ import {JwtModule} from "@nestjs/jwt";
 import {JwtStrategy} from "./jwt.strategy";
 import {DatabaseModule} from "../../core/database/database.module";
 import {HistoryModule} from "../history/history.module";
+import {DevicesModule} from "../devices/devices.module";
+import {SequelizeModule} from "@nestjs/sequelize";
+import {Users} from "../users/user.entity";
+import {Histories} from "../history/history.entity";
 
 @Module ({
+    controllers: [AuthController],
     providers: [
         AuthService,
         // LocalStrategy,
         JwtStrategy
     ],
-    controllers: [AuthController],
     exports: [JwtModule, AuthService],
     imports: [
         DatabaseModule,
@@ -23,7 +27,7 @@ import {HistoryModule} from "../history/history.module";
             secret: process.env.JWTKEY,
             signOptions: {expiresIn: process.env.TOKEN_EXPIRATION}
         }),
-        forwardRef(() => UsersModule),
+        SequelizeModule.forFeature ([Users]),
         forwardRef(() => HistoryModule)
     ]
 })
