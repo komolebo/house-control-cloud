@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { UsersService } from '../../modules/users/users.service';
 
 @Injectable()
-export class UserDoesNotExist implements CanActivate {
+export class UserNotExistGuard implements CanActivate {
     constructor(private readonly userService: UsersService) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {

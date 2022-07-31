@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
@@ -8,7 +8,8 @@ import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
-import {postInviteUser} from "../../http/rqData";
+import {nestPostInviteUser} from "../../http/rqData";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
 type TInviteUsrInfo = {
     login: string;
@@ -57,6 +58,7 @@ const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
 const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
     const {modalProps } = useGlobalModalContext();
     const {data} = modalProps;
+    const  {userInfo} = useContext(UserGlobalContext);
 
     const [userLogin, setUserLogin] = useState("");
     const [warning, setWarning] = useState("");
@@ -78,15 +80,16 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         }
     };
     const handleUserInvite = () => {
-        postInviteUser(data.devInfo.hex, userLogin, TDevRole[role]).then(resp => {
-            if (resp.status === 201) {
-                onAction({
-                    role: role,
-                    login: userLogin
-                });
-            } else {
-                setWarning("User ID not found")
-            }
+        userInfo && nestPostInviteUser(userInfo.id, data.devInfo.hex, userLogin, TDevRole[role])
+            .then(resp => {
+                if (resp.status === 201) {
+                    onAction({
+                        role: role,
+                        login: userLogin
+                    });
+                } else {
+                    setWarning("User ID not found")
+                }
         })
     }
 

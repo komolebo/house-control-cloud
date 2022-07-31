@@ -12,7 +12,7 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {fetchDevListByUser, postUnsubscribeFromDevice} from "../../http/rqData";
+import {nestGetDevListByUser, nestPostUnsubscribeFromDevice, roleStrToId} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {casket, leftCasket, rightCasket} from "../../styles/common/pages.css";
@@ -38,7 +38,7 @@ export const DevContainer: FC = () => {
     }
 
     const unsubscribeDevice = (devId: string) => {
-        postUnsubscribeFromDevice(devId).then(resp => {
+        userInfo && nestPostUnsubscribeFromDevice(userInfo.id, devId).then(resp => {
             // console.log("Unsubscribed: ")
             setValues({...values, ind: values.ind - 1})
         })
@@ -52,23 +52,33 @@ export const DevContainer: FC = () => {
     }
 
     const syncData = () => {
-        userInfo && fetchDevListByUser(userInfo.id, (devList: Array<TDevItem>) => {
-            if (JSON.stringify(values.devices) !== JSON.stringify(devList)) {
-                console.log("Syncing data change: ", devList)
+        userInfo && nestGetDevListByUser(userInfo.id).then(resp => {
+            let devList: Array<TDevItem> = [];
 
-                // handle newInd change to avoid extra window switching
-                const newInd = values.ind < devList.length
-                    ? values.ind < 0
-                        ? 0
-                        : values.ind
-                    : devList.length
-                        ? 0
-                        : -1
-                setValues({
-                    devices: devList,
-                    ind: newInd,
+            resp.data.forEach((dev: any) => {
+                devList.push({
+                    name: dev.name,
+                    hex: dev.hex,
+                    ip: dev.ip,
+                    role: roleStrToId(dev.Roles.role),
+                    active: dev.active,
+                    id: dev.id,
+                    status: 0,
+                    unsubscribable: dev.canUnsubscribe,
+                    version: dev.version
                 })
-            }
+            })
+
+            console.log("Syncing data change: ", devList)
+
+            // handle newInd change to avoid extra window switching
+            const newInd = values.ind < devList.length
+                ? values.ind < 0 ? 0 : values.ind
+                : devList.length ? 0 : -1
+            setValues({
+                devices: devList,
+                ind: newInd,
+            })
         })
     }
 

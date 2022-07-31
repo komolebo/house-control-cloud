@@ -96,7 +96,7 @@ export class DevicesService {
         return await this.deviceRepository.destroy({where: {id: device_id}})
     }
 
-    async accessDeviceByHex(hexId: string, thisUserId: number) {
+    async accessDeviceByHex(hexId: string, thisUserId: number, role: string) {
         console.log("Requesting access to ", hexId, " for user=", thisUserId)
         hexId = hexId.toLowerCase()
 
@@ -106,10 +106,9 @@ export class DevicesService {
         if(device.users.length) {
             console.log("Device already owned") // TODO
         } else {
-            const newRole = RoleValues.Owner;
-            const res = await this.bindDeviceWithUser(thisUserId, device.id, true, newRole)
+            const res = await this.bindDeviceWithUser(thisUserId, device.id, true, RoleValues[role])
             await this.notificationService.createNotificationYouAreAdded(
-                thisUserId, device.id, device.name, device.hex, newRole)
+                thisUserId, device.id, device.name, device.hex, role)
             return res
         }
     }
@@ -186,11 +185,9 @@ export class DevicesService {
             where: {hex: devHex},
             include: {model: Users},
         }).then(d => {
-            const thisUser = d.users.find(el => el.id === thisUID);
             const objUser = d.users.find(el => el.id === uId);
 
-            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
-                objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
+            if (objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
                 const role = objUser["dataValues"]["Roles"]
                 role.set("role", newRole).save()
                 d.users.forEach(u => this.socketService.dispatchDevUpdateMsg(u.id))
@@ -226,7 +223,7 @@ export class DevicesService {
             where: {hex: devHex},
             include: {model: Users},
         }).then(d => {
-            if (this.isUserAnOwner(thisUID, d) && !this.isUserLoginConnectedToDevice(uLogin, d)) {
+            if (!this.isUserLoginConnectedToDevice(uLogin, d)) {
                 this.usersRepository.findOne({where: {login: uLogin}})
                     .then(objUser => {
                         if (!objUser) return;

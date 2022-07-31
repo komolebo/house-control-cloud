@@ -8,7 +8,7 @@ import {InjectModel} from "@nestjs/sequelize";
 export const ENDPOINT_PARAM_USER_ID = 'user_id'
 
 @Injectable()
-export class UserIsUser implements CanActivate {
+export class UserIsUserGuard implements CanActivate {
     constructor(@InjectModel(Users) private readonly userRepository: typeof Users,
                 private readonly userService: UsersService,
                 private authService: AuthService

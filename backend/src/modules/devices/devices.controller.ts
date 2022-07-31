@@ -5,6 +5,8 @@ import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
 import { Headers } from '@nestjs/common';
 import {Users} from "../users/user.entity";
 import {JwtService} from "@nestjs/jwt";
+import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
+import {ENDPOINT_PARAM_DEVICE_ID, OwnerForDeviceGuard} from "../../core/guards/OwnerForDevice.guard";
 
 
 @Controller('api/devices')
@@ -38,59 +40,62 @@ export class DevicesController {
         return await this.devicesService.bindDeviceWithUser(user_id, device_id, false);
     }
 
-    @Post('access/:device_id')
-    async reqAccessToDevice(@Headers() headers,
-                            @Param('device_id') dev_hex: string) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.accessDeviceByHex(dev_hex, thisUser.id)
+    // @UseGuards(UserIsUserGuard)
+    @UseGuards(OwnerForDeviceGuard)
+    @Post(`access/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:role`)
+    async reqAccessToDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                            @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
+                            @Param('role') role: string) {
+        return this.devicesService.accessDeviceByHex(devHex, userId, role)
+        // return {res: "good"}
     }
 
-
-
-    @Post('forget/:device_id')
-    async reqUnsubscribeFromDevice(@Headers() headers,
-                                   @Param('device_id') dev_hex: string) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.unsubscribeFromDeviceByHex(dev_hex, thisUser.id)
+    @UseGuards(UserIsUserGuard)
+    @Post(`forget/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}`)
+    async reqUnsubscribeFromDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                                   @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string) {
+        return this.devicesService.unsubscribeFromDeviceByHex(devHex, userId)
     }
 
-    @Post('abandon/:device_id')
-    async reqClearDeviceUsers(@Headers() headers,
-                                   @Param('device_id') dev_hex: string) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.clearUsersOfDevice(dev_hex, thisUser.id)
+    @UseGuards(UserIsUserGuard)
+    @UseGuards(OwnerForDeviceGuard)
+    @Post(`reset/:${ENDPOINT_PARAM_DEVICE_ID}`)
+    async reqClearDeviceUsers(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                              @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string) {
+        return this.devicesService.clearUsersOfDevice(devHex, userId)
     }
 
-    @Post('modify/:device_id/:user_id/:role')
-    async reqModifyAccess(@Headers() headers,
-                          @Param('device_id') devHex: string,
-                          @Param('user_id') userId: number,
+    @Post(`modify/:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}/:obj_user_id/:role`)
+    async reqModifyAccess(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
+                          @Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                          @Param('obj_user_id') objUserId: number,
                           @Param('role') role: RoleValues) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.modifyRoleAccess(Number(userId), thisUser.id, devHex, role);
+        return this.devicesService.modifyRoleAccess(objUserId, Number(userId), devHex, role);
     }
 
-    @Delete(':device_id/:user_id')
-    async reqRemoveAccess(@Headers() headers,
-                          @Param('device_id') devHex: string,
-                          @Param('user_id') userId: number) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.removeRole(Number(userId), thisUser.id, devHex);
+    @UseGuards(UserIsUserGuard)
+    @UseGuards(OwnerForDeviceGuard)
+    @Delete(`:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}/:obj_user_id`)
+    async reqRemoveAccess(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                          @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
+                          @Param('obj_user_id') objUserId: number) {
+        return this.devicesService.removeRole(Number(objUserId), Number(userId), devHex);
     }
 
-    @Post('invite/:device_id/:user_id/:role')
-    async reqInviteUser(@Headers() headers,
-                          @Param('device_id') devHex: string,
-                          @Param('user_id') userLogin: string,
-                          @Param('role') role: string) {
-        const thisUser = this.parseHeaders (headers);
-        return this.devicesService.inviteUser(userLogin, thisUser.id, devHex, role);
+    @UseGuards(UserIsUserGuard)
+    @UseGuards(OwnerForDeviceGuard)
+    @Post(`invite/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:login/:role`)
+    async reqInviteUser(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
+                        @Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                        @Param('login') userLogin: string,
+                        @Param('role') role: string) {
+        return this.devicesService.inviteUser(userLogin, userId, devHex, role);
     }
 
-    @Get('list')
-    async getDevicesListPerUser(@Headers() headers) {
-        const thisUser = this.parseHeaders (headers);
-        return await this.devicesService.getDevicesPerUser(thisUser.id);
+    @UseGuards(UserIsUserGuard)
+    @Get(`list/:${ENDPOINT_PARAM_USER_ID}`)
+    async getDevicesListPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return await this.devicesService.getDevicesPerUser(userId);
     }
 
     @Get('role/:user_id/:device_id')

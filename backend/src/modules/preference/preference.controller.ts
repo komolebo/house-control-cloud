@@ -15,20 +15,20 @@ import {Users} from "../users/user.entity";
 import {PreferenceDto} from "./dto/preference.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {PreferenceService, TPreferenceAction} from "./preference.service";
-import {ENDPOINT_PARAM_USER_ID, UserIsUser} from "../../core/guards/UserIsUser";
+import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
 
 
 @Controller('api/user/preference')
 export class PreferenceController {
     constructor(private prefService: PreferenceService) {}
 
-    @UseGuards(UserIsUser)
+    @UseGuards(UserIsUserGuard)
     @Get(`:${ENDPOINT_PARAM_USER_ID}`)
     async getPreferenceByUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
         return this.prefService.getPrefByUserId(Number(userId))
     }
 
-    @UseGuards(UserIsUser)
+    @UseGuards(UserIsUserGuard)
     @Patch(`:${ENDPOINT_PARAM_USER_ID}`)
     async updateUserPreference(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                                @Body() body: PreferenceDto) {
@@ -36,20 +36,20 @@ export class PreferenceController {
         return this.prefService.updateUserPref(Number(userId), body)
     }
 
-    @UseGuards(UserIsUser)
+    @UseGuards(UserIsUserGuard)
     @Get(`black_list/:${ENDPOINT_PARAM_USER_ID}`)
     async getBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
         return this.prefService.getBlackListByUserId(Number(userId))
     }
 
-    @UseGuards(UserIsUser)
+    @UseGuards(UserIsUserGuard)
     @Put(`black_list/:${ENDPOINT_PARAM_USER_ID}/:block_id`)
     async appendBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                           @Param('block_id') uBlockId: number) {
         return this.prefService.modifyBlockList(Number(userId), Number(uBlockId), TPreferenceAction.append)
     }
 
-    @UseGuards(UserIsUser)
+    @UseGuards(UserIsUserGuard)
     @Delete(`black_list/:${ENDPOINT_PARAM_USER_ID}/:block_id`)
     async removeFromBlackList(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                               @Param('block_id') unblockId: number) {

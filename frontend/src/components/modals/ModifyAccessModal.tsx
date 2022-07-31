@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {cntrContent, cntrVContent} from "../../styles/common/position.css";
@@ -11,12 +11,13 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {mediumMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
-import {deleteAccess, postModifyAccess} from "../../http/rqData";
+import {nestDeleteAccess, nestPostModifyAccess} from "../../http/rqData";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
 interface IModifyElemProp {
     onAction: (usrInfo: TConnectedUser | null) => void,
     devInfo: TDevItem,
-    usrInfo: TConnectedUser,
+    objUserInfo: TConnectedUser,
 }
 interface IModifyAccessDoneProp {
     onAction: () => void,
@@ -71,24 +72,25 @@ const DoneElement: FC<IModifyAccessDoneProp> = ({onAction, usrInfo,}) => {
     </Box>
 }
 
-const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo}) => {
-    const [role, setRole] = useState<number>(usrInfo.role);
+const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInfo}) => {
+    const [role, setRole] = useState<number>(objUserInfo.role);
+    const {userInfo} = useContext(UserGlobalContext);
 
     const handleSelectChange = (e: SelectChangeEvent) => {
         setRole(Number(e.target.value));
     };
 
     const handleUpdAccess = () => {
-        usrInfo.role = role;
-        postModifyAccess(devInfo.hex, usrInfo.id, TDevRole[role])
+        objUserInfo.role = role; // TODO: check why is it needed
+        userInfo && nestPostModifyAccess(userInfo.id, devInfo.hex, objUserInfo.id, TDevRole[role])
             .then(() => {
                 accessActionTrigger = AccessActionTrigger.USER_ACCESS_UPDATE;
-                onAction(usrInfo);
+                onAction(objUserInfo);
             })
     }
 
     const handleRmAccess = () => {
-        deleteAccess(devInfo.hex, usrInfo.id)
+        userInfo && nestDeleteAccess(userInfo.id, devInfo.hex, objUserInfo.id)
             .then(() => {
                 accessActionTrigger = AccessActionTrigger.USER_ACCESS_REMOVED;
                 onAction(null);
@@ -113,10 +115,10 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo}) 
         <div className={[h3Font].join(' ')}>User</div>
         <div style={{display: "flex", flexDirection: "row"}}>
             <div className={[h4Font, cntrVContent].join(' ')} style={{marginRight: 15}}>
-                {usrInfo.fullName}
+                {objUserInfo.fullName}
             </div>
-            <ColorRoleLabel role={usrInfo.role}/>
-            {role !== usrInfo.role &&
+            <ColorRoleLabel role={objUserInfo.role}/>
+            {role !== objUserInfo.role &&
                 <div style={{display: "flex"}}>
                     <img src={logoTransition} style={{marginLeft: 5, marginRight: 5}} alt={"Transition logo"}/>
                     <ColorRoleLabel role={role}/>
@@ -163,7 +165,7 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, usrInfo}) 
                         flexGrow: 1,
                         m: 1
                     }}
-                    disabled={role === usrInfo.role}
+                    disabled={role === objUserInfo.role}
                     onClick={() => handleUpdAccess()}
                     className={mediumMuiBtn}
             >
@@ -197,7 +199,7 @@ export const ModifyAccessModal: FC = () => {
                 ? <UpdUsrAccessElement
                     onAction={(usrInfo) => setModeDone(usrInfo)}
                     devInfo={devInfo}
-                    usrInfo={usrInfo}
+                    objUserInfo={usrInfo}
                 />
                 : <DoneElement
                     onAction={() => complete()}

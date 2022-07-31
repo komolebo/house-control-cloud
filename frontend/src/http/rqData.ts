@@ -1,5 +1,5 @@
 import {host} from "./index";
-import {TConnectedUser, TDevItem, TDevRole} from "../globals/DeviceData";
+import {TConnectedUser, TDevRole} from "../globals/DeviceData";
 import {TUPref} from "../globals/AccountData";
 
 
@@ -51,52 +51,31 @@ export function deleteSelfAccount(userId: number) {
 
 
 // Devices
-export function fetchDevListByUser(id: number, onThen: (data: Array<TDevItem>) => void) {
-    host.get("/api/devices/list/")
-        .then(resp =>{
-            let devList: Array<TDevItem> = [];
-
-            resp.data.forEach((dev: any) => {
-                devList.push({
-                    name: dev.name,
-                    hex: dev.hex,
-                    ip: dev.ip,
-                    role: roleStrToId(dev.Roles.role),
-                    active: dev.active,
-                    id: dev.id,
-                    status: 0,
-                    unsubscribable: dev.canUnsubscribe,
-                    version: dev.version
-                })
-            })
-            console.log("fetch devices per user", id, devList);
-            onThen(devList)
-        })
+export function nestGetDevListByUser(userId: number) {
+    return host.get(`/api/devices/list/${userId}`)
 }
-export function postReqRoleAccess(dev_id: string,
-                                  role: string, ) {
-    return host.post("api/devices/access/" + dev_id)
-        .then(resp => {
-            console.log("postAccess response: ", resp)
-            return resp
-        })
+export function nestPostReqRoleAccess(userId: number,
+                                      devId: string,
+                                      role: string, ) {
+    return host.post(`api/devices/access/${devId}/${userId}/${role}`)
 }
-export function postModifyAccess(devHex: string,
-                                 userId: number,
-                                 newRole: string) {
-    return host.post(`api/devices/modify/${devHex}/${userId}/${newRole}`)
+export function nestPostModifyAccess(userId: number,
+                                     devHex: string,
+                                     objUserId: number,
+                                     newRole: string) {
+    return host.post(`api/devices/modify/${userId}/${devHex}/${objUserId}/${newRole}`)
 }
-export function postUnsubscribeFromDevice(devHex: string) {
-    return host.post("api/devices/forget/" + devHex)
+export function nestPostUnsubscribeFromDevice(userId: number, devHex: string) {
+    return host.post(`api/devices/forget/${devHex}/${userId}`) // Add guard not the last
 }
-export function postInviteUser(devHex: string, userLogin: string, role: string) {
-    return host.post(`api/devices/invite/${devHex}/${userLogin}/${role}`)
+export function nestPostInviteUser(userId: number, devHex: string, userLogin: string, role: string) {
+    return host.post(`api/devices/invite/${devHex}/${userId}/${userLogin}/${role}`)
 }
-export function postClearDeviceUsers(devHex: string) {
-    return host.post("api/devices/abandon/" + devHex)
+export function nestPostClearDeviceUsers(userId: number, devHex: string) {
+    return host.post(`api/devices/reset/${userId}/${devHex}`)
 }
-export function deleteAccess(devHex: string, userId: number) {
-    return host.delete(`api/devices/${devHex}/${userId}`)
+export function nestDeleteAccess(userId: number, devHex: string, objUserId: number) {
+    return host.delete(`api/devices/${userId}/${devHex}/${objUserId}`)
 }
 
 

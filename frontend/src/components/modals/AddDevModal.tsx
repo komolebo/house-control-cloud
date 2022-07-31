@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, TextField} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
@@ -7,9 +7,10 @@ import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
-import {postReqRoleAccess} from "../../http/rqData";
+import {nestPostReqRoleAccess} from "../../http/rqData";
 import {TDevRole} from "../../globals/DeviceData";
 import {warnLabel} from "../../styles/common/labels.css";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
@@ -48,6 +49,7 @@ const DoneElement: FC<IFinDevElem> = ({onAction}) => {
 const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     const [devHex, setDevHex] = useState("0011AABB");
     const [warning, setWarning] = useState("");
+    const {userInfo} = useContext(UserGlobalContext)
 
     const onInputChange = (e: any) => {
         const re = /^[0-9\b,A-F]+$/;
@@ -58,7 +60,7 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     }
 
     const handleReqAccess = () => {
-        postReqRoleAccess(devHex, TDevRole[TDevRole.GUEST])
+        userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.GUEST])
             .then(res => {
                 if (res && res.status === 201) {
                     onAction(res)

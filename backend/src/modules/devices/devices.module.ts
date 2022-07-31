@@ -1,4 +1,4 @@
-import {Module} from "@nestjs/common";
+import {forwardRef, Module} from "@nestjs/common";
 import {DevicesService} from './devices.service';
 import {DevicesController} from "./devices.controller";
 import {SequelizeModule} from "@nestjs/sequelize";
@@ -10,20 +10,21 @@ import {PassportModule} from "@nestjs/passport";
 import {NotificationModule} from "../notification/notification.module";
 import {AuthModule} from "../auth/auth.module";
 import {SocketModule} from "../../sockets/socket.module";
+import {UsersModule} from "../users/users.module";
 
 @Module ({
+    controllers: [DevicesController],
     providers: [DevicesService],
     exports: [DevicesService],
-    controllers: [DevicesController],
     imports: [
+        forwardRef(() => AuthModule),
+        forwardRef(() => UsersModule),
         NotificationModule,
         PassportModule,
         DatabaseModule,
         SequelizeModule.forFeature ([Devices, Users, Roles]),
-        AuthModule,
         SocketModule
     ]
 })
 
-export class DevicesModule {
-}
+export class DevicesModule {}

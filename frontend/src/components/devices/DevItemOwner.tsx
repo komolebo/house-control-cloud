@@ -9,7 +9,7 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice, postClearDeviceUsers} from "../../http/rqData";
+import {fetchConnUsersByDevice, nestPostClearDeviceUsers} from "../../http/rqData";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {cntrVContent} from "../../styles/common/position.css";
 
@@ -26,7 +26,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     const {userInfo} = useContext(UserGlobalContext)
 
     const handleClrSettings = (devInfo: TDevItem) => {
-        postClearDeviceUsers(devInfo.hex).then(resp => {
+        userInfo && nestPostClearDeviceUsers(userInfo.id, devInfo.hex).then(resp => {
             console.log("Cleared device: ", resp)
             if (resp.status === 201) {
                 onDevDataChanged();
