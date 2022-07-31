@@ -44,8 +44,9 @@ export const useUserGlobalInfo = () => {
     )
 
     useEffect(() => {
-        if (authorized && userInfo) {
-            nestGetUserFullInfo(userInfo.id).then(resp => {
+        if (authorized) {
+            const userStorageData = initUserInfoFromStore()
+            userStorageData && nestGetUserFullInfo(userStorageData.id).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
                     setUserInfo(resp.data)
                 }
