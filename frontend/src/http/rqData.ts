@@ -96,12 +96,18 @@ export function nestPostGetHistoryPerUser(userId: number) {
     return host.get("api/history/list/" + userId)
 }
 export function nestDeleteUserHistory(userId: number, idArr: Array<number>) {
-    console.log("Deleting", idArr)
+    // console.log("Deleting", idArr)
     return host.delete("api/history/" + userId, {
         data: {
             "id": idArr
         }
     })
+}
+export function nestGetCountHistoryPerUser(userId: number) {
+    return host.get(`api/history/count/${userId}`)
+}
+export function nestGetPagingHistoryPerUser(userId: number, size: number, offset: number) {
+    return host.get(`api/history/${userId}/${size}/${offset}`)
 }
 
 // Preferences

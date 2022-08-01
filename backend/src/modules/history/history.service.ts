@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Users} from "../users/user.entity";
 import {Histories} from "./history.entity";
@@ -13,8 +13,26 @@ export class HistoryService {
         const user = await this.userRepository.findOne({
             where: {id: userId}, include: {model: Histories}}
         )
-
         return user.get("history")
+    }
+
+    async countHistoryOfUser(userId: number) {
+        return await this.userRepository.count ({
+                where: {id: userId},
+                include: {model: Histories}
+            }
+        )
+    }
+
+    async getPagedHistoryOfUser(uId: number, offset: number, limit: number) {
+        const user = await this.userRepository.findByPk(uId);
+        return user.$get('history', {
+            offset: offset,
+            limit: limit,
+            order: [
+                ['id', 'DESC'],
+            ]
+        })
     }
 
     async createHistoryItem(userId: number, createHistoryDto: CreateHistoryItem_Dto) {
