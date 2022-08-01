@@ -47,7 +47,9 @@ import {nestDeleteUserHistory, nestGetPagingHistoryPerUser} from "../http/rqData
 import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {NavSeq} from "./NavSeq";
 import {commonPage} from "../styles/common/pages.css";
-
+import logoLoadMore from "../assets/arrow-down-blue.svg";
+import {ReactComponent as LogoMenuDelete} from '../assets/delete-item.svg';
+import {ReactComponent as LogoMenuFilter} from '../assets/menu-item-filter.svg';
 
 enum EHistorySetting {
     delete,
@@ -252,9 +254,7 @@ export const HistoryPage: FC = () => {
     }
     const handleCloseSettings = () => {
         setState({...state, setting: {
-                ...state.setting,
-                anchorElSetting: null,
-                clickInd: -1
+                ...state.setting, anchorElSetting: null, clickInd: -1
             }})
     }
     const handleDeleteByInd = () => {
@@ -515,9 +515,13 @@ export const HistoryPage: FC = () => {
             </table>
             { state.moreData
                 ? <div className={cntrContent}>
+
                     <Button variant={"outlined"}
-                            className={[shortMuiBtn].join(' ')}
+                            // className={[shortMuiBtn].join(' ')}
                             onClick={loadMore}
+                            startIcon={
+                                <img src={logoLoadMore} alt={"Load more entries"}/>
+                            }
                     > Load more
                     </Button>
                 </div> : <></>
@@ -546,6 +550,12 @@ export const HistoryPage: FC = () => {
                               handleDeleteByInd();
                               handleCloseSettings();
                           }}>
+                    <Box
+                        sx={{mr: 2, width: 24}}
+                        className={cntrContent}
+                    >
+                        <LogoMenuDelete fill="currentColor"/>
+                    </Box>
                     <Typography>Delete item</Typography>
                 </MenuItem>
                 { state.setting.setup[EHistorySetting.filterByDevice].show &&
@@ -555,6 +565,12 @@ export const HistoryPage: FC = () => {
                             handleCloseSettings();
                         }
                     }>
+                        <Box
+                            sx={{mr: 2, width: 24}}
+                            className={cntrContent}
+                        >
+                            <LogoMenuFilter fill="currentColor"/>
+                        </Box>
                         <Typography>{state.setting.setup[EHistorySetting.filterByDevice].name}</Typography>
                     </MenuItem>
                 }
@@ -564,6 +580,12 @@ export const HistoryPage: FC = () => {
                         handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_user);
                         handleCloseSettings();
                     }}>
+                        <Box
+                            sx={{mr: 2, width: 24}}
+                            className={cntrContent}
+                        >
+                            <LogoMenuFilter fill="currentColor"/>
+                        </Box>
                         <Typography>{state.setting.setup[EHistorySetting.filterByUser].name}</Typography>
                     </MenuItem>
                 }

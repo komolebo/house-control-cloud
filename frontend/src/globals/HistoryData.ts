@@ -73,7 +73,7 @@ export function applyIdFilters(indArr: Array<number>,
         return uOk && dOk ? ind : -1
     }).filter(newInd => newInd !== -1)
 }
-export const PAGE_ENTRIES_NUM = 100;
+export const PAGE_ENTRIES_NUM = 30;
 export const HISTORY_MSG_TYPES = [
     THistoryMsgType[THistoryMsgType.None],
     THistoryMsgType[THistoryMsgType.Devices],

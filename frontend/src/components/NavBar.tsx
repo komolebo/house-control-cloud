@@ -15,6 +15,10 @@ import {
 import logoHomeNet from "../assets/home-net-white.svg";
 import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
+import {ReactComponent as LogoMenuAccount} from '../assets/menu-item-account.svg';
+import {ReactComponent as LogoMenuHistory} from '../assets/menu-item-history.svg';
+import {ReactComponent as LogoMenuLogout} from '../assets/menu-item-logout.svg';
+
 import logoMsgYes from "../assets/nav-notification-yes.svg";
 import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
@@ -24,12 +28,14 @@ import {nestGetPreference, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
+import {cntrContent} from "../styles/common/position.css";
+
 
 export const NavBar: React.FC = () => {
     const settingsMenu = [
-        {name: 'Account', handler: () => navigate(ACCOUNT_PAGE)},
-        {name: 'History', handler: () => navigate(HISTORY_PAGE)},
-        {name: 'Logout', handler: () => clearUserData()},
+        {name: 'Account', handler: () => navigate(ACCOUNT_PAGE), icon: <LogoMenuAccount fill='currentColor'/>},
+        {name: 'History', handler: () => navigate(HISTORY_PAGE), icon: <LogoMenuHistory fill='currentColor'/>},
+        {name: 'Logout', handler: () => clearUserData(), icon: <LogoMenuLogout stroke='currentColor'/>},
     ];
     const {clearUserData, avatarSrc, setAvatarSrc, userInfo} = useContext(UserGlobalContext);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -154,13 +160,22 @@ export const NavBar: React.FC = () => {
                         }}
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
+                        onClick={handleCloseUserMenu}
                     >
                         {settingsMenu.map((setting) => (
                             <MenuItem
                                 key={setting.name}
                                 onClick={() => setting.handler()}
+                                // sx={{backgroundColor: "yellow"}}
                             >
-                                <Typography textAlign="right">{setting.name}</Typography>
+                                <Box
+                                    sx={{mr: 1, width: 24}}
+                                     className={cntrContent}
+                                >
+                                    {setting.icon}
+                                </Box>
+
+                                <Typography textAlign="right" color="2F3542">{setting.name}</Typography>
                             </MenuItem>
                         ))}
                     </Menu>

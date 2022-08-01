@@ -29,13 +29,6 @@ theme = createTheme(theme, {
             ],
         },
 
-        // MuiIconButton: {
-        //     styleOverrides: {
-        //         sizeMedium: {
-        //             backgroundColor: "yellow"
-        //         }
-        //     }
-        // },
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
@@ -48,14 +41,27 @@ theme = createTheme(theme, {
             }
         },
 
-        // MuiInputLabel: {
-        //     styleOverrides: {
-        //         root: {
-        //             backgroundColor: "yellow",
-        //             // zIndex: 1
-        //         }
-        //     }
-        // }
+        MuiMenuItem: {
+            styleOverrides: {
+                root: {
+                    "&:hover": {
+                        backgroundColor: "#1690E9",
+                        color: "white"
+                    },
+
+                    '& .MuiTypography-root': {
+                        color: '#2F3542',
+                    },
+                    '&:hover .MuiTypography-root': {
+                        color: "white",
+                    },
+
+                    color: "#1690E9",
+                    borderBottom: "solid 1px rgba(0, 0, 0, 0.1)",
+                    padding:  "8px 15px"
+                }
+            }
+        }
 
     },
     typography: {
