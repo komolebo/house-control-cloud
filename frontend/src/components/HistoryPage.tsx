@@ -128,7 +128,7 @@ export const HistoryPage: FC = () => {
     let [state, setState] = useState<IHistoryState>({...initialState});
     let [filterState, setFilterState] = useState<IFilterState>(initialFilterState)
     const {userInfo} = useContext(UserGlobalContext)
-    useRef<HTMLDivElement>();
+
     useEffect(() => {
         loadMore();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -275,10 +275,9 @@ export const HistoryPage: FC = () => {
                 console.log("history deleted")
                 filterAndUpdateView()
         })
-        // filterAndUpdateView();
     }
     const handleSelectAll = () => {
-        setState({...state, selection: filterState.filteredIndexes})
+        setState({...state, selection: [...filterState.filteredIndexes]})
     }
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
@@ -454,8 +453,8 @@ export const HistoryPage: FC = () => {
                             <td className={historyItem} style={{ width: 40, paddingRight: 5}}>
                                 <Checkbox
                                     className={historyItem} sx={{width: 40}}
-                                    onChange={e => handleCheck(e, i)}
-                                    checked={state.selection.includes(i)}
+                                    onChange={e => handleCheck(e, hInd)}
+                                    checked={state.selection.includes(hInd)}
                                 />
                             </td>
 
@@ -519,7 +518,7 @@ export const HistoryPage: FC = () => {
                 ? <div className={cntrContent}>
 
                     <Button variant={"outlined"}
-                            // className={[shortMuiBtn].join(' ')}
+                            sx={{mt: 1}}
                             onClick={loadMore}
                             startIcon={
                                 <img src={logoLoadMore} alt={"Load more entries"}/>
