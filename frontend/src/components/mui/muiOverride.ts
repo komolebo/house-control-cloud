@@ -44,15 +44,14 @@ theme = createTheme(theme, {
         MuiMenuItem: {
             styleOverrides: {
                 root: {
-                    "&:hover": {
+                    "&:hover, &.Mui-selected, &.Mui-selected:hover": {
                         backgroundColor: "#1690E9",
                         color: "white"
                     },
-
                     '& .MuiTypography-root': {
                         color: '#2F3542',
                     },
-                    '&:hover .MuiTypography-root': {
+                    '&:hover .MuiTypography-root, &.Mui-selected .MuiTypography-root': {
                         color: "white",
                     },
 

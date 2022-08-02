@@ -321,7 +321,9 @@ export const HistoryPage: FC = () => {
                 >
                     {
                         HISTORY_MSG_TYPES.map ((msgType, i) => {
-                            return <MenuItem key={i} value={msgType}>{msgType}</MenuItem>
+                            return <MenuItem key={i} value={msgType}>
+                                <Typography>{msgType}</Typography>
+                            </MenuItem>
                         })
                     }
                 </Select>
