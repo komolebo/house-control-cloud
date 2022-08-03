@@ -25,6 +25,15 @@ export class UsersService {
         return await this.userRepository.findAll();
     }
 
+    async getFullUserInfo(id: number): Promise<Users> {
+        return await this.userRepository.findOne<Users>({
+            where: { id }, include: [{
+                model: Preference,
+                include: [Blacklist]
+            }]
+        });
+    }
+
     async getUsersPerDevice(deviceId: number) {
         return await this.deviceRepository.findOne({
             where: {id: deviceId},
@@ -43,20 +52,17 @@ export class UsersService {
             })
     }
 
-    async deleteUser(user: UserDto): Promise<number> {
-        return await this.userRepository.destroy<Users>({ where: { email : user.login } });
-    }
-
     async deleteAccountById(userId: number) {
-        // TODO: rework
         const curUser = await Users.findOne({
             where: {id: userId},
-            include: [{
-                model: Preference
-            }, {
-                model: Devices,
-                include: [Users]
-            }]
+            include: [
+                {
+                    model: Preference
+                },
+                {
+                    model: Devices,
+                    include: [Users]
+                }]
         })
         if (!curUser) return
 
@@ -69,50 +75,32 @@ export class UsersService {
         }
 
         // check if there are devices which have this user as the only owner
-        curUser.devices && curUser.devices.forEach(dev => {
-            const isOwner = this.devService.isUserAnOwner(curUser.id, dev);
-            const theOnlyOwner = this.devService.calcOwnersPerDevice(dev) === 1
+        for (const dev of curUser.devices) {
+            const isOwner = this.devService._isUserAnOwner(curUser.id, dev);
+            const theOnlyOwner = await this.devService._calcOwnerPerDevice(dev) === 1
 
             // delete all users per this device
             if (isOwner && theOnlyOwner) {
-                dev.$remove("users", dev.users)
+                await dev.$remove("users", dev.users)
             }
-        })
+        }
         await curUser.destroy()
 
         return curUser
     }
 
-    async findOneByEmail(email: string): Promise<Users> {
-        return await this.userRepository.findOne<Users>({ where: { email } });
-    }
-
-    async findOneByLogin(login: string): Promise<Users> {
-        return await this.userRepository.findOne<Users>({ where: { login: login } });
-    }
-
-    async findOneById(id: number): Promise<Users> {
-        return await this.userRepository.findOne<Users>({
-            where: { id }, include: [{
-                model: Preference,
-                include: [Blacklist]
-            }]
-        });
-    }
 
     async update(userId: number, userDto: UpdateUserInfoDto) {
-        await this.findOneById(userId)
-            .then(user => {
-                // user.setDataValue('name', userDto.name);
-                if (userDto.email)
-                    user.setDataValue('email', userDto.email);
-                if (userDto.full_name)
-                    user.setDataValue('full_name', userDto.full_name);
-                if (userDto.phone)
-                    user.setDataValue('phone', userDto.phone);
-                // user.setDataValue('phone', userDto.phone);
-                user.save();
-                return user;
-            })
+        const user = await this.userRepository.findByPk(userId)
+
+        if (userDto.email)
+            user.setDataValue('email', userDto.email);
+        if (userDto.full_name)
+            user.setDataValue('full_name', userDto.full_name);
+        if (userDto.phone)
+            user.setDataValue('phone', userDto.phone);
+        await user.save();
+
+        return user;
     }
 }

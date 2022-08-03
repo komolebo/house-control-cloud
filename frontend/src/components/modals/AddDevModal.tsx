@@ -60,7 +60,7 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     }
 
     const handleReqAccess = () => {
-        userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.GUEST])
+        userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.OWNER])
             .then(res => {
                 if (res && res.status === 201) {
                     onAction(res)

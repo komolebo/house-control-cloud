@@ -1,57 +1,30 @@
-import React, {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Box, Button} from "@mui/material";
-import logoDone from "../../assets/done-big.svg";
+import {Button} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
-import logoBack from "../../assets/arrow-back.svg";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
 import {TDevItem} from "../../globals/DeviceData";
-import {shortMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
+import {shortMuiBtn} from "../../styles/common/buttons.css";
+import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
+import {nestPostClearDeviceUsers} from "../../http/rqData";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
+
+interface IState {
+    pageState: ModalPageState,
+    resultInfo: IModalDoneDisplayInfo
+}
 
 interface IPropClrSetElem {
     devInfo: TDevItem,
     onClear: () => void
-}
-interface IPropDoneElem {
-    onDone: () => void
 }
 
 interface IClrSettingsProp {
     onClose: () => void,
     onClear: (data: any) => void,
     devInfo: TDevItem
-}
-
-const DoneElement: FC<IPropDoneElem> = ({onDone}) => {
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo job is done"}/>
-        </div><br/>
-
-        <div className={[h2Font, cntrContent].join(' ')}>
-            Device settings cleared
-        </div><br/>
-
-        <div className={[helpText, cntrContent].join(' ')}>
-            Please go through initial device registration procedure
-        </div>
-        <div className={[helpText, cntrContent].join(' ')}>
-            to control the device again
-        </div>
-        <br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onDone()}
-                    startIcon={<img src={logoBack} alt={"Logo get back"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
 }
 
 const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
@@ -79,7 +52,6 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
             <Button variant={"contained"} color={"error"}
                     sx={{
                         mt: 2
-
                     }}
                     onClick={() => onClear()}
                     className={shortMuiBtn}
@@ -89,29 +61,56 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
     </div>
 }
 
-export const ClearSettingsModal: FC<IClrSettingsProp> = () => {
+export const ClearSettingsModal: FC<IClrSettingsProp> = ({devInfo}) => {
     const {modalProps } = useGlobalModalContext();
-    const {onAct, onClose, data} = modalProps;
-    let [pageState, setPageState] = useState(ModalPageState.ReqState)
+    const {onClose, data} = modalProps;
+    const {userInfo} = useContext(UserGlobalContext);
+    const [state, setState] = useState<IState>({
+        resultInfo: {} as IModalDoneDisplayInfo,
+        pageState: ModalPageState.ReqState
+    })
 
     const handleClear = () => {
-        // req to DB
-        // devInfo.users = [];
-        onAct(data);
-        setPageState(ModalPageState.DoneState);
+        console.log("handleClear")
+        userInfo && nestPostClearDeviceUsers(userInfo.id, data.hex).then(resp => {
+            console.log("Cleared device: ", resp)
+            if (resp.status === 201) {
+                setState({
+                    pageState: ModalPageState.DoneState,
+                    resultInfo: {
+                        success: true,
+                        header: "Device settings cleared",
+                        message: "Please go through initial device registration procedure"
+                    }
+                })
+            }
+        }).catch(resp => {
+            console.log("Cleared device fail: ", resp.response.data.message)
+            setState({
+                pageState: ModalPageState.DoneState,
+                resultInfo: {
+                    success: false,
+                    header: resp.response.data.message,
+                    message: "Please retry later"
+                }
+            })
+        })
     }
+
     const handleComplete = () => {
-        setPageState(ModalPageState.CompleteState);
+        setState({...state, pageState: ModalPageState.CompleteState});
         onClose();
     }
 
     return <div>
-        {pageState === ModalPageState.ReqState
+        {state.pageState === ModalPageState.ReqState
             ? <ClrSettingElement
-                devInfo={data} onClear={() => handleClear()}
+                devInfo={data}
+                onClear={() => handleClear()}
             />
-            : <DoneElement
+            : <ModalGenericDone
                 onDone={() => handleComplete()}
+                info={state.resultInfo}
             />
         }
     </div>

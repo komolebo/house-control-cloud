@@ -25,14 +25,6 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     const { showModal, hideModal } = useGlobalModalContext();
     const {userInfo} = useContext(UserGlobalContext)
 
-    const handleClrSettings = (devInfo: TDevItem) => {
-        userInfo && nestPostClearDeviceUsers(userInfo.id, devInfo.hex).then(resp => {
-            console.log("Cleared device: ", resp)
-            if (resp.status === 201) {
-                onDevDataChanged();
-            }
-        })
-    }
     const syncUsers = () => {
         fetchConnUsersByDevice(devInfo.id, uList => {
             console.log("fetchConnUsersByDevice ", devInfo.name)
@@ -137,8 +129,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                     color={"error"}
                     onClick={() => showModal(MODAL_TYPE.ClrSettModal, {
                         onClose: () => {hideModal()},
-                        onAct: () => {handleClrSettings(devInfo)},
-                        data: devInfo
+                        onAct: () => {},
+                        data: {...devInfo}
                     })}
                     className={shortMuiBtn}
             >

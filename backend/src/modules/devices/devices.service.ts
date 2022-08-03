@@ -19,26 +19,25 @@ export class DevicesService {
         return await this.deviceRepository.create<Devices>(new_device);
     }
 
-    async bindDeviceWithUser(user_id : number, device_id: number,
-                             connect_status: boolean,
-                             role?: RoleValues) {
-        return await this.usersRepository.findOne({where: {id: user_id}})
-            .then(user => {
-                if (!user) return new HttpException('Some error', HttpStatus.NOT_FOUND);
+    async bindDeviceWithUser(userId : number,
+                             deviceId: number,
+                             bind: boolean,
+                             role: RoleValues = RoleValues.Default) {
+        const user = await this.usersRepository.findByPk(userId)
+        const device = await this.deviceRepository.findByPk(deviceId);
 
-                this.deviceRepository.findOne({where: {id: device_id}})
-                    .then(device => {
-                        if (connect_status) {
-                            console.log("received role: ", role);
-                            if (role === undefined) role = RoleValues.Default;
+        if (!user)
+            return new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+        if (!device)
+            return new HttpException('Device does not exist', HttpStatus.NOT_FOUND);
 
-                            user.$add('devices', device, {through: {role: role}});
-                        } else {
-                            user.$remove('devices', device);
-                        }
-                        return user;
-                    })
-            })
+        if (bind) {
+            await user.$add('devices', device, {through: {role: role}});
+        } else {
+            await user.$remove('devices', device);
+        }
+
+        return user;
     }
 
     async getDevices() {
@@ -57,39 +56,14 @@ export class DevicesService {
         for (const device of devices) {
             device["dataValues"]["canUnsubscribe"] = true;
             if (device.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                const conn_users = await device.$get("users")
-                let manyOwners = false;
+                const isOwner = await this._isUserAnOwner(user_id, device, false);
+                const ownerCount = await this._calcOwnerPerDevice(device, false)
 
-                for (const u of conn_users) {
-                    if (u.id !== user_id && u.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                        manyOwners = true;
-                    }
-                }
-                device["dataValues"]["canUnsubscribe"] = manyOwners;
+                device["dataValues"]["canUnsubscribe"] = !(isOwner && ownerCount === 1)
             }
         }
 
         return devices
-    }
-
-    async getRoleByUserAndDevice(userId: number, deviceId: number): Promise<RoleValues> {
-        return await this.usersRepository.findOne({where: {id: userId}})
-            .then(user => {
-                if (!user) return RoleValues.None;
-
-                return user.$get('devices').then(devices => {
-                    for (let dev of devices) {
-                        if (dev.id == deviceId) {
-                            return dev['Roles'].role;
-                        }
-                    }
-                    return RoleValues.None;
-                })
-            })
-    }
-
-    async deleteDeviceById(device_id: number) {
-        return await this.deviceRepository.destroy({where: {id: device_id}})
     }
 
     async accessDeviceByHex(hexId: string, thisUserId: number, role: string) {
@@ -97,10 +71,13 @@ export class DevicesService {
         hexId = hexId.toLowerCase()
 
         const device = await this.deviceRepository.findOne({
-            where: {hex: hexId}, include: {model: Users}
+            where: {hex: hexId},
+            include: {model: Users}
         })
+        if (!device) throw new HttpException("Device cannot be empty", HttpStatus.BAD_REQUEST)
+
         if(device.users.length) {
-            console.log("Device already owned") // TODO
+            return new HttpException("Device already owner to become an owner", HttpStatus.BAD_REQUEST)
         } else {
             const res = await this.bindDeviceWithUser(thisUserId, device.id, true, RoleValues[role])
             await this.notificationService.createNotificationYouAreAdded(
@@ -110,100 +87,98 @@ export class DevicesService {
     }
 
     async unsubscribeFromDeviceByHex(hexId: string, thisUserId: number) {
-        let curRole = null;
-        let ownersCount = 0;
-
         const device = await this.deviceRepository.findOne({
             where: {hex: hexId},
             include: {model: Users}
         })
-        const conn_users = device.users;
 
-        conn_users.forEach(el => {
-            const role = el.get("Roles")["dataValues"].role;
-            const uId = el.id;
-
-            if (uId === thisUserId) curRole = role;
-            if (role === RoleValues.Owner) ownersCount += 1;
-        })
+        const manyOwners = await this._calcOwnerPerDevice(device) > 1
+        const isOwner = await this._isUserAnOwner(thisUserId, device)
 
         // remove myself if you're not the single left OWNER
-        const curUser = conn_users.find(el => el.id === thisUserId)
-        if (curRole !== RoleValues.Owner || ownersCount > 1) {
+        const curUser = device.users.find(el => el.id === thisUserId)
+        if (!isOwner || manyOwners) {
             await device.$remove("users", curUser);
-            return device
-        } else {}
+        } else {
+            throw new HttpException("Last owner cannot unsubscribe",
+                HttpStatus.FORBIDDEN)
+        }
+        return device
     }
 
     async clearUsersOfDevice(hexId: string, thisUserId: number) {
         console.log("clearUsersOfDevice:", hexId, thisUserId)
-        const deviceWithUsers = await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: { hex: hexId },
             include: {model: Users},
         });
 
         // if you're an OWNER for current device
-        if (deviceWithUsers && deviceWithUsers.users.length) {
-            const curUser = deviceWithUsers.users.find(el => el.id === thisUserId);
-
-            const rmUsers = deviceWithUsers.users;
+        if (device && device.users.length) {
+            const rmUsers = device.users;
+            const curUser = rmUsers.find(el => el.id === thisUserId);
 
             // yes, you are OWNER -> remove everyone
             if (curUser.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                const res =  await deviceWithUsers.$remove("Users", deviceWithUsers.users)
-                // TODO check res
+                const res = await device.$remove("Users", device.users)
+                if (!res) throw new HttpException("Clear users failed", HttpStatus.METHOD_NOT_ALLOWED)
                 rmUsers.forEach(u => {
                     this.notificationService.createNotificationYouLostAccess(
-                        u.id, deviceWithUsers.id, deviceWithUsers.hex, deviceWithUsers.name,
+                        u.id, device.id, device.hex, device.name,
                     )
                 })
-
-                return res
             }
-        } else {
-            console.log("Empty values")
-        }
+        } else throw "Device empty or no user connected"
 
-        this.deviceRepository.findOne({where: {hex: hexId}})
-            .then(device => {
-                device.$get("users").then(connUsers => {
-                })
-            })
+        return device
     }
 
     async modifyRoleAccess(uId: number, thisUID: number, devHex: string, newRole: RoleValues) {
         console.log("modifyRoleAccess, uid=", uId, "hex=", devHex, " by req of:", thisUID, " role:", newRole);
 
         // check if you are an owner for this device
-        await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: {hex: devHex},
             include: {model: Users},
-        }).then(d => {
-            const objUser = d.users.find(el => el.id === uId);
-
-            if (objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
-                const role = objUser["dataValues"]["Roles"]
-                role.set("role", newRole).save()
-            }
         })
+
+        if (!device || !device.users) throw new HttpException("Device data not found", HttpStatus.NOT_FOUND)
+
+        const objUser = device.users.find(el => el.id === uId);
+
+        if (! await this._isUserAnOwner (uId, device)) {
+            const role = objUser["dataValues"]["Roles"]
+            const result = role.set("role", newRole)
+            await role.save()
+            return result
+        }
+
+        throw new HttpException("User role not changed", HttpStatus.NOT_FOUND)
     }
 
     async removeRole(uId: number, thisUID: number, devHex: string) {
         console.log("removeRole, uid=", uId, "hex=", devHex, " by req of:", thisUID);
 
         // check if you are an owner for this device
-        await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: {hex: devHex},
             include: {model: Users},
-        }).then(d => {
-            const thisUser = d.users.find(el => el.id === thisUID);
-            const objUser = d.users.find(el => el.id === uId);
-
-            if (thisUser.get("Roles")["dataValues"].role === RoleValues.Owner &&
-                objUser.get("Roles")["dataValues"].role !== RoleValues.Owner) {
-                d.$remove("users", objUser);
-            }
         })
+
+        if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
+
+        const objUser = device.users.find(el => el.id === uId);
+
+        const thisUserIsOwner = await this._isUserAnOwner(thisUID, device);
+        const objUserIsOwner = await this._isUserAnOwner(uId, device);
+
+        if (thisUserIsOwner && !objUserIsOwner) {
+            const result = await device.$remove("users", objUser);
+            if (result) {
+                return device
+            }
+        }
+        throw new HttpException("User is not restrocted from device", HttpStatus.NOT_MODIFIED)
     }
 
     async inviteUser(uLogin: string, thisUID: number, devHex: string, role: string) {
@@ -211,43 +186,55 @@ export class DevicesService {
         uLogin = uLogin.toLowerCase()
 
         // check if you are an owner for this device
-        await this.deviceRepository.findOne({
+        const device = await this.deviceRepository.findOne({
             where: {hex: devHex},
             include: {model: Users},
-        }).then(d => {
-            if (!this.isUserLoginConnectedToDevice(uLogin, d)) {
-                this.usersRepository.findOne({where: {login: uLogin}})
-                    .then(objUser => {
-                        if (!objUser) return;
-
-                        d.$add('users', objUser, {through: {role: role}});
-                        this.notificationService.createNotificationYouAreInvited(
-                            objUser.id, d.id, d.name, d.hex, role)
-                        return
-                    })
-            }
         })
+
+        if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
+
+        if (!this._isUserLoginConnectedToDevice(uLogin, device)) {
+            const objUser = await this.usersRepository.findOne({where: {login: uLogin}})
+            if (!objUser) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
+
+            const result = await device.$add('users', objUser, {through: {role: role}});
+            if (result) {
+                await this.notificationService.createNotificationYouAreInvited(
+                    objUser.id, device.id, device.name, device.hex, role)
+                return device
+            }
+            throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
+        }
     }
 
-    calcOwnersPerDevice(device: Devices) {
-        if (!device || !device.users) return 0;
+    async _isUserAnOwner(uId: number, device: Devices, isDevWithUsers: boolean = true) {
+        if (!device) return false;
+        if (isDevWithUsers && !device.users)
+            return false;
+        else {
+            return device.$get("users").then(connUsers => {
+                const user = connUsers.find(el => el.id === uId)
+                return user && user.get("Roles")["dataValues"].role === RoleValues.Owner
+            })
+        }
 
-        let owners = 0;
-        device.users.forEach(u => owners += u.get('Roles')["dataValues"].role === RoleValues.Owner ? 1 : 0)
-
-        return owners;
     }
-    isUserAnOwner(uId: number, device: Devices) {
-        if (!device || !device.users) return false;
-        const user = device.users.find(el => el.id === uId)
-        return user && user.get("Roles")["dataValues"].role === RoleValues.Owner
+    isUserIdConnectedToDevice(uId: number, deviceIncUsers: Devices) {
+        if (!deviceIncUsers || !deviceIncUsers.users) return false;
+        return deviceIncUsers.users.find (el => el.id === uId) !== undefined
     }
-    isUserIdConnectedToDevice(uId: number, device: Devices) {
-        if (!device || !device.users) return false;
-        return device.users.find (el => el.id === uId) !== undefined
-    }
-    isUserLoginConnectedToDevice(login: string, device: Devices) {
+    _isUserLoginConnectedToDevice(login: string, device: Devices) {
         if (!device || !device.users) return false;
         return device.users.find (el => el.login === login) !== undefined
+    }
+    async _calcOwnerPerDevice(device: Devices, isDevWithUsers: boolean = true) {
+        if (!device) throw "Device is empty";
+        if (isDevWithUsers && !device.users) throw "Device does not have users"
+        else {
+            const connUsers = isDevWithUsers ? device.users : await device.$get ("users");
+            return connUsers.filter(u =>
+                u.get ('Roles')['dataValues'].role === RoleValues.Owner)
+                .length
+        }
     }
 }

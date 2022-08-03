@@ -22,7 +22,7 @@ export class UsersController {
     @UseGuards(UserIsUserGuard)
     @Get(`:${ENDPOINT_PARAM_USER_ID}`)
     async getUserFullInfo(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
-        return await this.usersService.findOneById(Number(userId));
+        return await this.usersService.getFullUserInfo(Number(userId));
     }
 
     @UseGuards(UserIsUserGuard)

@@ -31,7 +31,6 @@ export class DevicesController {
     }
 
     @UseGuards(UserIsUserGuard)
-    @UseGuards(OwnerForDeviceGuard)
     @Post(`access/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:role`)
     async reqAccessToDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                             @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
@@ -50,7 +49,7 @@ export class DevicesController {
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
     @UseInterceptors(DispatchInterceptor)
-    @Post(`reset/:${ENDPOINT_PARAM_DEVICE_ID}`)
+    @Post(`reset/:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}`)
     async reqClearDeviceUsers(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                               @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string) {
         return this.devicesService.clearUsersOfDevice(devHex, Number(userId))
@@ -93,17 +92,4 @@ export class DevicesController {
     async getDevicesListPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
         return await this.devicesService.getDevicesPerUser(Number(userId));
     }
-
-    @Get('role/:user_id/:device_id')
-    async getRoleByUserDevice(@Param('device_id') device_id: number,
-                              @Param('user_id') user_id: number) {
-        return await this.devicesService.getRoleByUserAndDevice(Number(user_id), device_id);
-    }
-
-    @Delete(':id')
-    async delete(@Param('id') id: number) {
-        return await this.devicesService.deleteDeviceById(Number(id));
-    }
-
-
 }

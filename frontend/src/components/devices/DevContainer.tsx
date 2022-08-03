@@ -70,7 +70,6 @@ export const DevContainer: FC = () => {
             })
 
             console.log("Syncing data change: ", devList)
-            console.log("<<<<<<<<<<<<: ", resp.data)
 
             // handle newInd change to avoid extra window switching
             const newInd = values.ind < devList.length

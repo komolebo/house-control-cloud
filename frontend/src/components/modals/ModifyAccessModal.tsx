@@ -138,8 +138,12 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
                     onChange={handleSelectChange}
                 >
                     {
-                        ROLES.map(role => {
-                            return <MenuItem value={role}>{TDevRole[role]}</MenuItem>
+                        ROLES.map((role, i) => {
+                            return <MenuItem
+                                value={role}
+                                key={i}
+                            >{TDevRole[role]}
+                            </MenuItem>
                         })
                     }
 
