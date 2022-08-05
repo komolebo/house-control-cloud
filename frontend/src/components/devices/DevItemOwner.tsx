@@ -9,8 +9,7 @@ import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
-import {fetchConnUsersByDevice, nestPostClearDeviceUsers} from "../../http/rqData";
-import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
+import {fetchConnUsersByDevice} from "../../http/rqData";
 import {cntrVContent} from "../../styles/common/position.css";
 
 interface IDevOwnerProps {
@@ -21,7 +20,6 @@ interface IDevOwnerProps {
 const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                                            onDevDataChanged}) => {
     const [users, setUsers] = useState<Array<TConnectedUser>>([]);
-    const [dataSync, setDataSync] = useState(false);
     const { showModal, hideModal } = useGlobalModalContext();
     const {userInfo} = useContext(UserGlobalContext)
 
@@ -33,24 +31,11 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
             // }
         })
     }
-    const onRemoteDeviceChanged = () => {
-        setDataSync(true)
-    }
 
     useEffect(() => {
         syncUsers()
-        setDataSync(false)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [devInfo, dataSync])
-
-    useEffect(() => {
-        socket.on(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
-        return () => {
-            // before the component is destroyed
-            // unbind all event handlers used in this component
-            socket.off(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
-        };
-    }, [])
+    }, [devInfo])
 
     return <div>
         <div className={h3Font}>Connected users: </div>

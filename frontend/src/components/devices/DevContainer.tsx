@@ -29,18 +29,11 @@ export const DevContainer: FC = () => {
     })
     const { showModal, hideModal } = useGlobalModalContext();
     const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
-    const {userInfo} = useContext(UserGlobalContext)
-
-    const handleDevInfoChange = (devName: string) => {
-        values.devices[values.ind].name = devName;
-        setValues({...values, devices: values.devices})
-    }
-
-    const onRemoteDeviceChanged = () => {
-        syncData();
-    }
+    const {userInfo} = useContext(UserGlobalContext);
+    const [syncRemoteData, setSyncRemoteData] = useState(false);
 
     const syncData = () => {
+        console.log("Before: ", values)
         userInfo && nestGetDevListByUser(userInfo.id).then(resp => {
             let devList: Array<TDevItem> = [];
 
@@ -58,36 +51,47 @@ export const DevContainer: FC = () => {
                 })
             })
 
-            console.log("Syncing data change: ", devList)
-
             // handle newInd change to avoid extra window switching
             const newInd = values.ind < devList.length
                 ? values.ind < 0 ? 0 : values.ind
                 : devList.length ? 0 : -1
+            console.log("Syncing data change: ", values.ind, newInd, devList)
+            values.ind = newInd;
             setValues({
+                ...values,
                 devices: devList,
-                ind: newInd,
             })
         })
     }
 
     useEffect(() => {
-        socket.on(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
+        if(syncRemoteData) {
+            syncData()
+            setSyncRemoteData(false);
+        }
+    }, [syncRemoteData])
+
+    useEffect(() => {
+        socket.on(IO_DEV_DATA_CHANGE_KEY, () => setSyncRemoteData(true));
         syncData();
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
-            socket.off(IO_DEV_DATA_CHANGE_KEY, onRemoteDeviceChanged);
+            socket.off(IO_DEV_DATA_CHANGE_KEY);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    const handleDevSelect = (newInd: number) => {
+        setValues({...values, ind: newInd})
+    }
 
     return <div id={devContainer}>
         <div id={devContHead}>
             <div style={{flexGrow: 10}}>
                 <DevList
                     devNames={values.devices.map(el => el.name)}
-                    onSelect={i => setValues({...values, ind: i})}
+                    onSelect={i => handleDevSelect(i)}
                     initSelection={values.ind}
                 />
             </div>
@@ -113,7 +117,7 @@ export const DevContainer: FC = () => {
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},
-                        onAct: () => { },
+                        onAct: () => {},
                         data: {
                             devInfo: values.devices[values.ind]
                         }
@@ -131,9 +135,9 @@ export const DevContainer: FC = () => {
 
             <div className={leftCasket}>
                 <div className={casket}>
-                    <DevItem dev={values.devices[values.ind]} onDevDataChange={dev_info => {
-                        handleDevInfoChange(dev_info)
-                    }}/>
+                    <DevItem
+                        dev={values.devices[values.ind]}
+                    />
                 </div>
             </div>
 

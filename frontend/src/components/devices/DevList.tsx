@@ -22,6 +22,7 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
     }, [devNames, initSelection]);
 
     const handleSelect = (i: number) => {
+        console.log("handleSelect", i)
         setCurSel(i);
         onSelect(i);
     }

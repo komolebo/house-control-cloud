@@ -10,11 +10,10 @@ import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/button
 
 export interface IProps {
     dev: TDevItem,
-    onDevDataChange: (dev_info: string) => void
 }
 
 
-const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
+const DevItem: FC<IProps> = ({dev}) => {
     const [editMode, setEditMode] = useState(false);
     let [name, setName] = useState(dev.name);
 
@@ -23,7 +22,6 @@ const DevItem: FC<IProps> = ({dev, onDevDataChange}: IProps) => {
     }, [dev])
 
     const handleSave = () => {
-        onDevDataChange(name);
         setEditMode(false);
     }
 
