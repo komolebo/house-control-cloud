@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useContext, useEffect, useState} from "react";
 import {devItemDelim} from "../../styles/DeviceItem.css"
 import {h3Font, h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField} from "@mui/material";
@@ -6,6 +6,8 @@ import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {nestPatchDeviceAlias} from "../../http/rqData";
 
 
 export interface IProps {
@@ -16,13 +18,17 @@ export interface IProps {
 const DevItem: FC<IProps> = ({dev}) => {
     const [editMode, setEditMode] = useState(false);
     let [name, setName] = useState(dev.name);
+    const {userInfo} = useContext(UserGlobalContext);
 
     useEffect(() => {
         setEditMode(false);
     }, [dev])
 
     const handleSave = () => {
-        setEditMode(false);
+        userInfo && nestPatchDeviceAlias(userInfo.id, dev.hex, name)
+            .then(() => {
+                setEditMode(false);
+            })
     }
 
     return <div >

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors} from '@nestjs/common';
 import {DevicesService} from "./devices.service";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
@@ -91,5 +91,14 @@ export class DevicesController {
     @Get(`list/:${ENDPOINT_PARAM_USER_ID}`)
     async getDevicesListPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
         return await this.devicesService.getDevicesPerUser(Number(userId));
+    }
+
+    @UseGuards(UserIsUserGuard)
+    @UseInterceptors(DispatchPostInterceptor)
+    @Patch(`alias/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:alias`)
+    async updateDeviceAlias(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                            @Param(ENDPOINT_PARAM_DEVICE_ID) deviceId: string,
+                            @Param("alias") alias: string) {
+        return await this.devicesService.updateDeviceAlias(Number(userId), deviceId, alias)
     }
 }

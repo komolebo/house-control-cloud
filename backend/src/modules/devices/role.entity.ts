@@ -12,6 +12,11 @@ export class Roles extends Model<Roles> {
     })
     role: string;
 
+    @Column({
+        type: DataType.STRING,
+    })
+    alias: string;
+
     @ForeignKey(() => Users)
     @Column({
         type: DataType.INTEGER,

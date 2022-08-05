@@ -23,14 +23,13 @@ interface IState {
 }
 
 export const DevContainer: FC = () => {
+    const { showModal, hideModal } = useGlobalModalContext();
+    const {userInfo} = useContext(UserGlobalContext);
+    const [syncRemoteData, setSyncRemoteData] = useState(false);
     const [values, setValues] = useState<IState>({
         ind: -1,
         devices: [],
     })
-    const { showModal, hideModal } = useGlobalModalContext();
-    const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
-    const {userInfo} = useContext(UserGlobalContext);
-    const [syncRemoteData, setSyncRemoteData] = useState(false);
 
     const syncData = () => {
         console.log("Before: ", values)
@@ -39,7 +38,7 @@ export const DevContainer: FC = () => {
 
             resp.data.forEach((dev: any) => {
                 devList.push({
-                    name: dev.name,
+                    name: dev.Roles.alias ? dev.Roles.alias : dev.name,
                     hex: dev.hex,
                     ip: dev.ip,
                     role: roleStrToId(dev.Roles.role),
@@ -47,7 +46,7 @@ export const DevContainer: FC = () => {
                     id: dev.id,
                     status: 0,
                     unsubscribable: dev.canUnsubscribe,
-                    version: dev.version
+                    version: dev.version,
                 })
             })
 
@@ -85,6 +84,8 @@ export const DevContainer: FC = () => {
     const handleDevSelect = (newInd: number) => {
         setValues({...values, ind: newInd})
     }
+
+    const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
 
     return <div id={devContainer}>
         <div id={devContHead}>

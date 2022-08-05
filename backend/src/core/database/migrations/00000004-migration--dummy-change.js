@@ -22,6 +22,7 @@ module.exports = {
         type: Sequelize.ENUM("Owner", "Guest", "Child", "None", "Default"),
         allowNull: false,
       },
+      alias: { type: Sequelize.STRING },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,

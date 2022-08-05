@@ -77,6 +77,9 @@ export function nestPostClearDeviceUsers(userId: number, devHex: string) {
 export function nestDeleteAccess(userId: number, devHex: string, objUserId: number) {
     return host.delete(`api/devices/${userId}/${devHex}/${objUserId}`)
 }
+export function nestPatchDeviceAlias(userId: number, devHex: string, alias: string) {
+    return host.patch(`api/devices/alias/${devHex}/${userId}/${alias}`)
+}
 
 
 // Notifications

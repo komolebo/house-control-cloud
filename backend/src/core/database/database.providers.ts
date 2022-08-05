@@ -37,7 +37,15 @@ export const databaseProviders = [{
                 config = databaseConfig.development;
         }
         const sequelize: Sequelize = new Sequelize(config);
-        sequelize.addModels([Users, Roles, Devices, Notifications, Histories, Preference, Blacklist])
+        sequelize.addModels([
+            Users,
+            Roles,
+            Devices,
+            Notifications,
+            Histories,
+            Preference,
+            Blacklist
+        ])
 
         const cur_dir = getRealPathFromGenFiles(__dirname);
 

@@ -236,6 +236,19 @@ export class DevicesService {
         } else throw new HttpException("User already connected", HttpStatus.CONFLICT)
     }
 
+    async updateDeviceAlias(thisUID: number, devHex: string, alias: string) {
+        const user = await this.usersRepository.findOne({
+            where: {id: thisUID},
+            include: [Devices]
+        })
+        if(!user || !user.devices) throw new HttpException("No user data", HttpStatus.NOT_FOUND);
+
+        const device = user.devices.find(el => el.hex === devHex);
+        await user.$add('devices', device, {through: {alias: alias}});
+
+        return user
+    }
+
     async _isUserAnOwner(uId: number, device: Devices, isDevWithUsers: boolean = true) {
         if (!device) return false;
         if (isDevWithUsers && !device.users)
