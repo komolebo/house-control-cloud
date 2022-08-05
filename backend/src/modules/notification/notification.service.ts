@@ -7,6 +7,7 @@ import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from 
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
+import {Histories} from "../history/history.entity";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -25,10 +26,6 @@ export class NotificationService {
                 private readonly historyService: HistoryService,
                 private readonly socketService: SocketService) {}
 
-    async create(notification: CreateNotification_Dto) {
-        // return await this.notificationRepository.create<Notifications>(notification);
-    }
-
     async remove(notificationId: number) {
         return await this.notificationRepository.destroy({where: {id: notificationId}});
     }
@@ -45,28 +42,29 @@ export class NotificationService {
             this.socketService.dispatchNotificationMsg(userId);
 
             return objDestroy
-            // return await uObj.$remove("notifications", nObj)
         }
     }
 
     async getNotificationsByUser(userId: number) {
-        return await this.userRepository.findOne(
-            {where: {id: userId}, include: {model: Notifications}, plain: true})
-            .then(user => {
-                // console.log(user.notifications)
-                user.notifications.forEach(el => {
-                    notificationInterpretData(el);
-                })
-                return user.notifications
-            })
+        const curUser = await this.userRepository.findOne({
+            where: {id: userId},
+            include: {model: Notifications},
+            plain: true
+        })
+
+        // console.log(user.notifications)
+        for (const notification of curUser.notifications) {
+            notificationInterpretData(notification);
+        }
+        return curUser.notifications
     }
 
     async isNotificationsByUser(userId: number) {
-        return await this.userRepository.findOne(
-            {where: {id: userId}, include: {model: Notifications}, plain: true})
-            .then(user => {
-                return user.notifications.length
-            })
+        return this.userRepository.count ({
+                where: {id: userId},
+                include: {model: Notifications}
+            }
+        )
     }
 
     private async createNotification(notificationDto: CreateNotification_Dto) {

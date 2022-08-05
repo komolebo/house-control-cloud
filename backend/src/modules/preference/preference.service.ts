@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Preference} from "./preference.entity";
 import {Users} from "../users/user.entity";
@@ -48,24 +48,19 @@ export class PreferenceService {
 
     private async getBlackListOfUser(user: Users) {
         const blackListIdList = await user.preference.$get ("black_list")
-            .then (res => {
-                return res.map (bl_item => bl_item.blockUserId)
-            })
-        return await this.userRepository.findAll ({
+            .then (res => res.map(bl_item => bl_item.blockUserId) )
+
+        const blackListFullInfo = await this.userRepository.findAll ({
             where: {id: blackListIdList},
             include: [Preference]
         })
-            .then (users => {
 
-                return users.map (u => {
-                    return {
-                        "name": u.full_name,
-                        "login": u.login,
-                        "id": u.id,
-                        "urlPic": u.preference ? u.preference.profile_photo : ""
-                    }
-                })
-            });
+        return blackListFullInfo.map (u => ({
+                "name": u.full_name,
+                "login": u.login,
+                "id": u.id,
+                "urlPic": u.preference ? u.preference.profile_photo : ""
+        }))
     }
 
     async updateUserPref(userId: number, prefDto: PreferenceDto) {
@@ -105,31 +100,32 @@ export class PreferenceService {
             await this.createDefault(user)
         }
 
-        return this.prefRepository.findOne ({
-            where: {id: user.preference.id}, include: [Blacklist]
+        const preference = await this.prefRepository.findOne ({
+            where: {id: user.preference.id},
+            include: [Blacklist]
         })
-            .then (preference => {
-                if(action === TPreferenceAction.append) {
-                    return this.appendBlockList (preference, blockedUserId);
-                } else if (action === TPreferenceAction.delete) {
-                    return this.removeFromBlockList(preference, blockedUserId)
-                }
-            })
+
+        if(action === TPreferenceAction.append) {
+            return this.appendBlockList (preference, blockedUserId);
+        } else if (action === TPreferenceAction.delete) {
+            return this.removeFromBlockList(preference, blockedUserId)
+        }
+        return new HttpException("Preference action undefined", HttpStatus.NOT_MODIFIED)
     }
 
     private appendBlockList(preference: Preference, blockedUserId: number) {
-        const duplicate = preference.black_list.find (blItem => blItem.prefId === preference.id &&
-            blItem.blockUserId === Number(blockedUserId))
+        const alreadyPresent = preference.black_list.find (blItem => blItem.blockUserId === Number(blockedUserId))
+        //blItem => blItem.prefId === preference.id
 
-        if (!duplicate) {
-            return Blacklist.create ({
-                prefId: preference.id,
-                blockUserId: blockedUserId
-            }).then (newBlItem => {
-                preference.black_list.push (newBlItem)
-                return preference
-            })
-        }
+        if (alreadyPresent) throw new HttpException("User is already blocked", HttpStatus.NOT_MODIFIED)
+
+        return Blacklist.create ({
+            prefId: preference.id,
+            blockUserId: blockedUserId
+        }).then (newBlItem => {
+            preference.black_list.push (newBlItem)
+            return preference
+        })
     }
     private async removeFromBlockList(preference: Preference, unblockUserId: number) {
         let blList = preference.get("black_list");

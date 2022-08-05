@@ -9,9 +9,13 @@ import {SocketService} from "../../sockets/socket.service";
 
 
 @Injectable()
-export class DispatchInterceptor implements NestInterceptor {
+export class DispatchPreInterceptor implements NestInterceptor {
   constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
               private socketService: SocketService) {
+  }
+
+  private isStatusOk(status: HttpStatus) {
+      return status === HttpStatus.CREATED || status === HttpStatus.OK
   }
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -31,9 +35,11 @@ export class DispatchInterceptor implements NestInterceptor {
           const response = context.switchToHttp().getResponse();
           const {statusCode} = response;
 
-          if (device && device.users && statusCode === HttpStatus.CREATED) {
-            device.users.forEach(conn_user => {
-                this.socketService.dispatchDevUpdateMsg(conn_user.id)
+          if (this.isStatusOk(statusCode) && device && device.users) {
+              const dispatchList = device.users.map(el => el.id);
+
+              dispatchList.forEach(conn_user => {
+                this.socketService.dispatchDevUpdateMsg(conn_user);
             })
           }
         })

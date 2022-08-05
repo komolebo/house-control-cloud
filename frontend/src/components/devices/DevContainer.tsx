@@ -12,7 +12,7 @@ import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TDevItem, TDevRole} from "../../globals/DeviceData";
 import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {floatr} from "../../styles/common/position.css";
-import {nestGetDevListByUser, nestPostUnsubscribeFromDevice, roleStrToId} from "../../http/rqData";
+import {nestGetDevListByUser, roleStrToId} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {casket, leftCasket, rightCasket} from "../../styles/common/pages.css";
@@ -29,22 +29,12 @@ export const DevContainer: FC = () => {
         devices: [],
     })
     const { showModal, hideModal } = useGlobalModalContext();
-    const canUnsubscribe = values.ind >= 0 && values.devices[values.ind].unsubscribable;
+    const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
     const {userInfo} = useContext(UserGlobalContext)
 
     const handleDevInfoChange = (devName: string) => {
         values.devices[values.ind].name = devName;
         setValues({...values, devices: values.devices})
-    }
-
-    const unsubscribeDevice = (devId: string) => {
-        userInfo && nestPostUnsubscribeFromDevice(userInfo.id, devId).then(resp => {
-            // console.log("Unsubscribed: ")
-            setValues({...values, ind: values.ind - 1})
-        })
-    }
-    const onAddDevice = () => {
-        // syncData();
     }
 
     const onRemoteDeviceChanged = () => {
@@ -94,10 +84,8 @@ export const DevContainer: FC = () => {
     }, [])
 
     useEffect(() => {
-        // if (dataSync) {
         syncData();
         setDataSync(false);
-        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataSync, userInfo])
 
@@ -118,7 +106,7 @@ export const DevContainer: FC = () => {
                     }
                     onClick={() => showModal(MODAL_TYPE.AddDevModal, {
                         onClose: () => hideModal(),
-                        onAct: () => syncData()
+                        onAct: () => {}
                     })}
                     className={[wideMuiBtn, floatr].join(' ')}
             >
@@ -132,7 +120,7 @@ export const DevContainer: FC = () => {
                     }
                     onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
                         onClose: () => {console.log("Modal onClose")},
-                        onAct: (devInfo) => { unsubscribeDevice(devInfo.hex) },
+                        onAct: () => { },
                         data: {
                             devInfo: values.devices[values.ind]
                         }
@@ -144,7 +132,7 @@ export const DevContainer: FC = () => {
             </Button>
             </div>
         </div>
-        { values.ind >= 0 &&
+        { values.ind >= 0 && values.devices.length &&
         <div>
             <div className={h2Font}>Device information</div><br/>
 
@@ -161,7 +149,7 @@ export const DevContainer: FC = () => {
                 <div className={casket}>
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
-                        onDevDataChanged={() => onAddDevice()}
+                        onDevDataChanged={() => {}}
                     />
                 </div>
             </div>

@@ -4,7 +4,8 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
 import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
 import {ENDPOINT_PARAM_DEVICE_ID, OwnerForDeviceGuard} from "../../core/guards/OwnerForDevice.guard";
-import {DispatchInterceptor} from "../../core/interceptors/dispatch.interceptor";
+import {DispatchPreInterceptor} from "../../core/interceptors/dispatch-pre-interceptor.service";
+import {DispatchPostInterceptor} from "../../core/interceptors/dispatch-post-interceptor.service";
 
 
 @Controller('api/devices')
@@ -20,17 +21,17 @@ export class DevicesController {
     async bindDeviceForUser(@Param('device_id') device_id: number,
                             @Param('user_id') user_id: number,
                             @Body() bindDev_dto: BindDevice_Dto) {
-        return await this.devicesService.bindDeviceWithUser(Number(user_id), Number(device_id), true,
-                                                            bindDev_dto.role);
+        console.log(bindDev_dto)
+        return await this.devicesService.bindDeviceWithUser(Number(user_id), Number(device_id), bindDev_dto.role);
     }
 
     @Post('unbind/:user_id/:device_id')
     async unbindDeviceForUser(@Param('device_id') device_id: number,
                               @Param('user_id') user_id: number) {
-        return await this.devicesService.bindDeviceWithUser(Number(user_id), Number(device_id), false);
+        return await this.devicesService.unbindDeviceFromUser(Number(user_id), Number(device_id));
     }
 
-    @UseGuards(UserIsUserGuard)
+    // @UseGuards(UserIsUserGuard)
     @Post(`access/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:role`)
     async reqAccessToDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                             @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
@@ -39,7 +40,7 @@ export class DevicesController {
     }
 
     @UseGuards(UserIsUserGuard)
-    @UseInterceptors(DispatchInterceptor)
+    @UseInterceptors(DispatchPreInterceptor)
     @Post(`forget/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}`)
     async reqUnsubscribeFromDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                                    @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string) {
@@ -48,7 +49,7 @@ export class DevicesController {
 
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
-    @UseInterceptors(DispatchInterceptor)
+    @UseInterceptors(DispatchPreInterceptor)
     @Post(`reset/:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}`)
     async reqClearDeviceUsers(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                               @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string) {
@@ -57,7 +58,7 @@ export class DevicesController {
 
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
-    @UseInterceptors(DispatchInterceptor)
+    @UseInterceptors(DispatchPreInterceptor)
     @Post(`modify/:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}/:obj_user_id/:role`)
     async reqModifyAccess(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
                           @Param(ENDPOINT_PARAM_USER_ID) userId: number,
@@ -68,7 +69,7 @@ export class DevicesController {
 
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
-    @UseInterceptors(DispatchInterceptor)
+    @UseInterceptors(DispatchPreInterceptor)
     @Delete(`:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}/:obj_user_id`)
     async reqRemoveAccess(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                           @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
@@ -78,7 +79,7 @@ export class DevicesController {
 
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
-    @UseInterceptors(DispatchInterceptor)
+    @UseInterceptors(DispatchPostInterceptor)
     @Post(`invite/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:login/:role`)
     async reqInviteUser(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
                         @Param(ENDPOINT_PARAM_USER_ID) userId: number,

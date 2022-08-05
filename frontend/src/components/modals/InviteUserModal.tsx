@@ -1,60 +1,29 @@
 import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
-import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
-import {cntrContent} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
+import {
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    TextField,
+    Typography
+} from "@mui/material";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import logoBack from "../../assets/arrow-back.svg";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostInviteUser} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
-
-type TInviteUsrInfo = {
-    login: string;
-    role: TDevRole;
-}
+import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 interface IInvitElemProp {
-    onAction: (usrInf: TInviteUsrInfo) => void
-}
-interface IDoneProp {
-    onAction: () => void,
-    usrInfo: TInviteUsrInfo | null
+    onAction: (resInfo: IModalDoneDisplayInfo) => void
 }
 
 const MIN_CHAR_ID = 1;
-
-const DoneElement: FC<IDoneProp> = ({onAction, usrInfo}) => {
-    const ROLE = usrInfo?.role ? TDevRole[usrInfo?.role] : "INVALID ROLE";
-    const NAME = usrInfo?.login ? usrInfo.login : "INVALID NAME";
-
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo job is done"}/>
-        </div><br/>
-
-        <div className={[h2Font, cntrContent].join(' ')}>
-            User invited
-        </div><br/>
-
-        <div className={[helpText, cntrContent].join(' ')}>
-            User '{NAME}' can now access with rights '{ROLE}'
-        </div><br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onAction()}
-                    startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
-}
-
 const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
     const {modalProps } = useGlobalModalContext();
     const {data} = modalProps;
@@ -71,6 +40,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         const re = /^[0-9\b,a-zA-Z]+$/;
         if (val === '' || (no_num.test(val[0]) && re.test(val))) {
             setUserLogin(val)
+            setWarning("")
         }
     }
     const handleSelectChange = (e: SelectChangeEvent) => {
@@ -84,13 +54,23 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             .then(resp => {
                 if (resp.status === 201) {
                     onAction({
-                        role: role,
-                        login: userLogin
+                        success: true,
+                        header: `User invited`,
+                        message: `User ${userLogin} can now access with rights ${role}`
                     });
-                } else {
-                    setWarning("User ID not found")
                 }
-        })
+            })
+            .catch(resp => {
+                if (resp.response.status === 404) {
+                    setWarning("User ID not found")
+                } else if (resp.response.status === 409) {
+                    onAction({
+                        success: false,
+                        header: `User not invited`,
+                        message: `User ${userLogin} already connected to device ${data.devInfo.hex}`
+                    });
+                }
+            })
     }
 
     return <div>
@@ -108,7 +88,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
         <TextField sx={{mb: 2}}
                    error={warning !== ""}
-                   label={"User's login"}
+                   label={warning !== "" ? "" : "User's login"}
                    id="outlined-uncontrolled"
                    color={"info"}
                    fullWidth={true}
@@ -130,7 +110,9 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                 >
                     {
                         ROLES.map((role, i) => {
-                            return <MenuItem key={i} value={role}>{TDevRole[role]}</MenuItem>
+                            return <MenuItem key={i} value={role}>
+                                <Typography>{TDevRole[role]}</Typography>
+                            </MenuItem>
                         })
                     }
 
@@ -155,11 +137,10 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
 
 export const InviteUserModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [userData, setUserData] = useState<TInviteUsrInfo | null>(null);
+    const [result, setResult] = useState<IModalDoneDisplayInfo>({} as IModalDoneDisplayInfo)
 
-    const setModeDone = (uData: TInviteUsrInfo) => {
-        console.log("setModeDone", uData);
-        setUserData(uData);
+    const setModeDone = (res: IModalDoneDisplayInfo) => {
+        setResult(res);
         modalProps.onAct(null);
     }
     const complete = () => {
@@ -168,13 +149,13 @@ export const InviteUserModal: FC = () => {
 
     return (
         <div>
-            { !userData
+            { !result.header
                 ? <InviteUsrElement
-                    onAction={(usrInfo) => setModeDone(usrInfo)}
+                    onAction={(resInfo) => setModeDone(resInfo)}
                 />
-                : <DoneElement
-                    onAction={() => complete()}
-                    usrInfo={userData}
+                : <ModalGenericDone
+                    onDone={() => complete()}
+                    info={result}
                 />
             }
         </div>

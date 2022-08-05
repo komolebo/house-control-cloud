@@ -240,10 +240,6 @@ const DoneElement: FC<IPropDoneElem> = ({modalProps}) => {
             Avatar uploaded
         </div><br/>
 
-        {/*<div className={[helpText, cntrContent].join(' ')}>*/}
-        {/*    Avatar uploaded*/}
-        {/*</div>*/}
-
         <div className={cntrContent}>
             <Button variant={"contained"}
                     onClick={() => modalProps.onClose()}
@@ -260,7 +256,6 @@ const DoneElement: FC<IPropDoneElem> = ({modalProps}) => {
 export const ChooseAvatarModal: FC = () => {
     const [state, setState] = useState<EPageState>(EPageState.CHOOSE_DEFAULT)
     const { modalProps } = useGlobalModalContext();
-    // const [formData] = useState<FormData>(new FormData())
     const formData = useRef(new FormData())
 
     const setCropImage = (file: any) => {

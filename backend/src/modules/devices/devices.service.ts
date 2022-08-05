@@ -21,23 +21,42 @@ export class DevicesService {
 
     async bindDeviceWithUser(userId : number,
                              deviceId: number,
-                             bind: boolean,
-                             role: RoleValues = RoleValues.Default) {
+                             role: string) {
+        const isRoleValid = Object.values(RoleValues).map(el => el.toString()).includes(role)
+        if (!isRoleValid)
+            throw new HttpException("Invalid role value", HttpStatus.BAD_REQUEST)
+
         const user = await this.usersRepository.findByPk(userId)
-        const device = await this.deviceRepository.findByPk(deviceId);
-
+        const device = await this.deviceRepository.findOne({
+            where: {id: deviceId},
+            include: [Users]
+        });
         if (!user)
-            return new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+            throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
         if (!device)
-            return new HttpException('Device does not exist', HttpStatus.NOT_FOUND);
+            throw new HttpException('Device does not exist', HttpStatus.NOT_FOUND);
+        if (this.isUserIdConnectedToDevice(userId, device))
+            throw new HttpException("User already connected to device", HttpStatus.CONFLICT)
 
-        if (bind) {
-            await user.$add('devices', device, {through: {role: role}});
-        } else {
-            await user.$remove('devices', device);
-        }
+        return user.$add('devices', device, {through: {role: role}});
+    }
 
-        return user;
+    async unbindDeviceFromUser(userId : number,
+                               deviceId: number) {
+        const user = await this.usersRepository.findByPk(userId)
+        const device = await this.deviceRepository.findOne({
+            where: {id: deviceId},
+            include: [Users]
+        });
+
+        if (!this.isUserIdConnectedToDevice(userId, device))
+            throw new HttpException("User is not connected to device", HttpStatus.BAD_REQUEST)
+        if (!user)
+            throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+        if (!device)
+            throw new HttpException('Device does not exist', HttpStatus.NOT_FOUND);
+
+        return user.$remove('devices', device);
     }
 
     async getDevices() {
@@ -45,7 +64,6 @@ export class DevicesService {
     }
 
     async getDevicesPerUser(user_id: number) {
-        console.log(user_id)
         const curUser = await this.usersRepository.findOne({
             where: {id: user_id},
             include: [Devices],
@@ -67,19 +85,23 @@ export class DevicesService {
     }
 
     async accessDeviceByHex(hexId: string, thisUserId: number, role: string) {
-        console.log("Requesting access to ", hexId, " for user=", thisUserId)
         hexId = hexId.toLowerCase()
 
         const device = await this.deviceRepository.findOne({
             where: {hex: hexId},
             include: {model: Users}
         })
-        if (!device) throw new HttpException("Device cannot be empty", HttpStatus.BAD_REQUEST)
+        if (!device)
+            throw new HttpException("Device cannot be empty", HttpStatus.NOT_FOUND)
 
         if(device.users.length) {
-            return new HttpException("Device already owner to become an owner", HttpStatus.BAD_REQUEST)
+            throw new HttpException("Device already owned to be owned again", HttpStatus.BAD_REQUEST)
         } else {
-            const res = await this.bindDeviceWithUser(thisUserId, device.id, true, RoleValues[role])
+            const res = await this.bindDeviceWithUser(
+                thisUserId,
+                device.id,
+                role)
+
             await this.notificationService.createNotificationYouAreAdded(
                 thisUserId, device.id, device.name, device.hex, role)
             return res
@@ -182,6 +204,9 @@ export class DevicesService {
     }
 
     async inviteUser(uLogin: string, thisUID: number, devHex: string, role: string) {
+        const objUser = await this.usersRepository.findOne({where: {login: uLogin}})
+        if(!objUser) throw new HttpException("User does not exist", HttpStatus.NOT_FOUND)
+
         console.log("inviteUser, uLogin=", uLogin, "hex=", devHex, " by req of:", thisUID, " role=", role);
         uLogin = uLogin.toLowerCase()
 
@@ -190,13 +215,9 @@ export class DevicesService {
             where: {hex: devHex},
             include: {model: Users},
         })
-
         if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
 
         if (!this._isUserLoginConnectedToDevice(uLogin, device)) {
-            const objUser = await this.usersRepository.findOne({where: {login: uLogin}})
-            if (!objUser) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
-
             const result = await device.$add('users', objUser, {through: {role: role}});
             if (result) {
                 await this.notificationService.createNotificationYouAreInvited(
@@ -204,7 +225,7 @@ export class DevicesService {
                 return device
             }
             throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
-        }
+        } else throw new HttpException("User already connected", HttpStatus.CONFLICT)
     }
 
     async _isUserAnOwner(uId: number, device: Devices, isDevWithUsers: boolean = true) {

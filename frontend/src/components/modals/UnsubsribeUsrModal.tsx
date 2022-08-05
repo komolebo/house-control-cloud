@@ -1,53 +1,39 @@
-import React, {FC, useState} from "react";
-import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
+import React, {FC, useContext, useState} from "react";
+import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import logoBack from "../../assets/arrow-back.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
-import {widerMuiBtn} from "../../styles/common/buttons.css";
+import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
+import {nestPostUnsubscribeFromDevice} from "../../http/rqData";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
 
 interface IUnsubElemProp {
-    onAction: () => void,
+    onAction: (resInfo: IModalDoneDisplayInfo) => void,
     devInfo: TDevItem
 }
 
-interface IUnsubDoneElemProp {
-    onAction: () => void,
-    devInfo?: TDevItem,
-}
-
-const DoneElement: FC<IUnsubDoneElemProp> = ({onAction, devInfo}) => {
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo job is done"}/>
-        </div><br/>
-
-        <div className={[h2Font, cntrContent].join(' ')}>
-            Successfully unsubscribed
-        </div><br/>
-
-        <div className={[helpText, cntrContent].join(' ')}>
-            You have no access to "{devInfo?.name}" anymore
-        </div><br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onAction()}
-                    startIcon={<img src={logoBack} alt={"Logo back to home"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
-}
 
 const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
+    const {userInfo} = useContext(UserGlobalContext);
+
     const handleUnsubscribe = () => {
-        onAction();
+        userInfo && nestPostUnsubscribeFromDevice(userInfo.id, devInfo.hex)
+            .then(() => {
+                onAction({
+                    success: true,
+                    header: "Successfully unsubscribed",
+                    message: `You has no access to ${devInfo.name} anymore`,
+                });
+            })
+            .catch(resp => {
+                onAction({
+                    success: false,
+                    header: "Access right not removed",
+                    message: `Please retry later`,
+                });
+            })
     }
 
     return <div>
@@ -82,31 +68,26 @@ const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
 
 export const UnsubscribeUsrModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
-
-    const {onAct} = modalProps;
     const {devInfo} = modalProps.data;
+    const [result, setResult] = useState<IModalDoneDisplayInfo>({} as IModalDoneDisplayInfo)
 
-    const setModeDone = () => {
-        onAct(devInfo);
-        setPageMode(ModalPageState.DoneState);
+    const setModeDone = (res: IModalDoneDisplayInfo) => {
+        setResult(res);
     }
     const complete = () => {
-        setPageMode(ModalPageState.CompleteState);
         hideModal();
     }
 
     return (
         <div>
-            { pageMode === ModalPageState.ReqState
+            { !result.header
                 ? <UnsubscribeUsrElement
-                    onAction={() => setModeDone()}
+                    onAction={(resInfo) => setModeDone(resInfo)}
                     devInfo={devInfo}
                 />
-                :
-                <DoneElement
-                    onAction={() => complete()}
-                    devInfo={devInfo}
+                : <ModalGenericDone
+                    onDone={() => complete()}
+                    info={result}
                 />
             }
         </div>

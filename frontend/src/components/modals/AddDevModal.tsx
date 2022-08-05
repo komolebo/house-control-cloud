@@ -1,50 +1,19 @@
 import React, {FC, useContext, useState} from "react";
-import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
+import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, TextField} from "@mui/material";
-import {cntrContent} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
-import logoBack from "../../assets/arrow-back.svg";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostReqRoleAccess} from "../../http/rqData";
 import {TDevRole} from "../../globals/DeviceData";
-import {warnLabel} from "../../styles/common/labels.css";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
-    onAction: (dev_data: any) => void
+    onAction: (resInfo: IModalDoneDisplayInfo) => void
 }
 
-const DoneElement: FC<IFinDevElem> = ({onAction}) => {
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo done"}/>
-        </div><br/>
-
-        <div className={[h2Font, cntrContent].join(' ')}>
-            Access requested
-        </div><br/>
-
-        <div className={[helpText, cntrContent].join(' ')}>
-            Please check device screen of wait
-        </div>
-        <div className={[helpText, cntrContent].join(' ')}>
-            for owner’s approval
-        </div><br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onAction("Finaly requested rights")}
-                    startIcon={<img src={logoBack} alt={"Logo get back"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
-}
 
 const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     const [devHex, setDevHex] = useState("0011AABB");
@@ -56,17 +25,32 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
         const str = e.target.value.toUpperCase()
         if (str === '' || (re.test(str) && str.length <= MIN_CHAR_ID)) {
             setDevHex(str)
+            setWarning("")
         }
     }
 
     const handleReqAccess = () => {
         userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.OWNER])
             .then(res => {
+                console.log("Success", res)
                 if (res && res.status === 201) {
-                    onAction(res)
+                    onAction({
+                        success: true,
+                        header: "Access requested",
+                        message: "Please check device screen of wait"
+                    })
                 }
-                else {
+            })
+            .catch(res => {
+                console.log("Failed", res)
+                if (res.response.status === 404) {
                     setWarning("Device does not exist")
+                } else if(res.response.status === 400) {
+                    onAction({
+                        success: false,
+                        header: "Access not requested",
+                        message: res.response.data.message
+                    })
                 }
             })
     }
@@ -88,21 +72,16 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
 
         <TextField sx={{mt: 2, mb: 2}}
-                   // error={warning !== ""}
+                   error={warning !== ""}
                    label={"Device ID"}
                    id="outlined-uncontrolled"
                    color={"info"}
                    fullWidth={true}
-                   // helperText={warning}
+                   helperText={warning}
                    onChange={e => onInputChange(e)}
                    inputProps={{ pattern: "[a-f]{1,15}" }}
                    value={devHex}
         />
-        {warning.length ? (
-            <div className={[warnLabel].join(' ')}>{warning}</div>
-        ): <></>
-        }
-
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>
             <Button variant={"contained"}
@@ -118,31 +97,27 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
 
 
 export const AddDevModal: FC = () => {
-    const { modalProps} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
+    const { hideModal } = useGlobalModalContext();
+    const [result, setResult] = useState<IModalDoneDisplayInfo>({} as IModalDoneDisplayInfo)
 
-    const setModeDone = (dev_data: any) => {
-        console.log(dev_data);
-        modalProps.onAct(dev_data)
-        setPageMode(ModalPageState.DoneState);
+    const setModeDone = (resInfo: IModalDoneDisplayInfo) => {
+        setResult(resInfo);
     }
     const complete = () => {
-        setPageMode(ModalPageState.CompleteState);
-        // modalProps.onAct("some data");
-        modalProps.onClose();
+        hideModal()
     }
 
     return (
         <div>
-            { pageMode === ModalPageState.ReqState
+            { !result.header
                 ? <FindDevElement
                     onAction={(dev_data) => setModeDone(dev_data)}
                 />
-                : <DoneElement
-                    onAction={() => complete()}
+                : <ModalGenericDone
+                    onDone={() => complete()}
+                    info={result}
                 />
             }
         </div>
-        // <AddDevPopup onclose={() => handleModalToggle()} onact={() => handleModalToggle()}/>
     )
 }

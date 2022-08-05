@@ -1,75 +1,23 @@
 import React, {FC, useContext, useState} from "react";
-import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
-import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
-import {cntrContent, cntrVContent} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
+import {useGlobalModalContext} from "./ModalProvider";
+import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
+import {cntrVContent} from "../../styles/common/position.css";
 import {h2Font, h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import logoBack from "../../assets/arrow-back.svg";
 import logoUpdateAccess from "../../assets/modal-update-access.svg";
 import {devItemDelim} from "../../styles/DeviceItem.css";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
-import {mediumMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
+import {mediumMuiBtn} from "../../styles/common/buttons.css";
 import {nestDeleteAccess, nestPostModifyAccess} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 interface IModifyElemProp {
-    onAction: (usrInfo: TConnectedUser | null) => void,
+    onAction: (resInfo: IModalDoneDisplayInfo) => void,
     devInfo: TDevItem,
     objUserInfo: TConnectedUser,
-}
-interface IModifyAccessDoneProp {
-    onAction: () => void,
-    usrInfo?: TConnectedUser,
-}
 
-enum AccessActionTrigger {
-    USER_ACCESS_UPDATE,
-    USER_ACCESS_REMOVED,
-    NONE
-}
-
-let accessActionTrigger: AccessActionTrigger = AccessActionTrigger.NONE;
-
-
-const DoneElement: FC<IModifyAccessDoneProp> = ({onAction, usrInfo,}) => {
-    const isUpdatePage = accessActionTrigger === AccessActionTrigger.USER_ACCESS_UPDATE;
-
-    return <Box sx={{m: "10px 20px 10px 20px"}}>
-        <div className={cntrContent}>
-            <img src={logoDone} alt={"Job is done"}/>
-        </div><br/>
-
-        <div className={[h2Font, cntrContent].join(' ')}>
-            {isUpdatePage
-                ? "Access modified"
-                : "Access removed"
-            }
-        </div><br/>
-
-        {usrInfo && (
-            isUpdatePage
-            ?   <div className={[helpText, cntrContent].join(' ')}>
-                    User '{usrInfo.fullName}' is now &nbsp;
-                    <ColorRoleLabel role={usrInfo.role}/>
-                </div>
-            :   <div className={[helpText, cntrContent].join(' ')}>
-                User '{usrInfo.fullName}' is disconnected from device:&nbsp;
-            </div>
-        )}
-        <br/><br/>
-
-        <div className={cntrContent}>
-            <Button variant={"contained"}
-                    onClick={() => onAction()}
-                    startIcon={<img src={logoBack} alt={"Back to home"}/>}
-                    className={widerMuiBtn}
-            >
-                Back to Home
-            </Button>
-        </div>
-    </Box>
 }
 
 const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInfo}) => {
@@ -83,17 +31,39 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
     const handleUpdAccess = () => {
         objUserInfo.role = role; // TODO: check why is it needed
         userInfo && nestPostModifyAccess(userInfo.id, devInfo.hex, objUserInfo.id, TDevRole[role])
-            .then(() => {
-                accessActionTrigger = AccessActionTrigger.USER_ACCESS_UPDATE;
-                onAction(objUserInfo);
+            .then(resp => {
+                console.log(resp)
+                onAction({
+                    success: true,
+                    message: `User ${objUserInfo.login} has now  ${role} access to ${devInfo.name}`,
+                    header: "Access right updated"
+                });
+            })
+            .catch(resp => {
+                console.log(resp)
+                onAction({
+                    success: false,
+                    header: "Access right not updated",
+                    message: `Please retry later`,
+                });
             })
     }
 
     const handleRmAccess = () => {
         userInfo && nestDeleteAccess(userInfo.id, devInfo.hex, objUserInfo.id)
             .then(() => {
-                accessActionTrigger = AccessActionTrigger.USER_ACCESS_REMOVED;
-                onAction(null);
+                onAction({
+                    success: true,
+                    message: `User ${objUserInfo.login} has no access to ${devInfo.name} anymore`,
+                    header: "Access right removed"
+                });
+            })
+            .catch(resp => {
+                onAction({
+                    success: false,
+                    header: "Access right not removed",
+                    message: `Please retry later`,
+                });
             })
     }
 
@@ -142,7 +112,8 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
                             return <MenuItem
                                 value={role}
                                 key={i}
-                            >{TDevRole[role]}
+                            >
+                                <Typography>{TDevRole[role]}</Typography>
                             </MenuItem>
                         })
                     }
@@ -183,31 +154,27 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
 
 export const ModifyAccessModal: FC = () => {
     const {modalProps, hideModal} = useGlobalModalContext();
-    const [pageMode, setPageMode] = useState(ModalPageState.ReqState)
-
     let {usrInfo, devInfo} = modalProps.data;
+    const [result, setResult] = useState<IModalDoneDisplayInfo>({} as IModalDoneDisplayInfo)
 
-    const setModeDone = (_usrInfo: TConnectedUser | null) => {
-        usrInfo = _usrInfo
-        setPageMode(ModalPageState.DoneState);
-        modalProps.onAct(null);
+    const setModeDone = (res: IModalDoneDisplayInfo) => {
+        setResult(res)
     }
     const complete = () => {
-        setPageMode(ModalPageState.CompleteState);
         hideModal();
     }
 
     return (
         <div>
-            { pageMode === ModalPageState.ReqState
+            { !result.header
                 ? <UpdUsrAccessElement
                     onAction={(usrInfo) => setModeDone(usrInfo)}
                     devInfo={devInfo}
                     objUserInfo={usrInfo}
                 />
-                : <DoneElement
-                    onAction={() => complete()}
-                    usrInfo={usrInfo}
+                : <ModalGenericDone
+                    onDone={() => complete()}
+                    info={result}
                 />
             }
         </div>
