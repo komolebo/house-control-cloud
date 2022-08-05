@@ -38,28 +38,30 @@ export class PreferenceService {
     async getBlackListByUserId(userId: number) {
         const user = await this.userRepository.findOne({
             where: {id: userId},
-            include: [Preference]
+            include: [
+                {
+                    model: Preference,
+                    include: [{
+                        model: Blacklist
+                    }]
+                }
+            ]
         })
 
-        if (!user || !user.preference) return
+        if (!user) throw new HttpException("User not found", HttpStatus.NOT_FOUND)
+        if(!user.preference || !user.preference.black_list) return {}
 
-        return this.getBlackListOfUser(user)
-    }
-
-    private async getBlackListOfUser(user: Users) {
-        const blackListIdList = await user.preference.$get ("black_list")
-            .then (res => res.map(bl_item => bl_item.blockUserId) )
-
+        const blackIdList = user.preference.black_list.map(el => el.blockUserId)
         const blackListFullInfo = await this.userRepository.findAll ({
-            where: {id: blackListIdList},
+            where: {id: blackIdList},
             include: [Preference]
         })
 
         return blackListFullInfo.map (u => ({
-                "name": u.full_name,
-                "login": u.login,
-                "id": u.id,
-                "urlPic": u.preference ? u.preference.profile_photo : ""
+            "name": u.full_name,
+            "login": u.login,
+            "id": u.id,
+            "urlPic": u.preference ? u.preference.profile_photo : ""
         }))
     }
 

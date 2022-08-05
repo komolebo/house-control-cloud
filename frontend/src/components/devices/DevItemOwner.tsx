@@ -26,11 +26,11 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
     const {userInfo} = useContext(UserGlobalContext)
 
     const syncUsers = () => {
-        fetchConnUsersByDevice(devInfo.id, uList => {
+        fetchConnUsersByDevice(devInfo.hex, uList => {
             console.log("fetchConnUsersByDevice ", devInfo.name)
-            if (JSON.stringify(uList) !== JSON.stringify(users)) {
+            // if (JSON.stringify(uList) !== JSON.stringify(users)) {
                 setUsers(uList);
-            }
+            // }
         })
     }
     const onRemoteDeviceChanged = () => {

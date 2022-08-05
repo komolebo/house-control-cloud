@@ -1,4 +1,4 @@
-import {Injectable, Inject} from '@nestjs/common';
+import {Injectable, Inject, HttpException, HttpStatus} from '@nestjs/common';
 import { Users } from './user.entity';
 import { USER_REPOSITORY } from '../../core/globals/db_constants';
 import {InjectModel} from "@nestjs/sequelize";
@@ -27,16 +27,17 @@ export class UsersService {
 
     async getFullUserInfo(id: number): Promise<Users> {
         return await this.userRepository.findOne<Users>({
-            where: { id }, include: [{
+            where: { id },
+            include: [{
                 model: Preference,
                 include: [Blacklist]
             }]
         });
     }
 
-    async getUsersPerDevice(deviceId: number) {
-        return await this.deviceRepository.findOne({
-            where: {id: deviceId},
+    async getUsersPerDevice(deviceHex: string) {
+        const device = await this.deviceRepository.findOne({
+            where: {hex: deviceHex},
             include: [{
                 model: Users,
                 include: [{
@@ -45,11 +46,10 @@ export class UsersService {
                 }]
             }]
         })
-            .then(device => {
-                if (!device) return;
 
-                return device.users;
-            })
+        if (!device) throw new HttpException("No device found", HttpStatus.NOT_FOUND);
+
+        return device.users;
     }
 
     async deleteAccountById(userId: number) {

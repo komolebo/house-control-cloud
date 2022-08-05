@@ -1,6 +1,5 @@
 import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { UsersService } from '../../modules/users/users.service';
 import {Users} from "../../modules/users/user.entity";
 import {AuthService} from "../../modules/auth/auth.service";
 import {InjectModel} from "@nestjs/sequelize";

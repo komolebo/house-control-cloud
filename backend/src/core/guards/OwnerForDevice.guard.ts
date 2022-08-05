@@ -12,7 +12,8 @@ export const ENDPOINT_PARAM_DEVICE_ID = 'device_id'
 
 @Injectable()
 export class OwnerForDeviceGuard implements CanActivate {
-    constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices
+    constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
+                private authService: AuthService
     ){}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -21,9 +22,8 @@ export class OwnerForDeviceGuard implements CanActivate {
     }
 
     async validateRequest(request) {
-        const userId: number = request.params[ENDPOINT_PARAM_USER_ID];
-        let deviceId: string = request.params[ENDPOINT_PARAM_DEVICE_ID];
-        deviceId = deviceId.toLowerCase()
+        let userId = this.getUserId (request);
+        let deviceId = this.getDeviceId(request);
 
         return userId && deviceId && this.deviceRepository.findOne({
             where : {hex: deviceId},
@@ -44,5 +44,19 @@ export class OwnerForDeviceGuard implements CanActivate {
 
                 return isOwner;
             })
+    }
+
+    private getDeviceId(request) {
+        let deviceId: string = request.params[ENDPOINT_PARAM_DEVICE_ID];
+        deviceId = deviceId ? deviceId.toLowerCase () : deviceId;
+        return deviceId;
+    }
+
+    private getUserId(request) {
+        let userId: number = request.params[ENDPOINT_PARAM_USER_ID];
+        if (userId === undefined) {// not specified in params, look for in tokens
+            return this.authService.parseHeaders (request.headers.authorization).id
+        }
+        return userId;
     }
 }

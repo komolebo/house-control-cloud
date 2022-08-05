@@ -45,7 +45,7 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        this.logger.error (`Client connected: ${client.id}`);
+        this.logger.debug (`Client connected: ${client.id}`);
         const uInfo = this.authService.parseHeaders(client.handshake.headers.authorization);
         if (uInfo) {
             if (Object.keys(this.uMap).findIndex(dId => dId === uInfo.id.toString()) < 0)

@@ -4,9 +4,9 @@ import {ValidateInputPipe} from "./core/pipes/validate.pipe";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log']
+    logger: ['error', 'warn', 'log'],
+    bufferLogs: true
   });
-
   // app.setGlobalPrefix('api')
 
   app.useGlobalPipes(new ValidateInputPipe());

@@ -2,6 +2,7 @@ import {Body, Controller, Delete, Get, Param, Patch, UseGuards} from '@nestjs/co
 import {UsersService} from "./users.service";
 import {UpdateUserInfoDto} from "./dto/user.dto";
 import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
+import {OwnerForDeviceGuard} from "../../core/guards/OwnerForDevice.guard";
 
 @Controller('api/users')
 export class UsersController {
@@ -13,10 +14,10 @@ export class UsersController {
         return await this.usersService.getUsers();
     }
 
-    // @UseGuards(UserIsUserGuard)
+    @UseGuards(OwnerForDeviceGuard)
     @Get('list/:device_id')
-    async getUserListPerDevice(@Param('device_id') device_id: number) {
-        return await this.usersService.getUsersPerDevice(device_id);
+    async getUserListPerDevice(@Param('device_id') deviceHex: string) {
+        return await this.usersService.getUsersPerDevice(deviceHex);
     }
 
     @UseGuards(UserIsUserGuard)

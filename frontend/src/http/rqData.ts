@@ -18,7 +18,7 @@ export function roleStrToId(role: string) {
 
 
 // users
-export function fetchConnUsersByDevice(dev_id: number,
+export function fetchConnUsersByDevice(dev_id: string,
                                        onThen: (data: Array<TConnectedUser>) => void) {
     host.get("api/users/list/" + dev_id)
         .then(resp => {
@@ -84,7 +84,7 @@ export function getNotificationsListPerUser(userId: number) {
     return host.get("api/notification/list/" + userId)
 }
 export function isNotificationPerUser(userId: number) {
-    return host.get("api/notification/exist/" + userId)
+    return host.get("api/notification/count/" + userId)
 }
 export function deleteNotification(notifId: number) {
     return host.delete("api/notification/" + notifId)

@@ -23,7 +23,6 @@ interface IState {
 }
 
 export const DevContainer: FC = () => {
-    const [dataSync, setDataSync] = useState(false);
     const [values, setValues] = useState<IState>({
         ind: -1,
         devices: [],
@@ -38,7 +37,7 @@ export const DevContainer: FC = () => {
     }
 
     const onRemoteDeviceChanged = () => {
-        setDataSync(true);
+        syncData();
     }
 
     const syncData = () => {
@@ -82,12 +81,6 @@ export const DevContainer: FC = () => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    useEffect(() => {
-        syncData();
-        setDataSync(false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dataSync, userInfo])
 
     return <div id={devContainer}>
         <div id={devContHead}>

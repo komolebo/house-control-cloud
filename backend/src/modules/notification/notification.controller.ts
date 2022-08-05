@@ -13,9 +13,9 @@ export class NotificationController {
     }
 
     @UseGuards(UserIsUserGuard)
-    @Get(`exist/:${ENDPOINT_PARAM_USER_ID}`)
-    async isNotificationsPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
-        return await this.notificationService.isNotificationsByUser(userId);
+    @Get(`count/:${ENDPOINT_PARAM_USER_ID}`)
+    async countNotificationsPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number) {
+        return await this.notificationService.countNotificationsByUser(userId);
     }
 
     @UseGuards(UserIsUserGuard)

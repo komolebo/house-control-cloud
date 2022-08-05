@@ -51,7 +51,6 @@ export const NavBar: React.FC = () => {
                 preference && setAvatarSrc(preference.profile_photo);
             }
         })
-        syncNotificationStatus();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userInfo])
 
@@ -87,9 +86,9 @@ export const NavBar: React.FC = () => {
     };
 
     const syncNotificationStatus = () => {
-        userInfo && isNotificationPerUser(userInfo?.id)
+        userInfo && isNotificationPerUser(userInfo.id)
             .then(resp => {
-                console.log("isNotificationPerUser resp: ", resp.data > 0)
+                console.log("isNotificationPerUser resp: ", resp.data)
                 if (resp.status === 200 || resp.status === 201) {
                     setNotification(resp.data);
                 }

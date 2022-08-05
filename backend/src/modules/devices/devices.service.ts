@@ -64,24 +64,32 @@ export class DevicesService {
     }
 
     async getDevicesPerUser(user_id: number) {
+        const result = []
         const curUser = await this.usersRepository.findOne({
             where: {id: user_id},
-            include: [Devices],
+            include: [{
+                model: Devices,
+                include: [ {
+                    model: Users
+                }]
+            }],
         })
         if (!curUser) return;
 
         const devices = curUser.devices;
         for (const device of devices) {
-            device["dataValues"]["canUnsubscribe"] = true;
+            let canUnsubscribe = true;
             if (device.get("Roles")["dataValues"].role === RoleValues.Owner) {
-                const isOwner = await this._isUserAnOwner(user_id, device, false);
-                const ownerCount = await this._calcOwnerPerDevice(device, false)
+                const isOwner = await this._isUserAnOwner(user_id, device);
+                const ownerCount = await this._calcOwnerPerDevice(device)
 
-                device["dataValues"]["canUnsubscribe"] = !(isOwner && ownerCount === 1)
+                canUnsubscribe = !(isOwner && ownerCount === 1)
             }
+            const {users, ...other} = device["dataValues"]
+            result.push({ ...other, "canUnsubscribe": canUnsubscribe })
         }
 
-        return devices
+        return result
     }
 
     async accessDeviceByHex(hexId: string, thisUserId: number, role: string) {
@@ -232,13 +240,10 @@ export class DevicesService {
         if (!device) return false;
         if (isDevWithUsers && !device.users)
             return false;
-        else {
-            return device.$get("users").then(connUsers => {
-                const user = connUsers.find(el => el.id === uId)
-                return user && user.get("Roles")["dataValues"].role === RoleValues.Owner
-            })
-        }
 
+        const connUsers = isDevWithUsers ? device.users : await device.$get("users")
+        const user = connUsers.find(el => el.id === uId)
+        return user && user.get("Roles")["dataValues"].role === RoleValues.Owner
     }
     isUserIdConnectedToDevice(uId: number, deviceIncUsers: Devices) {
         if (!deviceIncUsers || !deviceIncUsers.users) return false;
@@ -251,11 +256,10 @@ export class DevicesService {
     async _calcOwnerPerDevice(device: Devices, isDevWithUsers: boolean = true) {
         if (!device) throw "Device is empty";
         if (isDevWithUsers && !device.users) throw "Device does not have users"
-        else {
-            const connUsers = isDevWithUsers ? device.users : await device.$get ("users");
-            return connUsers.filter(u =>
-                u.get ('Roles')['dataValues'].role === RoleValues.Owner)
-                .length
-        }
+
+        const connUsers = isDevWithUsers ? device.users : await device.$get ("users");
+        return connUsers.filter(u =>
+            u.get ('Roles')['dataValues'].role === RoleValues.Owner)
+            .length
     }
 }

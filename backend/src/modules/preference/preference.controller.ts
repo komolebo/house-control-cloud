@@ -3,7 +3,6 @@ import {
     Controller,
     Delete,
     Get,
-    Headers,
     Param,
     Patch,
     Post,
@@ -11,7 +10,6 @@ import {
     UploadedFile, UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import {Users} from "../users/user.entity";
 import {PreferenceDto} from "./dto/preference.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {PreferenceService, TPreferenceAction} from "./preference.service";

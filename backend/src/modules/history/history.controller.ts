@@ -18,7 +18,7 @@ export class HistoryController {
         return await this.historyService.countHistoryOfUser(Number(userId));
     }
 
-    // @UseGuards(UserIsUserGuard)
+    @UseGuards(UserIsUserGuard)
     @Get(`:${ENDPOINT_PARAM_USER_ID}/:size/:offset`)
     async getPagedHistoryPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                                  @Param('offset') offset: number,

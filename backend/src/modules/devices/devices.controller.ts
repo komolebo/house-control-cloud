@@ -21,7 +21,6 @@ export class DevicesController {
     async bindDeviceForUser(@Param('device_id') device_id: number,
                             @Param('user_id') user_id: number,
                             @Body() bindDev_dto: BindDevice_Dto) {
-        console.log(bindDev_dto)
         return await this.devicesService.bindDeviceWithUser(Number(user_id), Number(device_id), bindDev_dto.role);
     }
 
@@ -31,7 +30,7 @@ export class DevicesController {
         return await this.devicesService.unbindDeviceFromUser(Number(user_id), Number(device_id));
     }
 
-    // @UseGuards(UserIsUserGuard)
+    @UseGuards(UserIsUserGuard)
     @Post(`access/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:role`)
     async reqAccessToDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                             @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,

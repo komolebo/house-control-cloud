@@ -7,7 +7,6 @@ import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from 
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
-import {Histories} from "../history/history.entity";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -59,13 +58,12 @@ export class NotificationService {
         return curUser.notifications
     }
 
-    async isNotificationsByUser(userId: number) {
-        return this.userRepository.count ({
-                where: {id: userId},
-                include: {model: Notifications}
-            }
-        )
+    async countNotificationsByUser(userId: number) {
+        return await this.notificationRepository.count ({
+            where: {sourceUserId: userId},
+        })
     }
+
 
     private async createNotification(notificationDto: CreateNotification_Dto) {
         const user = await this.userRepository.findOne({
