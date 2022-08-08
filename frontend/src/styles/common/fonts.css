@@ -21,6 +21,7 @@
 .h4-font {
     font-family: "Roboto Light", 'Roboto', sans-serif;
     font-size: 18px;
+    font-weight: 300;
     color: #2F3542;
     /*color: grey;*/
 }
