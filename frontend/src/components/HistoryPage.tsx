@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useContext, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, FC, useContext, useEffect, useState} from "react";
 import {fontLgrey, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
 import {historyItem, historyTable, historyTableHead, historyTableRow} from "../styles/HistoryPage.css"
 import {
@@ -39,7 +39,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
-import {shorterMuiBtn, shortMuiBtn} from "../styles/common/buttons.css";
+import {shorterMuiBtn} from "../styles/common/buttons.css";
 import {cntrContent, cntrVContent, flexG1, floatr} from "../styles/common/position.css";
 import moment from "moment";
 import logoSettings from "../assets/settings.svg";

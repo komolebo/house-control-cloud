@@ -89,7 +89,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         <TextField sx={{mb: 2}}
                    error={warning !== ""}
                    label={warning !== "" ? "" : "User's login"}
-                   id="outlined-uncontrolled"
+                   id="textfield-invite-user"
                    color={"info"}
                    fullWidth={true}
                    helperText={warning}

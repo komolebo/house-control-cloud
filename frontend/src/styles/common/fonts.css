@@ -20,9 +20,9 @@
 }
 .h4-font {
     font-family: "Roboto Light", 'Roboto', sans-serif;
-    font-weight: 300;
     font-size: 18px;
     color: #2F3542;
+    /*color: grey;*/
 }
 .h5-font {
     font-family: "Roboto Light", 'Roboto', sans-serif;

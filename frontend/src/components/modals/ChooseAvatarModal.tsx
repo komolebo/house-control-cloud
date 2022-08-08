@@ -2,7 +2,7 @@ import React, {FC, useContext, useRef, useState} from "react";
 import {ModalProps, useGlobalModalContext} from "./ModalProvider";
 import {Avatar as Ava, Box, Button} from "@mui/material";
 import {cntrContent, cntrVContent, flexCont6} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
+import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
 import {h2Font} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
@@ -233,7 +233,8 @@ const CropUploadedElement: FC<IPropCropElem> = ({
 const DoneElement: FC<IPropDoneElem> = ({modalProps}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
-            <img src={logoDone} alt={"Logo job is done"}/>
+            {/*<img src={logoDone} alt={"Logo job is done"}/>*/}
+            <LogoDone fill="#2ED573"/>
         </div><br/>
 
         <div className={[h2Font, cntrContent].join(' ')}>

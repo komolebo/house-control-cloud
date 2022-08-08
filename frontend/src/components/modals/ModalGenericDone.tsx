@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {Box, Button} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
-import logoDone from "../../assets/done-big.svg";
+import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
 import logoFail from "../../assets/stop.svg";
 import {h2Font, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
@@ -23,7 +23,7 @@ const ModalGenericDone: FC<IPropDoneElem> = ({onDone, info}) => {
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
             { info.success
-                ? <img src={logoDone} alt={"Logo job is done"}/>
+                ? <LogoDone fill="#2ED573"/>
                 : <img src={logoFail} alt={"Logo denied"}/>
             }
         </div><br/>

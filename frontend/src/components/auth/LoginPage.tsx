@@ -4,16 +4,16 @@ import {
     loginPage,
     stickCntr,
     stickRight
-} from "../styles/Login.css";
-import {point, preLabel, warnLabel} from "../styles/common/labels.css";
-import {hFont, underline} from "../styles/common/fonts.css";
-import {btn} from "../styles/common/buttons.css";
+} from "../../styles/Login.css";
+import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
+import {hFont, underline} from "../../styles/common/fonts.css";
+import {btn} from "../../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
-import {AUTH_PAGE, HOME_PAGE} from "../utils/consts";
-import {login} from "../http/auth";
-import {flexr, wide} from "../styles/common/position.css";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
-import logoHomeNet from "../assets/home-net-black.svg";
+import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE} from "../../utils/consts";
+import {login} from "../../http/auth";
+import {flexr} from "../../styles/common/position.css";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import logoHomeNet from "../../assets/home-net-black.svg";
 import {
     Button,
     Checkbox,
@@ -140,13 +140,17 @@ const LoginPage: FC = () => {
 
             <Button variant={"contained"}
                     onClick={() => signIn()}
-                    className={[wide, btn].join(' ')}
+                    className={[btn].join(' ')}
+                    fullWidth
             >
                 LOGIN
             </Button><br/>
 
             <div>
-                <label className={[stickRight, point, preLabel].join(' ')}>
+                <label
+                    className={[stickRight, point, preLabel].join(' ')}
+                    onClick={() => navigate(FORGOT_PWD_PAGE)}
+                >
                     Forgot Password?
                 </label>
             </div>

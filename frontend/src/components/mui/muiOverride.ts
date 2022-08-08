@@ -9,7 +9,8 @@ theme = createTheme(theme, {
         },
         info: {
             main: theme.palette.info.light
-        }
+        },
+        // mode: 'dark'
     },
     components: {
         MuiButton: {

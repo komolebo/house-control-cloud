@@ -1,17 +1,17 @@
 import React, {FC, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {delimiter, loginPage, stickCntr, warnContainer} from "../styles/Login.css";
-import {point, preLabel, warnLabel} from "../styles/common/labels.css";
-import {hFont, underline} from "../styles/common/fonts.css";
-import {btn} from "../styles/common/buttons.css";
+import {delimiter, loginPage, stickCntr, warnContainer} from "../../styles/Login.css";
+import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
+import {hFont, underline} from "../../styles/common/fonts.css";
+import {btn} from "../../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
-import {HOME_PAGE, LOGIN_PAGE} from "../utils/consts";
-import {register} from "../http/auth";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
-import {flexr, wide} from "../styles/common/position.css";
+import {HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
+import {register} from "../../http/auth";
+import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {flexr} from "../../styles/common/position.css";
 import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import logoHomeNet from "../assets/home-net-black.svg";
+import logoHomeNet from "../../assets/home-net-black.svg";
 
 interface IState {
     showPassword: boolean;
@@ -53,7 +53,7 @@ const SignupPage: FC = () => {
                 default:
                     setValues({...values, warnings: ["Unknown error happened, please try later"]})
             }
-        });
+        })
     }
 
     return (
@@ -65,7 +65,7 @@ const SignupPage: FC = () => {
 
             <TextField
                 sx={{width: "100%"}}
-                id="name-input-field"
+                id="login-input-field"
                 label="Login"
                 value={values.login}
                 onChange={e => setValues({...values, login: e.target.value})}
@@ -121,7 +121,8 @@ const SignupPage: FC = () => {
 
             <Button variant={"contained"}
                     onClick={() => signUp()}
-                    className={[wide, btn].join(' ')}
+                    className={[btn].join(' ')}
+                    fullWidth
             >
                 SIGN UP
             </Button><br/>

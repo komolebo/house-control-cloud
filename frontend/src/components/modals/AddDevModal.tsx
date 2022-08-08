@@ -72,7 +72,7 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
         <TextField sx={{mt: 2, mb: 2}}
                    error={warning !== ""}
                    label={"Device ID"}
-                   id="outlined-uncontrolled"
+                   id="textfield-add-dev-modal"
                    color={"info"}
                    fullWidth={true}
                    helperText={warning}
