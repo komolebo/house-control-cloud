@@ -75,12 +75,14 @@ export const DevContainer: FC = () => {
     }, [])
     useEffect(() => {
         syncData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userInfo])
     useEffect(() => {
         if(syncRemoteData) {
             syncData()
             setSyncRemoteData(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [syncRemoteData])
 
     const handleDevSelect = (newInd: number) => {
@@ -91,46 +93,48 @@ export const DevContainer: FC = () => {
 
     return <div id={devContainer}>
         <div id={devContHead}>
-            <div style={{flexGrow: 10}}>
+            <div style={{flexGrow: 1, overflow: "hidden"}}>
                 <DevList
                     devNames={values.devices.map(el => el.name)}
                     onSelect={i => handleDevSelect(i)}
                     initSelection={values.ind}
                 />
             </div>
-            <div style={{flexGrow: 1}}>
-            <Button variant={"contained"}
-                    sx={{ ml: 2 }}
-                    endIcon={
-                        <img src={logoAddDev} alt={"Adde device logo"}/>
-                    }
-                    onClick={() => showModal(MODAL_TYPE.AddDevModal, {
-                        onClose: () => hideModal(),
-                        onAct: () => {}
-                    })}
-                    className={[wideMuiBtn, floatr].join(' ')}
-            >
-                Add device
-            </Button>
-            <Button variant={"outlined"}
-                    endIcon={
-                        <img
-                            src={canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
-                        />
-                    }
-                    onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
-                        onClose: () => {console.log("Modal onClose")},
-                        onAct: () => {},
-                        data: {
-                            devInfo: values.devices[values.ind]
+
+            <div style={{width: 500, minWidth: 380}} className={floatr}>
+                <Button variant={"contained"}
+                        sx={{ ml: 2 }}
+                        endIcon={
+                            <img src={logoAddDev} alt={"Adde device logo"}/>
                         }
-                    })}
-                    className={[wideMuiBtn, floatr].join(' ')}
-                    disabled={!canUnsubscribe}
-            >
-                Unsubscribe
-            </Button>
+                        onClick={() => showModal(MODAL_TYPE.AddDevModal, {
+                            onClose: () => hideModal(),
+                            onAct: () => {}
+                        })}
+                        className={[wideMuiBtn, floatr].join(' ')}
+                >
+                    Add device
+                </Button>
+                <Button variant={"outlined"}
+                        endIcon={
+                            <img
+                                src={canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
+                            />
+                        }
+                        onClick={() => showModal(MODAL_TYPE.UnsubscribeUsrModal, {
+                            onClose: () => {console.log("Modal onClose")},
+                            onAct: () => {},
+                            data: {
+                                devInfo: values.devices[values.ind]
+                            }
+                        })}
+                        className={[wideMuiBtn, floatr].join(' ')}
+                        disabled={!canUnsubscribe}
+                >
+                    Unsubscribe
+                </Button>
             </div>
+
         </div>
         { values.ind >= 0 && values.devices.length &&
         <div>

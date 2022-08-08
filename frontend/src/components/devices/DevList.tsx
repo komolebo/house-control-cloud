@@ -1,9 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {
-    devListItemSelect,
-    devListItemUnselect
-} from "../../styles/DeviceList.css"
-import {Box, Button} from "@mui/material";
+import {Box, Tab, Tabs} from "@mui/material";
 import {h3Font} from "../../styles/common/fonts.css";
 
 interface IPropDevList {
@@ -21,28 +17,34 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
         setCurSel(initSelection)
     }, [devNames, initSelection]);
 
-    const handleSelect = (i: number) => {
+    const handleSelect = (event: React.SyntheticEvent, i: number) => {
         console.log("handleSelect", i)
         setCurSel(i);
         onSelect(i);
     }
 
-    return <div style={{maxWidth: '80%'}}>
+    return <div style={{maxWidth: '100%'}}>
         {devices.length === 0
                 ? <div className={h3Font}>No device is connected yet...</div>
                 :
-                <Box sx={{ flexGrow: 1, }}>
-                    {devices.map((device, i) =>
-                        <Button
-                            variant={"outlined"}
-                            key={i}
-                            onClick={ () => handleSelect(i) }
-                            id={i === curSel ? devListItemSelect : devListItemUnselect}
+                    <Box>
+                        <Tabs
+                            sx={{backgroundColor:"grey", p:0}}
+                            value={curSel}
+                            onChange={handleSelect}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            aria-label="scrollable auto tabs example"
+                            allowScrollButtonsMobile
                         >
-                            {device}
-                        </Button>
-                    )}
-                </Box>
+                            {devices.map((device, i) =>
+                                <Tab
+                                    label={device}
+                                    key={i}
+                                />
+                            )}
+                        </Tabs>
+                    </Box>
         }
         </div>
 };

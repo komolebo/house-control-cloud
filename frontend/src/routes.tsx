@@ -5,9 +5,7 @@ import SignupPage from "./components/auth/SignupPage";
 import HomePage from "./components/HomePage";
 import {HistoryPage} from "./components/HistoryPage";
 import {AccountPage} from "./components/AccountPage";
-import {ForgotPwdPage} from "./components/auth/ForgotPwdPage";
 import {CreatePwdPage} from "./components/auth/CreatePasswordPage";
-import {CheckYourEmailPage} from "./components/auth/CheckEmailPage";
 
 interface ITableRoute {
     path: string;

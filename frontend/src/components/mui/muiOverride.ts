@@ -61,6 +61,17 @@ theme = createTheme(theme, {
                     padding:  "8px 15px"
                 }
             }
+        },
+
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    fontFamily: "Roboto, 'Roboto', sans-serif",
+                    fontSize: "18px",
+                    fontStyle: "normal",
+                    color: "#2F3542"
+                }
+            }
         }
 
     },

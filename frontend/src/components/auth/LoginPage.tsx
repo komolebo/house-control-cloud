@@ -17,11 +17,9 @@ import logoHomeNet from "../../assets/home-net-black.svg";
 import {
     Button,
     Checkbox,
-    FormControl, FormControlLabel,
+    FormControlLabel,
     IconButton,
     InputAdornment,
-    InputLabel,
-    OutlinedInput,
     TextField,
     Typography
 } from "@mui/material";
@@ -97,22 +95,6 @@ const LoginPage: FC = () => {
                 />
             </div><br/>
 
-                    {/*type={values.showPassword ? 'text' : 'password'}*/}
-                    {/*value={values.password}*/}
-                    {/*onChange={e => setValues({...values, password: e.target.value})}*/}
-                    {/*endAdornment={*/}
-                    {/*    <InputAdornment position="end">*/}
-                    {/*        <IconButton*/}
-                    {/*            aria-label="toggle password visibility"*/}
-                    {/*            onClick={e => setValues({...values, showPassword: !values.showPassword})}*/}
-                    {/*            edge="end"*/}
-                    {/*        >*/}
-                    {/*            {values.showPassword ? <VisibilityOff /> : <Visibility />}*/}
-                    {/*        </IconButton>*/}
-                    {/*    </InputAdornment>*/}
-                    {/*}*/}
-                    {/*label="Password"*/}
-                    {/*onKeyUp={e => handleKeyUp(e, true)}*/}
             <TextField
                 id="outlined-adornment-password"
                 type={values.showPassword ? 'text' : 'password'}
