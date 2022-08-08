@@ -87,37 +87,56 @@ const LoginPage: FC = () => {
 
             <div>
                 <TextField
-                    sx={{width: "100%"}}
                     id="outlined-multiline-flexible"
                     label="Login or email"
                     value={values.login}
                     onChange={e => setValues({...values, login: e.target.value})}
                     onKeyUp={e => handleKeyUp(e, false)}
+                    fullWidth
+                    autoFocus
                 />
             </div><br/>
 
-            <FormControl sx={{ width: '100%' }} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    onChange={e => setValues({...values, password: e.target.value})}
-                    endAdornment={
+                    {/*type={values.showPassword ? 'text' : 'password'}*/}
+                    {/*value={values.password}*/}
+                    {/*onChange={e => setValues({...values, password: e.target.value})}*/}
+                    {/*endAdornment={*/}
+                    {/*    <InputAdornment position="end">*/}
+                    {/*        <IconButton*/}
+                    {/*            aria-label="toggle password visibility"*/}
+                    {/*            onClick={e => setValues({...values, showPassword: !values.showPassword})}*/}
+                    {/*            edge="end"*/}
+                    {/*        >*/}
+                    {/*            {values.showPassword ? <VisibilityOff /> : <Visibility />}*/}
+                    {/*        </IconButton>*/}
+                    {/*    </InputAdornment>*/}
+                    {/*}*/}
+                    {/*label="Password"*/}
+                    {/*onKeyUp={e => handleKeyUp(e, true)}*/}
+            <TextField
+                id="outlined-adornment-password"
+                type={values.showPassword ? 'text' : 'password'}
+                value={values.password}
+                onChange={e => setValues({...values, password: e.target.value})}
+                InputProps={{
+                    endAdornment:
                         <InputAdornment position="end">
                             <IconButton
-                                aria-label="toggle password visibility"
                                 onClick={e => setValues({...values, showPassword: !values.showPassword})}
                                 edge="end"
                             >
                                 {values.showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                         </InputAdornment>
-                    }
-                    label="Password"
-                    onKeyUp={e => handleKeyUp(e, true)}
-                />
-            </FormControl><br />
+                }}
+                label="New password"
+                error={values.warning.length > 0}
+                helperText={values.warning}
+                onKeyUp={e => handleKeyUp(e, true)}
+                fullWidth
+                inputRef={pwdFocusRef}
+            />
+            <br />
 
             <FormControlLabel
                 value="end"

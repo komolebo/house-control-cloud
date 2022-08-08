@@ -64,13 +64,6 @@ export const DevContainer: FC = () => {
     }
 
     useEffect(() => {
-        if(syncRemoteData) {
-            syncData()
-            setSyncRemoteData(false);
-        }
-    }, [syncRemoteData])
-
-    useEffect(() => {
         socket.on(IO_DEV_DATA_CHANGE_KEY, () => setSyncRemoteData(true));
         syncData();
         return () => {
@@ -80,6 +73,15 @@ export const DevContainer: FC = () => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+    useEffect(() => {
+        syncData()
+    }, [userInfo])
+    useEffect(() => {
+        if(syncRemoteData) {
+            syncData()
+            setSyncRemoteData(false);
+        }
+    }, [syncRemoteData])
 
     const handleDevSelect = (newInd: number) => {
         setValues({...values, ind: newInd})

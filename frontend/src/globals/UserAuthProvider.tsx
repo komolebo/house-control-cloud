@@ -45,6 +45,7 @@ export const useUserGlobalInfo = () => {
 
     useEffect(() => {
         if (authorized) {
+            console.log("useUserGlobalInfo")
             const userStorageData = initUserInfoFromStore()
             userStorageData && nestGetUserFullInfo(userStorageData.id).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
