@@ -42,7 +42,9 @@ const DevItem: FC<IProps> = ({dev}) => {
                     color={"info"}
                     defaultValue={dev.name}
                     fullWidth={true}
+                    autoFocus
                     onChange={e => setName(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && handleSave()}
                 />
             </div>
             : <div className={[h4Font, devItemDelim].join(' ')}>{dev.name}</div>

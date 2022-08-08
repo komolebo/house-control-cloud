@@ -129,6 +129,8 @@ export const HistoryPage: FC = () => {
     let [filterState, setFilterState] = useState<IFilterState>(initialFilterState)
     const {userInfo} = useContext(UserGlobalContext)
 
+    console.log("Drawing histroy page")
+
     useEffect(() => {
         loadMore();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,6 +168,12 @@ export const HistoryPage: FC = () => {
                     filterAndUpdateView();
                 }
             })
+    }
+    const clearLoadedData = () => {
+        historyData = [];
+        state.moreData = true;
+        state.offsetStep = 0;
+        loadMore();
     }
 
     const applyFilters = (): Array<number> => {
@@ -260,20 +268,24 @@ export const HistoryPage: FC = () => {
     const handleDeleteByInd = () => {
         const ind = filterState.filteredIndexes[state.setting.clickInd]
 
-        historyData[ind].text = "Deleted";
         userInfo && nestDeleteUserHistory(userInfo.id, [historyData[ind].id]).then(resp => {
-            console.log("history deleted")
-            filterAndUpdateView()
+            console.log(resp.status)
+
+            if (resp.status === 200) {
+                console.log("history deleted")
+                clearLoadedData();
+            }
         })
-        filterAndUpdateView();
     }
     const handleDeleteMultiple = () => {
         userInfo && nestDeleteUserHistory(userInfo.id, state.selection.map(ind => historyData[ind].id))
             .then(resp => {
-                state.selection = []
-                state.editMode = false;
-                console.log("history deleted")
-                filterAndUpdateView()
+                if (resp.status === 200) {
+                    state.selection = []
+                    state.editMode = false;
+                    console.log("history deleted")
+                    clearLoadedData()
+                }
         })
     }
     const handleSelectAll = () => {

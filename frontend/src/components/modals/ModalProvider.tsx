@@ -1,4 +1,4 @@
-import React, {createContext, FC, useContext, useState} from "react";
+import React, {createContext, FC, useContext, useEffect, useState} from "react";
 
 import {Box, Modal} from "@mui/material";
 import logoClose from "../../assets/close.svg";
@@ -81,6 +81,17 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
         onClose: () => {},
         data: {}
     });
+
+    useEffect(() => {
+        function handleEscapeKey(event: KeyboardEvent) {
+            if (event.code === 'Escape') {
+                hideModal()
+            }
+        }
+
+        document.addEventListener('keyup', handleEscapeKey)
+        return () => document.removeEventListener('keyup', handleEscapeKey)
+    }, [])
 
     const showModal = (modalType: MODAL_TYPE, modalProps: ModalProps) => {
         setType(modalType);

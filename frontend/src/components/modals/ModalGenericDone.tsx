@@ -20,7 +20,6 @@ export interface IPropDoneElem {
 
 
 const ModalGenericDone: FC<IPropDoneElem> = ({onDone, info}) => {
-    console.log("Done", info)
     return <Box sx={{m: "10px 20px 10px 20px"}}>
         <div className={cntrContent}>
             { info.success
@@ -47,6 +46,7 @@ const ModalGenericDone: FC<IPropDoneElem> = ({onDone, info}) => {
                     onClick={() => onDone()}
                     startIcon={<img src={logoBack} alt={"Logo get back"}/>}
                     className={widerMuiBtn}
+                    autoFocus
             >
                 Back to Home
             </Button>

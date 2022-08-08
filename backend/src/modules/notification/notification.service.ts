@@ -7,6 +7,7 @@ import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from 
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
+import {Devices} from "../devices/device.entity";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -20,10 +21,10 @@ function notificationInterpretData(notification: Notifications) {
 
 @Injectable()
 export class NotificationService {
-    constructor(@InjectModel(Notifications) private readonly notificationRepository: typeof Notifications,
-                @InjectModel(Users) private readonly userRepository: typeof Users,
-                private readonly historyService: HistoryService,
-                private readonly socketService: SocketService) {}
+    constructor(@InjectModel(Notifications) protected readonly notificationRepository: typeof Notifications,
+                @InjectModel(Users) protected readonly userRepository: typeof Users,
+                protected readonly historyService: HistoryService,
+                protected readonly socketService: SocketService) {}
 
     async remove(notificationId: number) {
         return await this.notificationRepository.destroy({where: {id: notificationId}});
@@ -67,63 +68,166 @@ export class NotificationService {
 
     private async createNotification(notificationDto: CreateNotification_Dto) {
         const user = await this.userRepository.findOne({
-            where: {id: notificationDto.userId}, include: {model: Notifications}}
-        )
+            where: {id: notificationDto.userId},
+            include: [Notifications]
+        })
 
         const notification = await this.notificationRepository.create<Notifications>(notificationDto);
         if (notification) {
             this.socketService.dispatchNotificationMsg (notificationDto.userId);
-            await this.historyService.createHistoryItem(notificationDto.userId, {
-                text: notificationDto.text,
-                type: THistoryMsgType[THistoryMsgType.Notification],
-                devId: notificationDto.deviceHex,
-                uId: notificationDto.sourceUserName,
-                })
         }
         return await user.$add("notifications", notification);
-    }
-
-    async createNotificationYouAreAdded(userId: number,
-                                        deviceId: number,
-                                        deviceName: string,
-                                        devHex: string,
-                                        newRole: string) {
-        return await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_ADDED],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
-            deviceId: deviceId,
-            userId: userId,
-            deviceHex: devHex,
-            text: `You are added to device \`${deviceName}\`, role: '${newRole}'`
-        })
     }
 
     async createNotificationYouLostAccess(userId: number,
                                           deviceId: number,
                                           devHex: string,
                                           deviceName: string) {
-        return await this.createNotification({
+        const text = `You lost an access to device \`${deviceName}\``;
+        await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.ERROR],
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
-            text: `You lost an access to device \`${deviceName}\``
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
         })
     }
-
-    async createNotificationYouAreInvited(userId: number,
-                                          deviceId: number,
-                                          devHex: string,
-                                          deviceName: string,
-                                          newRole: string) {
-        return await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_INVITED],
+    async createNotificationYouGotAccess(userId: number,
+                                         deviceId: number,
+                                         devHex: string,
+                                         deviceName: string) {
+        const text = `You got an access to device \`${deviceName}\``;
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
-            text: `You are invited to device \`${deviceName}\`, role: '${newRole}'`
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
+        })
+    }
+    async createNotificationYourRoleChanged(userId: number,
+                                            deviceId: number,
+                                            devHex: string,
+                                            deviceName: string,
+                                            role: string) {
+        const text = `Your role is changed to '${role}' for device \`${deviceName}\``;
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_MODIFIED],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            deviceId: deviceId,
+            userId: userId,
+            deviceHex: devHex,
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
+        })
+    }
+    async createNotificationUserLostAccess(userId: number,
+                                           objUserName: string,
+                                           objUserId: number,
+                                           objLogin: string,
+                                           deviceId: number,
+                                           devHex: string,
+                                           deviceName: string) {
+        const text =`${objUserName} lost an access to device \`${deviceName}\``
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
+            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            deviceId: deviceId,
+            userId: userId,
+            sourceUserId: objUserId,
+            deviceHex: devHex,
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
+            uId: objLogin
+        })
+    }
+    async createNotificationUserRoleChanged(userId: number,
+                                            objUserName: string,
+                                            objUserId: number,
+                                            objLogin: string,
+                                            deviceId: number,
+                                            devHex: string,
+                                            deviceName: string,
+                                            role: string) {
+        const text =`Role of ${objUserName} is changed to ${role} for device \`${deviceName}\``
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED],
+            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            deviceId: deviceId,
+            userId: userId,
+            sourceUserId: objUserId,
+            deviceHex: devHex,
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
+            uId: objLogin
+        })
+    }
+    async createNotificationUserGotAccess(userId: number,
+                                          objUserName: string,
+                                          objUserId: number,
+                                          objLogin: string,
+                                          deviceId: number,
+                                          devHex: string,
+                                          deviceName: string,
+                                          role: string) {
+        const text =`${objUserName} got '${role}' access to device \`${deviceName}\``
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            deviceId: deviceId,
+            userId: userId,
+            sourceUserId: objUserId,
+            deviceHex: devHex,
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
+            uId: objLogin
+        })
+    }
+    async createNotificationUsersClear(userId: number,
+                                       deviceId: number,
+                                       devHex: string,
+                                       deviceName: string) {
+        const text = `User list of device \`${deviceName}\` is cleared`;
+        await this.createNotification({
+            msgType: ENotificationTypes[ENotificationTypes.ALL_USERS_CLEAR],
+            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            deviceId: deviceId,
+            userId: userId,
+            deviceHex: devHex,
+            text: text
+        })
+        await this.historyService.createHistoryItem(userId, {
+            text: text,
+            type: THistoryMsgType[THistoryMsgType.Notification],
+            devId: devHex,
         })
     }
 }

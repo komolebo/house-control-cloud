@@ -32,7 +32,6 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     const handleReqAccess = () => {
         userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.OWNER])
             .then(res => {
-                console.log("Success", res)
                 if (res && res.status === 201) {
                     onAction({
                         success: true,
@@ -42,7 +41,6 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
                 }
             })
             .catch(res => {
-                console.log("Failed", res)
                 if (res.response.status === 404) {
                     setWarning("Device does not exist")
                 } else if(res.response.status === 400) {
@@ -81,6 +79,8 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
                    onChange={e => onInputChange(e)}
                    inputProps={{ pattern: "[a-f]{1,15}" }}
                    value={devHex}
+                   autoFocus
+                   onKeyPress={e => e.key === 'Enter' && handleReqAccess()}
         />
 
         <Box sx={{display: "flex", justifyContent: "center", p: 1}}>

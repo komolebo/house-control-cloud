@@ -13,17 +13,20 @@ export enum ENotificationAction {
 
 export enum ENotificationTypes {
     // no choice //
-    YOU_ARE_ADDED,
-    DEVICE_ADDED,
+    YOU_GOT_ACCESS, // device name
+    USER_GOT_ACCESS, // device name, object user name
 
-    USER_REMOVED,
-    YOU_LOST_ACCESS,
+    YOU_LOST_ACCESS, // device name
+    USER_LOST_ACCESS, // device name, object user name
+
+    YOU_ARE_MODIFIED, // device name, role name
+    USER_IS_MODIFIED, // device name, object user name, role name
+
+    ALL_USERS_CLEAR, // device name -> USER_LOST_ACCESS
 
     // with options //
     ACCEPT_USER_ADD,
     ACCEPT_USER_REMOVE,
-
-    YOU_ARE_INVITED,
 
     SUBSCRIPTION_EXPIRED,
     SUBSCRIPTION_PROLONGED,
@@ -40,16 +43,16 @@ const typeStr = (type: ENotificationTypes): string => {
 
 export function ExplainNotificationMap(type: ENotificationTypes, dbObj: Notifications): IExplainMap {
     switch (type.toString()) {
-        case typeStr(ENotificationTypes.YOU_ARE_ADDED):
-            return {
-                text: `You are now added to the device ${dbObj.deviceId}`,
-                actions: NO_ACTION_STR,
-            };
-        case typeStr(ENotificationTypes.DEVICE_ADDED):
-            return {
-                text: "Device is successfully added",
-                actions: "OK"
-            };
+        // case typeStr(ENotificationTypes.YOU_ARE_ADDED):
+        //     return {
+        //         text: `You are now added to the device ${dbObj.deviceId}`,
+        //         actions: NO_ACTION_STR,
+        //     };
+        // case typeStr(ENotificationTypes.DEVICE_ADDED):
+        //     return {
+        //         text: "Device is successfully added",
+        //         actions: "OK"
+        //     };
         case typeStr(ENotificationTypes.ACCEPT_USER_ADD):
             return {
                 text: "Please accept user adding",

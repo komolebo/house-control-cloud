@@ -9,11 +9,12 @@ import {SocketModule} from "../../sockets/socket.module";
 import {AuthModule} from "../auth/auth.module";
 import {HistoryModule} from "../history/history.module";
 import {UsersModule} from "../users/users.module";
+import {NotificationWrapService} from "./notification-wrapper.service";
 
 @Module({
   controllers: [NotificationController],
-  providers: [NotificationService],
-  exports: [NotificationService],
+  providers: [NotificationService, NotificationWrapService],
+  exports: [NotificationService, NotificationWrapService],
   imports: [
       forwardRef(() => UsersModule),
       forwardRef(() => AuthModule),

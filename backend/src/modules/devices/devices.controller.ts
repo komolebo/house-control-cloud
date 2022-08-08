@@ -31,6 +31,7 @@ export class DevicesController {
     }
 
     @UseGuards(UserIsUserGuard)
+    @UseInterceptors(DispatchPostInterceptor)
     @Post(`access/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:role`)
     async reqAccessToDevice(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
                             @Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,

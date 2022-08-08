@@ -81,7 +81,7 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
     const {userInfo} = useContext(UserGlobalContext)
 
     const handleRemoveElement = (id: number) => {
-        deleteNotification(id).then(resp => {
+        userInfo && deleteNotification(userInfo.id, id).then(resp => {
             if (resp.status === 200 || resp.status === 201) {
                 console.log("Response from removing the notification", resp)
                 syncNotifications();

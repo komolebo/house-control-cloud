@@ -48,8 +48,9 @@ export class HistoryService {
         if (!rawDelArr.length) return;
 
         const user = await this.userRepository.findOne({
-            where: {id: userId}, include: {model: Histories}}
-        )
+            where: {id: userId},
+            include: [Histories]
+        })
 
         // verify all the IDs belong to userId
         let delArr = []

@@ -36,8 +36,8 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
     const handleInputChange = (e: any) => {
         const val = e.target.value;
 
-        const no_num = /^[a-zA-Z]/;
-        const re = /^[0-9\b,a-zA-Z]+$/;
+        const no_num = /^[a-zA-Z_]/;
+        const re = /^[0-9\b,a-zA-Z_]+$/;
         if (val === '' || (no_num.test(val[0]) && re.test(val))) {
             setUserLogin(val)
             setWarning("")
@@ -96,6 +96,8 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                    onChange={e => handleInputChange(e)}
                    inputProps={{ pattern: "[a-f]{1,15}" }}
                    value={userLogin}
+                   onKeyPress={e => e.key === 'Enter' && handleUserInvite()}
+                   autoFocus
         />
 
         <Box sx={{ minWidth: 120 }}>

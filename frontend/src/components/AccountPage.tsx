@@ -243,6 +243,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             fullWidth={true}
                             onChange={e => setState({...state, name: e.target.value})}
                             size={"small"}
+                            onKeyPress={e => e.key === 'Enter' && handleSave()}
                         />
                     </div>
                     : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.full_name}</div>
@@ -261,6 +262,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             onChange={e => setState({...state, email: e.target.value.toLowerCase()})}
                             fullWidth={true}
                             size={"small"}
+                            onKeyPress={e => e.key === 'Enter' && handleSave()}
                         />
                     </div>
                     : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.email}</div>
@@ -280,6 +282,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             value={state.phone}
                             size={"small"}
                             fullWidth={true}
+                            onKeyPress={e => e.key === 'Enter' && handleSave()}
                             InputProps={{
                                 inputComponent: PhoneInputComponent,
                                 // autoFocus: true,

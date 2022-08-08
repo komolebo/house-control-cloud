@@ -13,10 +13,10 @@ export class CreateNotification_Dto {
 
     readonly text: string;
 
-    readonly deviceId?: number;
+    readonly deviceId?: number; // filter criteria
     readonly deviceHex?: string;
 
-    readonly sourceUserId?: number; // to rename it later to targetUserId
+    readonly sourceUserId?: number; // filter criteria // to rename it later to targetUserId
     readonly sourceUserName?: string;
 }
 

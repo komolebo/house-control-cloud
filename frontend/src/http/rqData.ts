@@ -89,8 +89,8 @@ export function getNotificationsListPerUser(userId: number) {
 export function isNotificationPerUser(userId: number) {
     return host.get("api/notification/count/" + userId)
 }
-export function deleteNotification(notifId: number) {
-    return host.delete("api/notification/" + notifId)
+export function deleteNotification(userId: number, notifId: number) {
+    return host.delete(`api/notification/${userId}/${notifId}`)
 }
 
 

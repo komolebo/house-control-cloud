@@ -5,15 +5,13 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
-import {NotificationService} from "../notification/notification.service";
-import {SocketService} from "../../sockets/socket.service";
+import {NotificationWrapService} from "../notification/notification-wrapper.service";
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
                 @InjectModel(Users) private readonly  usersRepository: typeof Users,
-                private notificationService: NotificationService,
-                private socketService: SocketService) { }
+                private notificationService: NotificationWrapService) { }
 
     async create(new_device: CreateDevice_Dto): Promise<Devices> {
         return await this.deviceRepository.create<Devices>(new_device);
@@ -38,7 +36,18 @@ export class DevicesService {
         if (this.isUserIdConnectedToDevice(userId, device))
             throw new HttpException("User already connected to device", HttpStatus.CONFLICT)
 
-        return user.$add('devices', device, {through: {role: role}});
+        const result = await user.$add('devices', device, {through: {role: role}});
+
+        if (result) {
+            await this.notificationService.handleAddUser(
+                this._getOwnersListPerDevice(device),
+                user,
+                device,
+                role
+            )
+            return result
+        }
+        throw new HttpException("User not added to device", HttpStatus.BAD_REQUEST)
     }
 
     async unbindDeviceFromUser(userId : number,
@@ -105,14 +114,12 @@ export class DevicesService {
         if(device.users.length) {
             throw new HttpException("Device already owned to be owned again", HttpStatus.BAD_REQUEST)
         } else {
-            const res = await this.bindDeviceWithUser(
+            // await this.notificationService.createNotificationYouAreAdded(
+            //     thisUserId, device.id, device.name, device.hex, role)
+            return await this.bindDeviceWithUser (
                 thisUserId,
                 device.id,
                 role)
-
-            await this.notificationService.createNotificationYouAreAdded(
-                thisUserId, device.id, device.name, device.hex, role)
-            return res
         }
     }
 
@@ -129,6 +136,11 @@ export class DevicesService {
         const curUser = device.users.find(el => el.id === thisUserId)
         if (!isOwner || manyOwners) {
             await device.$remove("users", curUser);
+            await this.notificationService.handleLostAccess(
+                this._getOwnersListPerDevice(device),
+                curUser,
+                device
+            )
         } else {
             throw new HttpException("Last owner cannot unsubscribe",
                 HttpStatus.FORBIDDEN)
@@ -152,6 +164,13 @@ export class DevicesService {
             if (curUser.get("Roles")["dataValues"].role === RoleValues.Owner) {
                 const res = await device.$remove("Users", device.users)
                 if (!res) throw new HttpException("Clear users failed", HttpStatus.METHOD_NOT_ALLOWED)
+
+                await this.notificationService.handleClearUsers(
+                    rmUsers,
+                    curUser,
+                    device
+                )
+
                 rmUsers.forEach(u => {
                     this.notificationService.createNotificationYouLostAccess(
                         u.id, device.id, device.hex, device.name,
@@ -172,7 +191,10 @@ export class DevicesService {
             include: {model: Users},
         })
 
-        if (!device || !device.users) throw new HttpException("Device data not found", HttpStatus.NOT_FOUND)
+        if (!device || !device.users)
+            throw new HttpException("Device data not found", HttpStatus.NOT_FOUND)
+        if (! await this._isUserAnOwner(thisUID, device))
+            throw new HttpException("You need to be an owner to modify roles", HttpStatus.FORBIDDEN)
 
         const objUser = device.users.find(el => el.id === uId);
 
@@ -180,6 +202,12 @@ export class DevicesService {
             const role = objUser["dataValues"]["Roles"]
             const result = role.set("role", newRole)
             await role.save()
+            await this.notificationService.handleModifyUser(
+                this._getOwnersListPerDevice(device),
+                objUser,
+                device,
+                newRole
+            )
             return result
         }
 
@@ -205,6 +233,11 @@ export class DevicesService {
         if (thisUserIsOwner && !objUserIsOwner) {
             const result = await device.$remove("users", objUser);
             if (result) {
+                await this.notificationService.handleLostAccess(
+                    this._getOwnersListPerDevice(device),
+                    objUser,
+                    device
+                )
                 return device
             }
         }
@@ -228,8 +261,14 @@ export class DevicesService {
         if (!this._isUserLoginConnectedToDevice(uLogin, device)) {
             const result = await device.$add('users', objUser, {through: {role: role}});
             if (result) {
-                await this.notificationService.createNotificationYouAreInvited(
-                    objUser.id, device.id, device.name, device.hex, role)
+                await this.notificationService.handleAddUser(
+                    this._getOwnersListPerDevice(device),
+                    objUser,
+                    device,
+                    role
+                )
+                // await this.notificationService.createNotificationYouAreInvited(
+                //     objUser.id, device.id, device.name, device.hex, role)
                 return device
             }
             throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
@@ -274,5 +313,9 @@ export class DevicesService {
         return connUsers.filter(u =>
             u.get ('Roles')['dataValues'].role === RoleValues.Owner)
             .length
+    }
+    _getOwnersListPerDevice(device: Devices) {
+        if (!device || !device.users) return []
+        return device.users.filter(el => el.get('Roles')["dataValues"].role === RoleValues.Owner)
     }
 }
