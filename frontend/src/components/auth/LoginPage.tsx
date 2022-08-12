@@ -112,8 +112,6 @@ const LoginPage: FC = () => {
                         </InputAdornment>
                 }}
                 label="New password"
-                error={values.warning.length > 0}
-                helperText={values.warning}
                 onKeyUp={e => handleKeyUp(e, true)}
                 fullWidth
                 inputRef={pwdFocusRef}
