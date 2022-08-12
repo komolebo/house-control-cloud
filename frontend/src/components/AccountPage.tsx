@@ -338,6 +338,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
 const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) => {
     const [unwrap, setUnwrap] = useState(false);
+    const {updateUserInfo} = useContext(UserGlobalContext);
     const dark_mode = Boolean(user.preference.dark_mode)
 
     const handleUnblockUser = (i: number) => {
@@ -350,11 +351,12 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
         })
     }
     const handleDarkModeChange = (e: any) => {
-        user.preference.dark_mode = e.target.checked;
+        const darkMode = e.target.checked;
         nestPatchUserPref(user.id, {
-            dark_mode: user.preference.dark_mode
+            dark_mode: darkMode
         }).then(res => {
             if (res.status === 200) {
+                updateUserInfo({dark_mode: darkMode})
                 onChange();
             }
         })

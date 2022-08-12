@@ -11,11 +11,19 @@ export interface IUserSetting {
     email: string;
     full_name: string;
     phone: string;
+    preference: IUserPreference;
+}
+export interface IUserPreference {
+    dark_mode: boolean;
+    email_verified: boolean;
+    phone_verified: boolean;
+    profile_photo: string;
 }
 export interface IUserModifySetting {
     email?: string;
     full_name?: string;
     phone?: string;
+    dark_mode?: boolean;
 }
 
 function setAuthTokenToStore(jwtToken: string) {
@@ -45,7 +53,6 @@ export const useUserGlobalInfo = () => {
 
     useEffect(() => {
         if (authorized) {
-            console.log("useUserGlobalInfo")
             const userStorageData = initUserInfoFromStore()
             userStorageData && nestGetUserFullInfo(userStorageData.id).then(resp => {
                 if (resp.status === 200 || resp.status === 201) {
@@ -66,12 +73,21 @@ export const useUserGlobalInfo = () => {
         setAuthorized(isAuth);
     }
     const updateUserInfo = (uNewInfo: IUserModifySetting) => {
-        if (userInfo) {
-            uNewInfo.full_name && (userInfo.full_name = uNewInfo.full_name)
-            uNewInfo.email && (userInfo.email = uNewInfo.email)
-            uNewInfo.phone && (userInfo.phone = uNewInfo.phone)
-            setUserInfo({...userInfo})
-        }
+        if (!userInfo) return;
+
+        if(uNewInfo.full_name !== undefined)
+            userInfo.full_name = uNewInfo.full_name;
+
+        if(uNewInfo.email !== undefined)
+            userInfo.email = uNewInfo.email;
+
+        if(uNewInfo.phone !== undefined)
+            userInfo.phone = uNewInfo.phone;
+
+        if (uNewInfo.dark_mode !== undefined)
+            userInfo.preference.dark_mode = uNewInfo.dark_mode;
+
+        setUserInfo({...userInfo})
     }
 
     return {

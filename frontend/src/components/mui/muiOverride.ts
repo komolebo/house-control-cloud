@@ -1,14 +1,23 @@
 import {createTheme} from "@mui/material";
 
-export let theme = createTheme({});
+export let lightTheme = createTheme({});
+export let darkTheme = createTheme({});
 
-theme = createTheme(theme, {
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        background: {
+            default: "#222222"
+        }
+    }
+})
+
+lightTheme = createTheme(lightTheme, {
     palette: {
         success: {
-            main: theme.palette.success.light,
+            main: lightTheme.palette.success.light,
         },
         info: {
-            main: theme.palette.info.light
+            main: lightTheme.palette.info.light
         },
         // mode: 'dark'
     },
@@ -79,34 +88,5 @@ theme = createTheme(theme, {
         button: {
             textTransform: "none"
         }
-    },
-
-    overrides: {
-        // MuiPickersBasePicker:{
-        //     pickerView:{
-        //         backgroundColor:"black"
-        //     }
-        // },
-        // MuiPickersDay: {
-        //     day: {
-        //         color: "yellow",
-        //         fontFamily: "\"Do Hyeon\", sans-serif",
-        //         backgroundColor: "red",
-        //         borderRadius:"0px",
-        //     },
-        //     container:{
-        //         backgroundColor:"black"
-        //     },
-        //     daySelected: {
-        //         backgroundColor: "",
-        //         color:"green"
-        //     },
-        //     dayDisabled: {
-        //         color: "black",
-        //     },
-        //     current: {
-        //         color: "",
-        //     },
-        // },
     },
 });
