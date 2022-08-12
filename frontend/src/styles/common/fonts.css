@@ -80,3 +80,7 @@
     height: 24px;
     padding: 13px 13px;
 }
+
+.h-bold {
+    font-weight: 600
+}

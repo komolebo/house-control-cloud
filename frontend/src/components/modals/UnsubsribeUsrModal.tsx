@@ -1,8 +1,8 @@
 import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
-import {Box, Button} from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, hBold, helpText} from "../../styles/common/fonts.css";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
@@ -37,9 +37,13 @@ const UnsubscribeUsrElement: FC<IUnsubElemProp> = ({onAction, devInfo}) => {
     }
 
     return <div>
-        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+        <div style={{display: "flex", alignItems: "center"}}>
             <img src={logoDisconnect} id="logo-clr-sett" alt={"logo-clr-sett"}/>
-            &nbsp;&#160;Unsubscribe
+            <Typography variant="h2"
+                        className={hBold}
+                        sx={{ml: 2}}
+            > Unsubscribe
+            </Typography>
         </div><br/>
 
         <Box sx={{pt: 2, pb: 2}}>

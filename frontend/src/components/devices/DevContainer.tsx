@@ -2,7 +2,7 @@ import React, {FC, useContext, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem from "./DevItem";
 import {devContainer, devContHead} from "../../styles/DevContainer.css"
-import {Button} from "@mui/material";
+import {Box, Button, Card, Typography} from "@mui/material";
 import logoAddDev from "../../assets/add-device2.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import logoDisconnectGrey from "../../assets/disconnect-device-grey.svg";
@@ -16,6 +16,7 @@ import {nestGetDevListByUser, roleStrToId} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {casket, leftCasket, rightCasket} from "../../styles/common/pages.css";
+import {darkBoxBg, lightBoxBg} from "../../styles/common/colors.css";
 
 interface IState {
     ind: number;
@@ -90,6 +91,7 @@ export const DevContainer: FC = () => {
     }
 
     const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
+    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
 
     return <div id={devContainer}>
         <div id={devContHead}>
@@ -104,6 +106,7 @@ export const DevContainer: FC = () => {
             <div style={{width: 500, minWidth: 380}} className={floatr}>
                 <Button variant={"contained"}
                         sx={{ ml: 2 }}
+                        color="info"
                         endIcon={
                             <img src={logoAddDev} alt={"Adde device logo"}/>
                         }
@@ -116,6 +119,7 @@ export const DevContainer: FC = () => {
                     Add device
                 </Button>
                 <Button variant={"outlined"}
+                        color="info"
                         endIcon={
                             <img
                                 src={canUnsubscribe ? logoDisconnect : logoDisconnectGrey} alt={"Logo disconnect"}
@@ -138,24 +142,24 @@ export const DevContainer: FC = () => {
         </div>
         { values.ind >= 0 && values.devices.length &&
         <div>
-            <div className={h2Font}>Device information</div><br/>
+            <Typography variant="h4">Device information</Typography><br/>
 
             <div className={leftCasket}>
-                <div className={casket}>
+                <Card className={[casket].join(' ')}>
                     <DevItem
                         dev={values.devices[values.ind]}
                     />
-                </div>
+                </Card>
             </div>
 
             { values.devices[values.ind].role === TDevRole.OWNER &&
             <div className={rightCasket}>
-                <div className={casket}>
+                <Card className={[casket].join(' ')}>
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
                         onDevDataChanged={() => {}}
                     />
-                </div>
+                </Card>
             </div>
              }
         </div>

@@ -1,5 +1,5 @@
 import React, {FC, useContext, useEffect, useState} from "react";
-import {Box, Button} from "@mui/material";
+import {Box, Button, Card, Typography} from "@mui/material";
 import {h4Font, h4FontBlue, h5Font} from "../styles/common/fonts.css";
 import logoBellBlue from "../assets/bell-blue.svg"
 import logoBellGreen from "../assets/bell-green.svg"
@@ -44,12 +44,8 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
             </div>
 
             <Box sx={{flexGrow: 6, pl: 2, pr: 2}}>
-                <div className={[h4Font].join(' ')}>
-                    {item.text}
-                </div>
-                <div className={[h5Font].join(' ')} style={{paddingTop: "10px", paddingBottom: "10px"}}>
-                    {moment(item.createdAt).fromNow()}
-                </div>
+                <Typography variant="h3">{item.text}</Typography>
+                <Typography variant="h5" sx={{pt: "10px"}}>{moment(item.createdAt).fromNow()}</Typography>
 
                 {item.actions
                     ? <Button variant={"contained"}
@@ -124,10 +120,10 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
     }, [])
 
     return  (
-    <Box sx={{
-        pt: 2, pb: 2, bgcolor: "white", opacity: 1,
+    <Card sx={{
+        pt: 2, pb: 2, opacity: 1,
         width: "410px", borderRadius: "12px",
-        boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)",
+
     }}
     >
         {/* Notifications header */}
@@ -154,5 +150,5 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
                 </div>
             })}
         </Box>
-    </Box>)
+    </Card>)
 }

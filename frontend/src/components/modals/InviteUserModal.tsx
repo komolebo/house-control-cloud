@@ -11,7 +11,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, hBold, helpText} from "../../styles/common/fonts.css";
 import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
@@ -73,10 +73,13 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             })
     }
 
-    return <div>
-        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+    return <>
+        <div style={{display: "flex", alignItems: "center"}}>
             <img src={logoInviteUsr} id="logo-add-dev" alt={"logo-add-dev"}/>
-            &nbsp;&#160;Invite by user ID
+            <Typography variant="h2"
+                        className={hBold}
+                        sx={{ml: 2}}
+            > Invite by user ID </Typography>
         </div>
 
         <Box sx={{pt: 3, pb: 3}}>
@@ -109,6 +112,13 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                     value={role.toString()}
                     label="Select Role"
                     onChange={handleSelectChange}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                backgroundColor: "special.main",
+                            }
+                        }
+                    }}
                 >
                     {
                         ROLES.map((role, i) => {
@@ -133,7 +143,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
         </Box>
 
 
-    </div>
+    </>
 }
 
 

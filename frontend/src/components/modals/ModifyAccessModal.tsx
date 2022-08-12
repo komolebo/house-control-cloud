@@ -2,7 +2,7 @@ import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
 import {cntrVContent} from "../../styles/common/position.css";
-import {h2Font, h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, h3Font, h4Font, hBold, helpText} from "../../styles/common/fonts.css";
 import logoUpdateAccess from "../../assets/modal-update-access.svg";
 import {devItemDelim} from "../../styles/DeviceItem.css";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
@@ -36,7 +36,7 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
                 onAction({
                     success: true,
                     message: `User ${objUserInfo.login} has now  ${role} access to ${devInfo.name}`,
-                    header: "Access right updated"
+                    header: "Access rights updated"
                 });
             })
             .catch(resp => {
@@ -68,25 +68,27 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
     }
 
     return <div>
-        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+        <div style={{display: "flex", alignItems: "center"}}>
             <img src={logoUpdateAccess} id="logo-clr-sett" alt={"logo-clr-sett"}/>
-            &nbsp;&#160;Modify access right
+            <Typography variant="h2"
+                        className={hBold}
+                        sx={{ml: 2}}
+            > Modify access right </Typography>
         </div><br/>
 
         <Box sx={{pt: 2, pb: 2}}>
             <div className={helpText}>
                 Here you can change non-OWNER user’s rights to access the device
             </div>
-        </Box>
+        </Box><br/>
 
-        <div className={[h3Font].join(' ')}>Device name</div>
-        <div className={[h4Font, devItemDelim].join(' ')}>{devInfo.name}</div>
 
-        <div className={[h3Font].join(' ')}>User</div>
+        <Typography variant="h4" className={hBold}>Device name </Typography>
+        <Typography variant="h3" sx={{m: "10px 0"}}>{devInfo.name}</Typography><br/>
+
+        <Typography variant="h4" className={hBold}>User </Typography>
         <div style={{display: "flex", flexDirection: "row"}}>
-            <div className={[h4Font, cntrVContent].join(' ')} style={{marginRight: 15}}>
-                {objUserInfo.fullName}
-            </div>
+            <Typography variant="h3" sx={{m: "10px 15px 10px 0"}} className={cntrVContent}>{objUserInfo.fullName}</Typography><br/>
             <ColorRoleLabel role={objUserInfo.role}/>
             {role !== objUserInfo.role &&
                 <div style={{display: "flex"}}>
@@ -106,6 +108,13 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
                     value={role.toString()}
                     label="Select new role"
                     onChange={handleSelectChange}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                backgroundColor: "special.main",
+                            }
+                        }
+                    }}
                 >
                     {
                         ROLES.map((role, i) => {

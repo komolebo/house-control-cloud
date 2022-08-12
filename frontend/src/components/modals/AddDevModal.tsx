@@ -1,7 +1,7 @@
 import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
-import {Box, Button, TextField} from "@mui/material";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {Box, Button, TextField, Typography} from "@mui/material";
+import {h2Font, hBold, helpText} from "../../styles/common/fonts.css";
 import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostReqRoleAccess} from "../../http/rqData";
@@ -54,9 +54,10 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     }
 
     return <div>
-        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+        <div style={{display: "flex", alignItems: "center"}}>
             <img src={logoAddDev} id="logo-add-dev" alt={"logo-add-dev"}/>
-            &nbsp;&#160;Add device by ID
+            &nbsp;&#160;
+            <Typography variant="h2" className={hBold}>Add device by ID</Typography>
         </div>
 
         <Box sx={{pt: 4, pb: 0}}>

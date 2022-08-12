@@ -1,6 +1,6 @@
 import React, {FC, useContext, useState} from "react";
-import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Button} from "@mui/material";
+import {h2Font, h4Font, hBold, helpText} from "../../styles/common/fonts.css";
+import {Button, Typography} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
@@ -29,14 +29,19 @@ interface IClrSettingsProp {
 
 const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
     return <div>
-        <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
+        <div style={{display: "flex", alignItems: "center"}}>
             <img src={logoAttention} id="logo-clr-sett" alt={"logo-clr-sett"}/>
-            &nbsp;&#160;Clear device settings
-        </div><br/><br/>
+            <Typography variant="h2"
+                        className={hBold}
+                        sx={{ml: 2}}
+            > Clear device settings </Typography>
+        </div>
 
-        <div className={h4Font}>
-            '{devInfo.name}' on '{devInfo.ip}'
-        </div><br/>
+
+        <br/><br/>
+
+
+        <Typography variant="h3"> '{devInfo.name}' on '{devInfo.ip}'</Typography><br/>
 
         <div className={helpText}>
             Custom device settings will be deleted.

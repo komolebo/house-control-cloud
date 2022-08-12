@@ -1,7 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {devItemDelim} from "../../styles/DeviceItem.css"
 import {h3Font, h4Font} from "../../styles/common/fonts.css";
-import {Button, TextField} from "@mui/material";
+import {Button, TextField, Typography} from "@mui/material";
 import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
@@ -21,6 +21,17 @@ const DevItem: FC<IProps> = ({dev}) => {
     const {userInfo} = useContext(UserGlobalContext);
 
     useEffect(() => {
+        function handleEscapeKey(event: KeyboardEvent) {
+            if (event.code === 'Escape') {
+                setEditMode(false)
+            }
+        }
+
+        document.addEventListener('keyup', handleEscapeKey)
+        return () => document.removeEventListener('keyup', handleEscapeKey)
+    }, [])
+
+    useEffect(() => {
         setEditMode(false);
     }, [dev])
 
@@ -32,7 +43,7 @@ const DevItem: FC<IProps> = ({dev}) => {
     }
 
     return <div >
-        <div className={[h3Font].join(' ')}>Name</div>
+        <Typography variant="h4">Name </Typography>
         {editMode
             ? <div className={[h4Font, devItemDelim].join(' ')}>
                 <TextField
@@ -47,19 +58,20 @@ const DevItem: FC<IProps> = ({dev}) => {
                     onKeyPress={e => e.key === 'Enter' && handleSave()}
                 />
             </div>
-            : <div className={[h4Font, devItemDelim].join(' ')}>{dev.name}</div>
+            : <Typography className={devItemDelim} variant="h3">{dev.name} </Typography>
+            // <div className={[h4Font, devItemDelim].join(' ')}>{dev.name}</div>
         }
 
-        <div className={[h3Font].join(' ')}>ID</div>
-        <div className={[h4Font, devItemDelim].join(' ')}>{dev.hex}</div>
+        <Typography variant="h4">ID </Typography>
+        <Typography className={devItemDelim} variant="h3">{dev.hex} </Typography>
 
-        <div className={[h3Font].join(' ')}>IP</div>
-        <div className={[h4Font, devItemDelim].join(' ')}>{dev.ip}</div>
+        <Typography variant="h4">IP </Typography>
+        <Typography className={devItemDelim} variant="h3">{dev.ip} </Typography>
 
         {dev.version && (
             <div>
-                <div className={[h3Font].join(' ')}>Version</div>
-                <div className={[h4Font, devItemDelim].join(' ')}>{dev.version}</div>
+                <Typography variant="h4">Version </Typography>
+                <Typography className={devItemDelim} variant="h3">{dev.version} </Typography>
             </div>
         )}
 
@@ -68,6 +80,7 @@ const DevItem: FC<IProps> = ({dev}) => {
                       sx={{
                           mt: 2,
                       }}
+                      color="info"
                       disabled={name.length === 0}
                       onClick={handleSave}
                       className={wideMuiBtn}
@@ -85,22 +98,24 @@ const DevItem: FC<IProps> = ({dev}) => {
 
         {editMode
             ?
-            <Button variant={"text"}
+            <Button variant="text"
                     onClick={() => setEditMode(!editMode)}
                     sx={{
                         right: 0, top: 10, position:'absolute',
                     }}
                     className={shorterMuiBtn}
+                    color="info"
             > Cancel
             </Button>
             :
-            <Button variant={"text"}
+            <Button variant="text"
                 onClick={() => setEditMode(!editMode)}
                 sx={{
                     right: 0, top: 10, position:'absolute',
                 }}
                 endIcon={<img src={logoEdit} alt={"Logo edit"}/>}
                 className={shorterMuiBtn}
+                color="info"
             > Edit
             </Button>
         }

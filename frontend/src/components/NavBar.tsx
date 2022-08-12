@@ -3,11 +3,11 @@ import {navBar} from "../styles/NavBar.css";
 import {
     AppBar,
     Avatar,
-    Box,
+    Box, Card,
     ClickAwayListener,
     IconButton,
     Menu,
-    MenuItem, Popper,
+    MenuItem, MenuList, Paper, Popper, Select,
     Toolbar,
     Tooltip,
     Typography
@@ -98,8 +98,9 @@ export const NavBar: React.FC = () => {
     return (
         <div id={navBar}>
         <AppBar position="static">
-            <Toolbar sx={styleHeights.toolbar}
-                     className={navBar}
+            <Toolbar 
+                sx={styleHeights.toolbar}
+                className={navBar}
             >
                 <IconButton onClick={() => navigate(HOME_PAGE)} sx={{ ml: 4 }} >
                     <img src={logoHomeNet} alt={"HomeNet logo"}/>
@@ -145,7 +146,7 @@ export const NavBar: React.FC = () => {
                         </Box>
                     </Tooltip>
                     <Menu
-                        sx={{ mt: '45px' }}
+                        sx={{ mt: '45px'}}
                         id="menu-appbar"
                         anchorEl={anchorElUser}
                         anchorOrigin={{
@@ -160,9 +161,13 @@ export const NavBar: React.FC = () => {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                         onClick={handleCloseUserMenu}
+                        MenuListProps={{
+                            sx: {backgroundColor: "special.main"}
+                        }}
                     >
                         {settingsMenu.map((setting) => (
                             <MenuItem
+                                dense={true}
                                 key={setting.name}
                                 onClick={() => setting.handler()}
                                 // sx={{backgroundColor: "yellow"}}

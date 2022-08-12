@@ -12,3 +12,4 @@ export const cntrTxt: string;
 export const casualSmall: string;
 export const casualMid: string;
 export const editableSize: string;
+export const hBold: string;

@@ -36,6 +36,8 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
                             scrollButtons="auto"
                             aria-label="scrollable auto tabs example"
                             allowScrollButtonsMobile
+                            textColor="primary"
+                            indicatorColor="primary"
                         >
                             {devices.map((device, i) =>
                                 <Tab

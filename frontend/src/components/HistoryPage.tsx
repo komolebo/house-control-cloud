@@ -3,7 +3,7 @@ import {fontLgrey, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts
 import {historyItem, historyTable, historyTableHead, historyTableRow} from "../styles/HistoryPage.css"
 import {
     Box,
-    Button,
+    Button, Card,
     Checkbox,
     Chip,
     FormControl,
@@ -12,7 +12,7 @@ import {
     InputBase,
     InputLabel,
     Menu,
-    MenuItem,
+    MenuItem, MenuList,
     Paper,
     Select,
     SelectChangeEvent,
@@ -50,6 +50,9 @@ import {commonPage} from "../styles/common/pages.css";
 import logoLoadMore from "../assets/arrow-down-blue.svg";
 import {ReactComponent as LogoMenuDelete} from '../assets/delete-item.svg';
 import {ReactComponent as LogoMenuFilter} from '../assets/menu-item-filter.svg';
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {PickersDay, pickersDayClasses, PickersDayProps} from "@mui/lab";
+
 
 enum EHistorySetting {
     delete,
@@ -314,7 +317,7 @@ export const HistoryPage: FC = () => {
     }
 
     return <div className={commonPage}>
-        <div className={hFont}>History</div>
+        <Typography variant="h1" sx={{mb: 1}}>History</Typography>
         <div className={helpText}>Here you can view device actions history or your activitivity</div><br/>
 
         <NavSeq currentPage={HISTORY_PAGE}/><br/>
@@ -329,6 +332,13 @@ export const HistoryPage: FC = () => {
                     value={filterState.msgType !== THistoryMsgType[THistoryMsgType.None] ? filterState.msgType : ""}
                     label="Filter"
                     onChange={handleMsgTypeChange}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                backgroundColor: "special.main",
+                            }
+                        }
+                    }}
                 >
                     {
                         HISTORY_MSG_TYPES.map ((msgType, i) => {
@@ -340,35 +350,27 @@ export const HistoryPage: FC = () => {
                 </Select>
             </FormControl>
 
-            <Paper
-                component="form"
-                sx={{
-                    p: '2px 4px', ml: 3, mr: 3, display: 'flex',
-                    alignItems: 'center',
-                    flexGrow: 10,
-                    borderRadius: "6px ",
-                    boxShadow: "5px 5px 15px rgba(0, 0, 0, 0.04)",
-                    border: "solid 1px rgba(0, 0, 0, 0.25)",
+            <TextField
+                id="outlined-adornment-password"
+                value={filterState.keyword}
+                onChange={handleChangeKeyword}
+                onKeyPress={handleSubmitKeyword}
+                sx={{flex: 1, m: "0 20px"}}
+                placeholder="Search by keyword"
+                onSubmit={e => {
+                    e.preventDefault ();
                 }}
                 color={"info"}
-            >
-                <IconButton onClick={handleApplyKeyword}
-                    // type="submit"
+                fullWidth
+                InputProps={{
+                    startAdornment: <>
+                        <InputAdornment position="start">
+                            <IconButton onClick={handleApplyKeyword}
+                            // type="submit"
                             sx={{pl: 1}}>
-                    <SearchIcon/>
-                </IconButton>
-                <InputBase
-                    onSubmit={e => {
-                        e.preventDefault ();
-                    }}
-                    sx={{flex: 1}}
-                    placeholder="Search by keyword"
-                    value={filterState.keyword}
-                    color={"info"}
-                    onChange={handleChangeKeyword}
-                    onKeyPress={handleSubmitKeyword}
-                    // onKeyDown={handleSubmitKeyword}
-                    startAdornment={
+                            <SearchIcon color="secondary"/>
+                            </IconButton>
+                        </InputAdornment>
                         <InputAdornment position="end" sx={{mr: 1}}>
                             {filterState.filterDevId ?
                                 <Chip
@@ -387,13 +389,16 @@ export const HistoryPage: FC = () => {
                                 /> : <></>
                             }
                         </InputAdornment>
-                    }
-                />
-                <IconButton onClick={handleClearKeyword}
-                            sx={{p: '10px'}}>
-                    <ClearIcon/>
-                </IconButton>
-            </Paper>
+                    </>,
+                    endAdornment:
+                        <InputAdornment position="end">
+                            <IconButton onClick={handleClearKeyword}
+                                        sx={{p: '10px'}}>
+                                <ClearIcon color="secondary"/>
+                            </IconButton>
+                        </InputAdornment>
+                }}
+            />
 
             <Box sx={{maxWidth: 150, flexDirection: "row"}}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -403,7 +408,11 @@ export const HistoryPage: FC = () => {
                         value={filterState.from}
                         onChange={date => handleChangeDateFrom(date ? date : undefined)}
                         maxDate={filterState.to ? filterState.to : undefined}
-                        renderInput={(params) => <TextField {...params} />}
+                        renderInput={params =>
+                            <TextField
+                                {...params}
+                            />
+                        }
                     />
                 </LocalizationProvider>
             </Box>
@@ -434,9 +443,13 @@ export const HistoryPage: FC = () => {
                 <div className={flexG1} style={{display: "flex"}}>
                     <IconButton sx={{p: '10px', ml: 2}}
                                 onClick={() => clearSelection(true)}>
-                        <ClearIcon/>
+                        <ClearIcon color="secondary"/>
                     </IconButton>
-                    <div className={[h4Font, cntrVContent].join(' ')}>Selected: {state.selection.length}</div>
+                    <div className={[cntrVContent].join(' ')}>
+                        <Typography variant="h3">
+                            Selected: {state.selection.length}
+                        </Typography>
+                    </div>
                 </div>
 
                 <div>
@@ -456,7 +469,7 @@ export const HistoryPage: FC = () => {
             </div>
         }
 
-        <div id={historyTable}>
+        <Card id={historyTable}>
             <table style={{width: "100%", border: 0}}>
                 <tbody>
                 {
@@ -464,6 +477,7 @@ export const HistoryPage: FC = () => {
                         return <tr id={historyTableRow} key={i}>
                             <td className={historyItem} style={{ width: 40, paddingRight: 5}}>
                                 <Checkbox
+                                    color="info"
                                     className={historyItem} sx={{width: 40}}
                                     onChange={e => handleCheck(e, hInd)}
                                     checked={state.selection.includes(hInd)}
@@ -489,8 +503,10 @@ export const HistoryPage: FC = () => {
                                 </div>
                             </td>
 
-                            <td className={[h4Font, historyItem].join(' ')}>
-                                {historyData[hInd].text}
+                            <td className={[historyItem].join(' ')}>
+                                <Typography variant="h3">
+                                    {historyData[hInd].text}
+                                </Typography>
                             </td>
 
                             <td className={[floatr, historyItem, cntrVContent].join(' ')}
@@ -557,6 +573,9 @@ export const HistoryPage: FC = () => {
                 }}
                 open={Boolean(state.setting.anchorElSetting)}
                 onClose={handleCloseSettings}
+                MenuListProps={{
+                    sx: {backgroundColor: "special.main"}
+                }}
             >
                 <MenuItem key={state.setting.setup[EHistorySetting.delete].name}
                           onClick={() => {
@@ -603,6 +622,6 @@ export const HistoryPage: FC = () => {
                     </MenuItem>
                 }
             </Menu>
-        </div>
+        </Card>
     </div>
 }

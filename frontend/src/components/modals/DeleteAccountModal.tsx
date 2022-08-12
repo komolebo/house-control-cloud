@@ -1,6 +1,6 @@
 import React, {FC, useContext, useState} from "react";
 import {h2Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Button} from "@mui/material";
+import {Button, Typography} from "@mui/material";
 import {cntrContent, cntrVContent, flexG1, flexr} from "../../styles/common/position.css";
 import {useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/attention.svg";
@@ -42,8 +42,8 @@ export const DeleteAccountModal: FC<IProp> = () => {
                 <img src={logoDeleteAcc} id="logo-clr-sett" alt={"logo-clr-sett"}/>
             </div>
             <div style={{width: "100%"}}>
-                <div className={h2Font} style={{display: "flex", alignItems: "center"}}>
-                    Delete account
+                <div style={{display: "flex", alignItems: "center"}}>
+                    <Typography variant="h2">Delete account</Typography>
                 </div>
                 <br/>
 

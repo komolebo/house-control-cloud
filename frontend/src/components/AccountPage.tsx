@@ -10,7 +10,7 @@ import {h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.cs
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
-import {Avatar, Button, FormControlLabel, IconButton, Switch, TextField} from "@mui/material";
+import {Avatar, Button, Card, FormControlLabel, IconButton, Switch, TextField, Typography} from "@mui/material";
 import {cntrVContent, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
@@ -19,7 +19,7 @@ import logoCollapse from "../assets/collapse.svg";
 import logoMinus from "../assets/blue-minus2.svg";
 import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
 import {TBlItem, TUPref, TUser} from "../globals/AccountData";
-import {colBlue} from "../styles/common/colors.css";
+import {colBlue, darkBoxBg, lightBoxBg} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
 import {UserGlobalContext} from "../globals/UserAuthProvider";
 import {
@@ -77,6 +77,17 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     const {showModal, hideModal} = useGlobalModalContext();
     let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
 
+    useEffect(() => {
+        function handleEscapeKey(event: KeyboardEvent) {
+            if (event.code === 'Escape') {
+                setState({...state, editMode: false})
+            }
+        }
+
+        document.addEventListener('keyup', handleEscapeKey)
+        return () => document.removeEventListener('keyup', handleEscapeKey)
+
+    }, [])
     useEffect(() => {
         clearInput()
         initView()
@@ -177,12 +188,12 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                     sx={{
                         // m: "15px 5px",
                         width: 100, height: 100,
-                        m: "10px 0 0 0",
+                        m: "10px 0 15px 0",
                         border: "2px solid #1690E9"
                     }}
                     src={avatarSrc}
                 />
-                <div className={h4Font}>{user.login}</div>
+                <Typography variant="h3">{user.login}</Typography>
             </div>
 
             <Button
@@ -191,17 +202,19 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                     onAct: (data) => handleUpdateAvatar(data),
                     data: { curAvatarSrc: avatarSrc }
                 })}
-                variant={"outlined"} sx={{ ml: 1 }}
+                variant="outlined"
+                color="info"
+                sx={{ ml: 1 }}
                 className={[shortMuiBtn].join(' ')}
             >
-                Update
+                Upload
             </Button>
 
             <LoadingButton
                 endIcon={<></>}
                 onClick={() => handleRemoveAvatar()}
-                color={"inherit"}
-                variant={"outlined"} sx={{ ml: 2 }}
+                color="secondary"
+                variant="outlined" sx={{ ml: 2 }}
                 className={[shortMuiBtn].join(' ')}
                 loading={state.loadingRemoval}
                 loadingPosition="end"
@@ -211,7 +224,9 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         </div><br/><br/>
 
         {state.editMode
-            ? <Button variant={"text"}
+            ? <Button
+                    variant="text"
+                    color="info"
                     onClick={() => {clearInput(); setState({...state, editMode: false})}}
                     sx={{
                         right: 0, top: 10, position:'absolute',
@@ -219,8 +234,10 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                     className={shorterMuiBtn}
             > Cancel
             </Button>
-            : <Button variant={"text"}
-                    size={"large"}
+            : <Button
+                    variant="text"
+                    size="large"
+                    color="info"
                     onClick={() => setState({...state, editMode: true})}
                     sx={{
                         right: 0, top: 10, position:'absolute',
@@ -233,7 +250,8 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
         {/* start elements */}
         <div style={{paddingBottom: 20, gap: 20, display: "flex"}} >
-            <div className={[h3Font].join (' ')} style={{width: "47%"}}> Name
+            <div style={{width: "47%"}}>
+                <Typography variant="h4">Name</Typography>
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')} >
                         <TextField
@@ -242,17 +260,22 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             defaultValue={user.full_name}
                             fullWidth={true}
                             onChange={e => setState({...state, name: e.target.value})}
-                            size={"small"}
+                            size="small"
+                            variant="outlined"
+                            color="info"
                             onKeyPress={e => e.key === 'Enter' && handleSave()}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.full_name}</div>
+                    : <Typography
+                        className={[spaceTextEdit].join (' ')} variant="h3">{user.full_name}
+                    </Typography>
                 }
             </div>
         </div>
 
         <div style={{paddingBottom: 20, gap: 20, display: "flex"}}>
-            <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Email
+            <div style={{width: "47%"}}>
+                <Typography variant="h4">Email</Typography>
                 {state.editMode
                     ? <div className={[spaceNoPad].join (' ')}>
                         <TextField
@@ -261,11 +284,15 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             defaultValue={user.email}
                             onChange={e => setState({...state, email: e.target.value.toLowerCase()})}
                             fullWidth={true}
-                            size={"small"}
+                            size="small"
+                            variant="outlined"
+                            color="info"
                             onKeyPress={e => e.key === 'Enter' && handleSave()}
                         />
                     </div>
-                    : <div className={[h4Font, spaceTextEdit].join (' ')}>{user.email}</div>
+                    : <Typography
+                        className={[spaceTextEdit].join (' ')} variant="h3">{user.email}
+                    </Typography>
                 }
                 <div className={[colBlue, h5Font].join(' ')}>&nbsp; Verified &nbsp;
                     <img src={logoVerified} alt="logo verified"/>
@@ -273,14 +300,17 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
             </div>
 
             { state.editMode
-                ? <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Phone
+                ? <div style={{width: "47%"}}>
+                    <Typography variant="h4">Phone</Typography>
                     <div className={[spaceNoPad].join (' ')}>
                         <TextField
                             error={state.warningPhone.length > 0}
                             helperText={state.warningPhone}
                             // onChange={e => setState({...state, phone: e.target.value})}
                             value={state.phone}
-                            size={"small"}
+                            variant="outlined"
+                            color="info"
+                            size="small"
                             fullWidth={true}
                             onKeyPress={e => e.key === 'Enter' && handleSave()}
                             InputProps={{
@@ -295,8 +325,11 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                     </Button>
                 </div>
                 : user.phone
-                    ? <div className={[h3Font].join (' ')}  style={{width: "47%"}}> Phone
-                        <div className={[h4Font, spaceTextEdit].join (' ')}>{user.phone}</div>
+                    ? <div style={{width: "47%"}}>
+                        <Typography variant="h4">Phone</Typography>
+                        <div className={[spaceTextEdit].join (' ')}>
+                            <Typography variant="h3">{user.phone}</Typography>
+                        </div>
                         <Button style={{height: 24 }} >
                             Verify
                         </Button>
@@ -306,7 +339,8 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         </div>
 
         <br/>
-        <div className={[h3Font].join(' ')}>Delete account</div>
+        <Typography variant="h4">Delete account</Typography>
+
         <div className={helpText}>You automatically will be removed from connected to you devices</div>
         <Button variant={"text"}
                 color={"error"}
@@ -325,6 +359,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
         {state.editMode
             ? <div><br/>
                 <Button variant={"contained"}
+                        color="info"
                     // sx={{ mt: 2,}}
                         disabled={!isDataEdited()}
                         onClick={handleSave}
@@ -338,7 +373,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
 const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) => {
     const [unwrap, setUnwrap] = useState(false);
-    const {updateUserInfo} = useContext(UserGlobalContext);
+    const {updateUserInfo, userInfo} = useContext(UserGlobalContext);
     const dark_mode = Boolean(user.preference.dark_mode)
 
     const handleUnblockUser = (i: number) => {
@@ -362,12 +397,14 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
         })
     }
 
+    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
     return <div className={casket}>
         <div style={{display: "flex", justifyContent: "flex-end"}}>
             <FormControlLabel
                 control={
                     <Switch checked={dark_mode}
                             onChange={handleDarkModeChange}
+                            color="info"
                     />}
                 label="Dark mode"
             />
@@ -378,11 +415,11 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
                     onClick={() => setUnwrap(!unwrap)} >
             <img src={unwrap ? logoCollapse : logoUncollapse} alt={"Collapse logo"}/>
         </IconButton>
-        <div className={[h3Font].join(' ')}>Block list</div>
+        <Typography variant="h4">Block list</Typography>
         <div className={helpText}>{blackList.length} blocked users are forbidden to send you notification</div>
         <br/>
         { unwrap ?
-            <table className={simpleCasket}>
+            <table className={[simpleCasket, boxClassName].join(' ')}>
                 <tbody>
                 {
                     blackList.map((blEl, i) => {
@@ -392,10 +429,11 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
                                         <img src={logoMinus} alt={"Minus user"}/>
                                     </IconButton>
                                 </td>
-                                <td className={[h4Font, cntrVContent, simpleCasketRo].join(' ')}>
+                                <td className={[cntrVContent, simpleCasketRo].join(' ')}>
                                         <Avatar alt="Remy Sharp" src={blEl.urlPic}
                                                 style={{width: 40, height: 40, marginRight: 10, border: "2px solid #1690E9"}} />
-                                        {blEl.login}
+                                    <Typography variant="h3">{blEl.login}</Typography>
+
                                     {/*{blEl.login}*/}
                                 </td>
                             </tr>
@@ -437,19 +475,25 @@ export const AccountPage: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
+
     return <div className={commonPage}>
-        <div className={hFont}>Account</div>
+        <Typography variant="h1">
+            Account
+        </Typography>
         <div className={helpText}>Here you can view device actions history or your activity</div><br/>
 
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 
         <div style={{gap: 20, display: "flex"}}>
-            <div className={leftCasket}>
-                <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
+            <div className={[leftCasket].join(' ')}>
+                <Card>
+                    <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
+                </Card>
             </div>
-            <div className={rightCasket}>
+            <Card className={[rightCasket].join(' ')}>
                 <AccountDataElementR user={state.user} onChange={() => syncAllData()} blackList={state.blackList}/>
-            </div>
+            </Card>
         </div>
     </div>
 }

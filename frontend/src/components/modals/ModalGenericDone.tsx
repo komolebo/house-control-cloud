@@ -1,9 +1,9 @@
 import React, {FC} from "react";
-import {Box, Button} from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import {cntrContent} from "../../styles/common/position.css";
 import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
 import logoFail from "../../assets/stop.svg";
-import {h2Font, helpText} from "../../styles/common/fonts.css";
+import {h2Font, hBold, helpText} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 
@@ -28,8 +28,11 @@ const ModalGenericDone: FC<IPropDoneElem> = ({onDone, info}) => {
             }
         </div><br/>
 
-        <div className={[h2Font, cntrContent].join(' ')}>
-            { info.header }
+        <div className={[cntrContent].join(' ')}>
+            <Typography variant="h2" className={hBold}>
+                { info.header }
+            </Typography>
+
         </div><br/>
 
         {/**/}

@@ -1,6 +1,6 @@
 import React, {createContext, FC, useContext, useEffect, useState} from "react";
 
-import {Box, Modal} from "@mui/material";
+import {Box, Card, Modal} from "@mui/material";
 import logoClose from "../../assets/close.svg";
 import {imgHover} from "../../styles/common/buttons.css";
 import {AddDevModal} from "./AddDevModal";
@@ -119,12 +119,10 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box
+                <Card
                     sx={{
                         p: 3, position: "absolute", left: "50%", top: "50%",
                         transform: "translate(-50%, -50%)",
-                        background: "#FFFFFF", boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.15)",
-                        borderRadius: "15px",
                     }}
                 >
                     <div className={floatr} style={{width: 20, height: 20}}>
@@ -134,7 +132,7 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                          />
                     </div>
                     {renderComponent()}
-                </Box>
+                </Card>
             </Modal>
             }
             {children}

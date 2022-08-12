@@ -1,7 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {devOwnerBottom, devOwnerConnusrProp, devOwnerTop} from "../../styles/DeviceItem.css";
 import {h3Font, h4Font, helpText} from "../../styles/common/fonts.css";
-import {Avatar, Button} from "@mui/material";
+import {Avatar, Button, Typography} from "@mui/material";
 import logoInvite from "../../assets/invite-users.svg"
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
@@ -37,8 +37,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [devInfo])
 
-    return <div>
-        <div className={h3Font}>Connected users: </div>
+    return <>
+        <Typography variant="h4">Connected users: </Typography>
 
         <div id={devOwnerTop}>
             <table>
@@ -53,12 +53,12 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 {users.map(conn_user => {
                     const isIdMatched = conn_user.id === userInfo?.id;
                     return <tr key={conn_user.login}>
-                        <td id={devOwnerConnusrProp} className={h4Font}>
+                        <td id={devOwnerConnusrProp}>
                             <div style={{display: "flex"}} className={cntrVContent}>
                                 <Avatar alt="Remy Sharp"
                                         src={conn_user.urlPic}
                                         style={{width: 50, height: 50, marginRight: 10, border: "2px solid #1690E9"}} />
-                                {conn_user.fullName}
+                                <Typography variant="h3">{conn_user.fullName} </Typography>
                             </div>
                         </td>
                         <td id={devOwnerConnusrProp} className={h4Font}>
@@ -105,6 +105,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 variant={"outlined"} sx={{
                     mr: 2
                 }}
+                color="info"
                 className={shortMuiBtn}
             >
                 Invite
@@ -122,7 +123,7 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                 Clear users
             </Button>
         </div>
-    </div>
+    </>
 }
 
 export default DevItemOwner;

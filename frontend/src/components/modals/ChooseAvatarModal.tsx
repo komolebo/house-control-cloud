@@ -1,9 +1,9 @@
 import React, {FC, useContext, useRef, useState} from "react";
 import {ModalProps, useGlobalModalContext} from "./ModalProvider";
-import {Avatar as Ava, Box, Button} from "@mui/material";
+import {Avatar as Ava, Box, Button, Typography} from "@mui/material";
 import {cntrContent, cntrVContent, flexCont6} from "../../styles/common/position.css";
 import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
-import {h2Font} from "../../styles/common/fonts.css";
+import {h2Font, hBold} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
 import {DataURIToBlob, nestPatchUserPref, nestPostUploadAvatar} from "../../http/rqData";
@@ -91,10 +91,10 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
         })
     }
     return <div>
-        <div className={h2Font}>
-            {/*<img src={logoAddDev} id="logo-add-dev" alt={"logo-add-dev"}/>*/}
-            Choose new profile photo
-        </div><br/>
+        <Typography variant="h2"
+                    className={hBold}
+                    sx={{ml: 2}}
+        > Choose new profile photo </Typography><br/>
 
         <div className={flexCont6}>
             {avatarIndexes.map ((avaInd) => {
@@ -139,7 +139,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                 />
                 <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}/>
             </label> : <></>
-        </div>
+        </div><br/>
 
         <div className={cntrContent}>
             <LoadingButton
