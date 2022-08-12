@@ -48,6 +48,22 @@ export function nestPatchUpdateUserInfo(userId: number, data: any) {
 export function deleteSelfAccount(userId: number) {
     return host.delete("api/users/" + userId)
 }
+export function bestOPostForgotPassword(email: string) {
+    return host.post("auth/forgot/", {
+        email: email
+    })
+}
+export function nestGetTokenExist(token: string) {
+    return host.post("auth/isToken/", {
+        token: token
+    })
+}
+export function nestPostChangePassword(token: string, password: string) {
+    return host.patch("auth/change/", {
+        token: token,
+        password: password
+    })
+}
 
 
 // Devices

@@ -8,11 +8,20 @@ import {btn} from "../../styles/common/buttons.css";
 import {preLabel} from "../../styles/common/labels.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
+import {CheckYourEmailPage} from "./CheckEmailPage";
+import {LoadingButton} from "@mui/lab";
+import {bestOPostForgotPassword} from "../../http/rqData";
+import {log} from "util";
 
 
-export const ForgotPwdPage: FC = () => {
+interface IPropRestorePwd {
+    onSent: () => void
+}
+
+const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
     const [login, setLogin] = useState("");
     const [error, setError] = useState("");
+    const [isSending, setSending] = useState(false);
     const navigate = useNavigate();
 
     const sendVerificationEmail = () => {
@@ -22,7 +31,13 @@ export const ForgotPwdPage: FC = () => {
         if (!formatOk) {
             setError("Incorrect email format")
         } else {
-            setError("")
+            // setError("")
+            setSending(true);
+            bestOPostForgotPassword(login).then(resp => {
+                if (resp.status === 201) {
+                    onSent()
+                }
+            })
         }
     }
     const handleLoginInput = (e: any) => {
@@ -59,13 +74,16 @@ export const ForgotPwdPage: FC = () => {
         />
         <br/><br/><br/>
 
-        <Button variant={"contained"}
+        <LoadingButton variant={"contained"}
                 onClick={() => sendVerificationEmail()}
                 className={[btn].join(' ')}
                 fullWidth
+                loadingPosition="end"
+                loading={isSending}
+                endIcon={<></>}
         >
             SEND VERIFICATION EMAIL
-        </Button>
+        </LoadingButton>
         <br/>
 
         <div className={delimiter} /><br/>
@@ -95,4 +113,12 @@ export const ForgotPwdPage: FC = () => {
             </Button>
         </div>
     </div>
+}
+
+export const ForgotPwdPage: FC = () => {
+    const [emailSend, setEmailSent] = useState(false)
+
+    return !emailSend
+        ? <RestorePwdByEmail onSent={() => setEmailSent(true)}/>
+        : <CheckYourEmailPage/>
 }

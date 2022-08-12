@@ -11,6 +11,7 @@ import {DevicesModule} from "../devices/devices.module";
 import {SequelizeModule} from "@nestjs/sequelize";
 import {Users} from "../users/user.entity";
 import {Histories} from "../history/history.entity";
+import {MailModule} from "../mail/mail.module";
 
 @Module ({
     controllers: [AuthController],
@@ -28,7 +29,8 @@ import {Histories} from "../history/history.entity";
             signOptions: {expiresIn: process.env.TOKEN_EXPIRATION}
         }),
         SequelizeModule.forFeature ([Users]),
-        forwardRef(() => HistoryModule)
+        forwardRef(() => HistoryModule),
+        MailModule,
     ]
 })
 export class AuthModule {}

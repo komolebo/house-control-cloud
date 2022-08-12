@@ -1,4 +1,6 @@
-import React, {FC, useRef, useState} from "react";
+import React, {FC, useEffect, useRef, useState} from "react";
+import {useParams} from 'react-router-dom'
+import {useNavigate} from "react-router-dom";
 import {flexr} from "../../styles/common/position.css";
 import logoHomeNet from "../../assets/home-net-black.svg";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
@@ -6,8 +8,8 @@ import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
 import {Button, IconButton, InputAdornment, TextField} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
-import {useNavigate} from "react-router-dom";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {nestGetTokenExist, nestPostChangePassword} from "../../http/rqData";
 
 interface IState {
     password: string;
@@ -32,6 +34,21 @@ export const CreatePwdPage: FC = () => {
     const [state, setState] = useState<IState>(initialState)
     const navigate = useNavigate();
     const confirmRef = useRef<any>();
+    const { token } = useParams();
+
+    const redirectToLogin = () => {
+        navigate(LOGIN_PAGE);
+    }
+
+    useEffect(() => {
+        token && nestGetTokenExist(token).then(resp => {
+            if (resp.status === 201) {
+                const valid = resp.data.valid;
+
+                if (!valid) redirectToLogin();
+            }
+        }).catch(() => redirectToLogin())
+    }, [])
 
     const checkPassword = () => {
         if (state.password.length < MIN_PWD_CHAR) {
@@ -50,7 +67,11 @@ export const CreatePwdPage: FC = () => {
     }
     const handleSavePassword = () => {
         if(checkPassword()) {
-
+            token && nestPostChangePassword(token, state.password).then(resp => {
+                if (resp.status === 200) {
+                    redirectToLogin()
+                }
+            })
         }
     }
     const handleNewPwdInput = (e: any) => {
@@ -150,7 +171,7 @@ export const CreatePwdPage: FC = () => {
         <div className={[stickCntr].join (' ')}>
             <Button
                 style={{height: 18}}
-                onClick={() => navigate(LOGIN_PAGE)}
+                onClick={() => redirectToLogin()}
             >
                 LOGIN
             </Button>

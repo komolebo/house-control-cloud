@@ -1,18 +1,23 @@
 import {HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {JwtService} from '@nestjs/jwt';
-import {UsersService} from '../users/users.service';
 import {UserPwdDto} from "../users/dto/user.dto";
 import {Users} from "../users/user.entity";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
 import {InjectModel} from "@nestjs/sequelize";
+import {MailService} from "../mail/mail.service";
+import {ForgotPasswordDto} from "./dto/forgotPassword_Dto";
+import {ChangePasswordDto} from "./dto/changePasswordDto";
+import {TokenPasswordDto} from "./dto/tokenPasswordDto";
+import { SignOptions } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
     constructor(@InjectModel(Users) private userRepository: typeof Users,
                 private readonly jwtService: JwtService,
-                private readonly historyService: HistoryService
+                private readonly historyService: HistoryService,
+                private mailService: MailService
     ) { }
 
     async validateUser(email: string, password: string) {
@@ -49,6 +54,7 @@ export class AuthService {
             type: THistoryMsgType[THistoryMsgType.Account],
             text: "Signed in"
         })
+
         return { user: result, token: token, status: HttpStatus.ACCEPTED };
     }
 
@@ -76,28 +82,64 @@ export class AuthService {
         return { user: result, token };
     }
 
-    public async updatePwd(userId: number, pass: UserPwdDto) {
-        const user : Users = await this.userRepository.findOne({where: {id: userId}});
-        const hash_pass: string = await this.hashPassword(pass.password);
+    public async forgot(forgotPasswordDto: ForgotPasswordDto) {
+        let user = await this.userRepository.findOne({where: {email: forgotPasswordDto.email}});
+        if (!user) {
+            return new UnauthorizedException({message: 'User does not exist'})
+        }
 
-        await user.setDataValue('password', hash_pass);
-        await user.save();
-        return user;
+        const token = await this.generateToken(
+            {
+                id: user.id,
+                name: user.full_name,
+                email: user.email
+            },
+            {expiresIn: '1d'});
+        user.setDataValue("reset_token", token);
+        await user.save()
+
+        await this.mailService.sendUserRestorePassword(
+            user.full_name,
+            user.email,
+            token
+        )
     }
 
-    private async generateToken(user) {
-        const token = await this.jwtService.signAsync(user);
-        return token;
+    public async changePassword(resetPasswordDto: ChangePasswordDto) {
+        let user = await this.userRepository.findOne({where: {reset_token: resetPasswordDto.token}});
+        if (!user) {
+            return new UnauthorizedException({message: 'Incorrect token'})
+        }
+
+        const password = await this.hashPassword(resetPasswordDto.password);
+        user.setDataValue('password', password)
+        user.setDataValue('reset_token', null)
+        await user.save()
+
+        const token = await this.generateToken(user["dataValues"]);
+
+        return { token: token, status: HttpStatus.ACCEPTED };
+    }
+
+    public async isTokenValid(tokenPasswordDto: TokenPasswordDto) {
+        let tokenValid = true;
+        let user = await this.userRepository.findOne({where: {reset_token: tokenPasswordDto.token}});
+        if (!user) {
+            tokenValid = false;
+        }
+        return {"valid": tokenValid}
+    }
+
+    private async generateToken(payload, options?: SignOptions) {
+        return this.jwtService.signAsync (payload, options);
     }
 
     private async hashPassword(password) {
-        const hash = await bcrypt.hash(password, 10);
-        return hash;
+        return bcrypt.hash (password, 10);
     }
 
     private async comparePassword(enteredPassword, dbPassword) {
-        const match = await bcrypt.compare(enteredPassword, dbPassword);
-        return match;
+        return bcrypt.compare (enteredPassword, dbPassword);
     }
 
     parseHeaders(authorization): Users | null {

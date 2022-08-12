@@ -40,6 +40,11 @@ export class Users extends Model<Users> {
     })
     phone: string;
 
+    @Column({
+        type: DataType.STRING,
+    })
+    reset_token: string;
+
     @BelongsToMany(() => Devices, () => Roles)
     devices: Devices[]
 
