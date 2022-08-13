@@ -3,6 +3,7 @@ import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 import {Breadcrumbs, Link, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import {imgHover} from "../styles/common/buttons.css";
 
 interface IProp {
     currentPage: string;
@@ -39,6 +40,7 @@ export const NavSeq: FC<IProp> = ({currentPage}) => {
             underline="hover"
             key={i}
             color="text.primary"
+            className={imgHover}
             onClick={() => navigate(el.path)}
         >
             {el.name}

@@ -1,5 +1,7 @@
 import {createTheme} from "@mui/material";
 import type {} from '@mui/x-date-pickers/themeAugmentation';
+import darkScrollbar from "@mui/material/darkScrollbar";
+import {grey} from "@mui/material/colors";
 
 export let lightTheme = createTheme({});
 export let darkTheme = createTheme({});
@@ -75,13 +77,13 @@ darkTheme = createTheme(darkTheme, {
     },
 
     components: {
-        // MuiDatePicker: {
-        //     styleOverrides: {
-        //         root: {
-        //             backgroundColor: 'red',
-        //         },
-        //     },
-        // },
+        MuiCheckbox: {
+          styleOverrides: {
+              root: {
+                  color: "#4a7197"
+              }
+          }
+        },
         MuiMenuItem: {
             styleOverrides: {
                 root: {

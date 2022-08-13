@@ -22,18 +22,26 @@ interface INotificationProp {
 const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
     console.log(item)
 
-    return <div>
-        <Box sx={{borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
-                    display: "flex",
-                    flexDirection: "row", pt: 2, pb: 2, mr: 2,
-            }}>
+    return <Box sx={{
+                borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
+                display: "flex",
+                flexDirection: "row", pt: 2, pb: 2, mr: 2,
+            }}
+             className={item.severity === TNotifySeverity.Action
+                 ? colBorderBlue
+                 : item.severity === TNotifySeverity.Info
+                     ? colBorderGreen
+                     : colBorderRed
+             }
+        >
             <div style={{paddingLeft: 15}}
-                 className={item.severity === TNotifySeverity.Action
-                     ? colBorderBlue
-                    : item.severity === TNotifySeverity.Info
-                         ? colBorderGreen
-                         : colBorderRed
-                 }>
+                 // className={item.severity === TNotifySeverity.Action
+                 //     ? colBorderBlue
+                 //    : item.severity === TNotifySeverity.Info
+                 //         ? colBorderGreen
+                 //         : colBorderRed
+                 // }
+            >
                 {item.severity === TNotifySeverity.Action
                     ? <img src={logoBellBlue} alt={"Logo bel blue"}/>
                     : item.severity === TNotifySeverity.Info
@@ -68,7 +76,6 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                  alt={"Logo close"}/>
             </div>
         </Box>
-    </div>
 }
 
 
@@ -119,12 +126,12 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    return  (
-    <Card sx={{
-        pt: 2, pb: 2, opacity: 1,
-        width: "410px", borderRadius: "12px",
+    return <Card
+        sx={{
+            pt: 2, pb: 2, opacity: 1,
+            width: "410px", borderRadius: "12px",
 
-    }}
+        }}
     >
         {/* Notifications header */}
         <Box sx={{
@@ -150,5 +157,5 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
                 </div>
             })}
         </Box>
-    </Card>)
+    </Card>
 }

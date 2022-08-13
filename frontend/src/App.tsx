@@ -4,7 +4,7 @@ import {privateRoutes, publicRoutes} from "./routes";
 import {UserAuthProvider, UserGlobalContext} from "./globals/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
-import {CssBaseline, ThemeProvider} from "@mui/material";
+import {CssBaseline, darkScrollbar, GlobalStyles, ThemeProvider} from "@mui/material";
 import {darkTheme, lightTheme} from "./components/mui/muiOverride";
 import {ModalProvider} from "./components/modals/ModalProvider";
 
@@ -44,6 +44,7 @@ const App = () => {
     return (
         <ThemeProvider theme={dark ? darkTheme : lightTheme}>
             <CssBaseline/>
+            <GlobalStyles styles={dark ? { ...darkScrollbar() } : undefined} />
             <ModalProvider>
                 <AppRouter/>
             </ModalProvider>
