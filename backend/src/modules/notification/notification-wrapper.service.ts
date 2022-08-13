@@ -53,7 +53,7 @@ export class NotificationWrapService extends NotificationService {
             }
         }
         await this.createNotificationYouGotAccess(objUser.id,
-            device.id, device.hex, device.name)
+            device.id, device.hex, device.name, role)
     }
 
     async handleModifyUser(owners: Array<Users>, objUser: Users, device: Devices, role: string) {

@@ -101,8 +101,9 @@ export class NotificationService {
     async createNotificationYouGotAccess(userId: number,
                                          deviceId: number,
                                          devHex: string,
-                                         deviceName: string) {
-        const text = `You got an access to device \`${deviceName}\``;
+                                         deviceName: string,
+                                         role: string) {
+        const text = `You got an ${role} access to device \`${deviceName}\``;
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -172,7 +173,7 @@ export class NotificationService {
         const text =`Role of ${objUserName} is changed to ${role} for device \`${deviceName}\``
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED],
-            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
             deviceId: deviceId,
             userId: userId,
             sourceUserId: objUserId,
