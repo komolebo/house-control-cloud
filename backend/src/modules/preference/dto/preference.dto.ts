@@ -7,8 +7,6 @@ export class PreferenceDto {
     phone_verified?: boolean;
     // @IsNotEmpty()
     email_verified?: boolean;
-    // @IsNotEmpty()
-    dark_mode?: boolean;
 
     profile_photo?: string;
 

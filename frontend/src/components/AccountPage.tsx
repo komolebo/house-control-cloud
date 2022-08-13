@@ -6,7 +6,7 @@ import {
     simpleCasketRo,
     simpleCasketTr
 } from '../styles/common/pages.css'
-import {h3Font, h4Font, h5Font, helpText, hFont} from "../styles/common/fonts.css";
+import {h5Font, helpText} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
@@ -33,6 +33,7 @@ import {
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
 import PhoneInputComponent, {DEFAULT_COUNTRY_CODE} from "./elements/PhoneInputComponent";
+import {DarkModeContext} from "../globals/DarkModeProvider";
 
 interface IState {
     user: TUser,
@@ -86,7 +87,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
         document.addEventListener('keyup', handleEscapeKey)
         return () => document.removeEventListener('keyup', handleEscapeKey)
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     useEffect(() => {
         clearInput()
@@ -373,8 +374,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
 const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) => {
     const [unwrap, setUnwrap] = useState(false);
-    const {updateUserInfo, userInfo} = useContext(UserGlobalContext);
-    const dark_mode = Boolean(user.preference.dark_mode)
+    const {globalDark, setGlobalDark} = useContext(DarkModeContext);
 
     const handleUnblockUser = (i: number) => {
         if (!user.preference || !blackList) return;
@@ -391,18 +391,18 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
             dark_mode: darkMode
         }).then(res => {
             if (res.status === 200) {
-                updateUserInfo({dark_mode: darkMode})
+                setGlobalDark(darkMode)
                 onChange();
             }
         })
     }
 
-    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
+    const boxClassName = globalDark ? darkBoxBg : lightBoxBg;
     return <div className={casket}>
         <div style={{display: "flex", justifyContent: "flex-end"}}>
             <FormControlLabel
                 control={
-                    <Switch checked={dark_mode}
+                    <Switch checked={globalDark}
                             onChange={handleDarkModeChange}
                             color="info"
                     />}
@@ -474,8 +474,6 @@ export const AccountPage: FC = () => {
         syncAllData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
 
     return <div className={commonPage}>
         <Typography variant="h1">

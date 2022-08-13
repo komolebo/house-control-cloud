@@ -1,48 +1,14 @@
 import {createContext, FC, useEffect, useState} from "react";
 import {nestGetUserFullInfo} from "../http/rqData";
 import {updateTokenInHostHeaders} from "../http";
-import jwtDecode from "jwt-decode";
-
-const USER_TOKEN = "USER_TOKEN"
-
-export interface IUserSetting {
-    id: number;
-    login: string;
-    email: string;
-    full_name: string;
-    phone: string;
-    preference: IUserPreference;
-}
-export interface IUserPreference {
-    dark_mode: boolean;
-    email_verified: boolean;
-    phone_verified: boolean;
-    profile_photo: string;
-}
-export interface IUserModifySetting {
-    email?: string;
-    full_name?: string;
-    phone?: string;
-    dark_mode?: boolean;
-}
-
-function setAuthTokenToStore(jwtToken: string) {
-    localStorage.setItem(USER_TOKEN, jwtToken);
-}
-function clearUserFromStore() {
-    localStorage.removeItem(USER_TOKEN);
-}
-export function getAuthToken() {
-    return localStorage.getItem(USER_TOKEN);
-}
-export function isAuth(): boolean {
-    return getAuthToken() !== null;
-}
-const initUserInfoFromStore = () => {
-    const token = getAuthToken()
-    const user: IUserSetting | null = token ? jwtDecode(token) : null
-    return user ? user : null
-}
+import {
+    clearUserFromStore,
+    initUserInfoFromStore,
+    isAuth,
+    IUserModifySetting,
+    IUserSetting,
+    setAuthTokenToStore
+} from "./storage";
 
 export const useUserGlobalInfo = () => {
     const [authorized, setAuthorized] = useState(isAuth());
@@ -83,9 +49,6 @@ export const useUserGlobalInfo = () => {
 
         if(uNewInfo.phone !== undefined)
             userInfo.phone = uNewInfo.phone;
-
-        if (uNewInfo.dark_mode !== undefined)
-            userInfo.preference.dark_mode = uNewInfo.dark_mode;
 
         setUserInfo({...userInfo})
     }

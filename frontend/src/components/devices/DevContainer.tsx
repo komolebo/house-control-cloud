@@ -2,11 +2,10 @@ import React, {FC, useContext, useEffect, useState} from "react";
 import DevList from "./DevList";
 import DevItem from "./DevItem";
 import {devContainer, devContHead} from "../../styles/DevContainer.css"
-import {Box, Button, Card, Typography} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 import logoAddDev from "../../assets/add-device2.svg";
 import logoDisconnect from "../../assets/disconnect-device.svg";
 import logoDisconnectGrey from "../../assets/disconnect-device-grey.svg";
-import {h2Font} from "../../styles/common/fonts.css";
 import DevItemOwner from "./DevItemOwner";
 import {MODAL_TYPE, useGlobalModalContext} from "../modals/ModalProvider";
 import {TDevItem, TDevRole} from "../../globals/DeviceData";
@@ -16,7 +15,6 @@ import {nestGetDevListByUser, roleStrToId} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {IO_DEV_DATA_CHANGE_KEY, socket} from "../../http/wssocket";
 import {casket, leftCasket, rightCasket} from "../../styles/common/pages.css";
-import {darkBoxBg, lightBoxBg} from "../../styles/common/colors.css";
 
 interface IState {
     ind: number;
@@ -91,7 +89,6 @@ export const DevContainer: FC = () => {
     }
 
     const canUnsubscribe = values.ind >= 0 && values.devices.length && values.devices[values.ind].unsubscribable;
-    const boxClassName = userInfo?.preference?.dark_mode ? darkBoxBg : lightBoxBg;
 
     return <div id={devContainer}>
         <div id={devContHead}>

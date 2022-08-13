@@ -1,12 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import {privateRoutes, publicRoutes} from "./routes";
-import {UserAuthProvider, UserGlobalContext} from "./globals/UserAuthProvider";
+import {UserGlobalContext} from "./globals/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
 import {CssBaseline, darkScrollbar, GlobalStyles, ThemeProvider} from "@mui/material";
 import {darkTheme, lightTheme} from "./components/mui/muiOverride";
 import {ModalProvider} from "./components/modals/ModalProvider";
+import {DarkModeContext} from "./globals/DarkModeProvider";
 
 function AppRouter() {
     const  {authorized} = useContext(UserGlobalContext);
@@ -34,17 +35,18 @@ function AppRouter() {
 
 
 const App = () => {
-    const {userInfo} = useContext(UserGlobalContext);
-    const [dark, setDark] = useState(userInfo?.preference?.dark_mode);
+    const {globalDark} = useContext(DarkModeContext);
+    const [darkMode, setDarkMode] = useState<boolean>(globalDark);
 
     useEffect(() => {
-        setDark(userInfo?.preference?.dark_mode)
-    }, [userInfo])
+        setDarkMode(globalDark)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [globalDark])
 
     return (
-        <ThemeProvider theme={dark ? darkTheme : lightTheme}>
+        <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
             <CssBaseline/>
-            <GlobalStyles styles={dark ? { ...darkScrollbar() } : undefined} />
+            <GlobalStyles styles={darkMode ? { ...darkScrollbar() } : undefined} />
             <ModalProvider>
                 <AppRouter/>
             </ModalProvider>

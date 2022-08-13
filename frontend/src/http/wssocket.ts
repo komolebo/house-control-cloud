@@ -1,6 +1,6 @@
 import socketio from "socket.io-client";
 import {createContext} from "react";
-import {getAuthToken} from "../globals/UserAuthProvider";
+import {getAuthToken} from "../globals/storage";
 
 const SOCKET_URL = "http://192.168.0.109:3002"
 

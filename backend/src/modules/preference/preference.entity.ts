@@ -25,12 +25,6 @@ export class Preference extends Model<Preference> {
     email_verified: boolean;
 
     @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: false
-    })
-    dark_mode: boolean;
-
-    @Column({
         type: DataType.STRING,
     })
     profile_photo: string;
