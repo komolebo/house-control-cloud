@@ -9,9 +9,18 @@ import {HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {register} from "../../http/auth";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
 import {flexr} from "../../styles/common/position.css";
-import {Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField} from "@mui/material";
+import {
+    Button,
+    FormControl,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    OutlinedInput,
+    TextField,
+    useTheme
+} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import logoHomeNet from "../../assets/home-net-black.svg";
+import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 
 interface IState {
     showPassword: boolean;
@@ -32,6 +41,7 @@ const SignupPage: FC = () => {
         login: ""
     })
     const navigate = useNavigate();
+    const theme = useTheme();
     const {setAuthData} = useContext(UserGlobalContext);
 
     const signUp = async () => {
@@ -59,7 +69,7 @@ const SignupPage: FC = () => {
     return (
         <div className={loginPage}>
             <div className={flexr}>
-                <img src={logoHomeNet} alt={"HomeNet logo"}/>
+                <LogoHomeNet style={{ color: theme.palette.text.primary }} />
                 <p className={[hFont].join(' ')}>&nbsp;Sign up</p>
             </div><br/>
 

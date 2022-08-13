@@ -12,7 +12,7 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
-import logoHomeNet from "../assets/home-net-white.svg";
+import {ReactComponent as LogoHomeNet} from "../assets/home-net.svg";
 import logoHomeNetCloud from "../assets/home-net-cloud.svg";
 import logoFaq from "../assets/nav-faq.svg";
 import {ReactComponent as LogoMenuAccount} from '../assets/menu-item-account.svg';
@@ -103,7 +103,7 @@ export const NavBar: React.FC = () => {
                 className={navBar}
             >
                 <IconButton onClick={() => navigate(HOME_PAGE)} sx={{ ml: 4 }} >
-                    <img src={logoHomeNet} alt={"HomeNet logo"}/>
+                    <LogoHomeNet style={{ color: "white" }} />
                 </IconButton>
 
                 <Box sx={{ml: 1, flexGrow: 3}}>

@@ -2,10 +2,10 @@ import React, {FC, useEffect, useRef, useState} from "react";
 import {useParams} from 'react-router-dom'
 import {useNavigate} from "react-router-dom";
 import {flexr} from "../../styles/common/position.css";
-import logoHomeNet from "../../assets/home-net-black.svg";
+import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, IconButton, InputAdornment, TextField} from "@mui/material";
+import {Button, IconButton, InputAdornment, TextField, useTheme} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
@@ -35,6 +35,7 @@ export const CreatePwdPage: FC = () => {
     const navigate = useNavigate();
     const confirmRef = useRef<any>();
     const { token } = useParams();
+    const theme = useTheme();
 
     const redirectToLogin = () => {
         navigate(LOGIN_PAGE);
@@ -98,7 +99,7 @@ export const CreatePwdPage: FC = () => {
 
     return <div className={loginPage}>
         <div className={flexr}>
-            <img src={logoHomeNet} alt={"HomeNet logo"}/>
+            <LogoHomeNet style={{ color: theme.palette.text.primary }} />
             <p className={[hFont].join(' ')}>&nbsp;Create password</p>
         </div><br/>
 

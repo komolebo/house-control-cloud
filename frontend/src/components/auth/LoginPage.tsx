@@ -13,7 +13,8 @@ import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE} from "../../utils/consts";
 import {login} from "../../http/auth";
 import {flexr} from "../../styles/common/position.css";
 import {UserGlobalContext} from "../../globals/UserAuthProvider";
-import logoHomeNet from "../../assets/home-net-black.svg";
+import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
+
 import {
     Button,
     Checkbox,
@@ -21,7 +22,7 @@ import {
     IconButton,
     InputAdornment,
     TextField,
-    Typography
+    Typography, useTheme
 } from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 
@@ -37,6 +38,7 @@ const LoginPage: FC = () => {
     const pwdFocusRef = useRef<any>();
     const navigate = useNavigate();
     const {setAuthData} = useContext(UserGlobalContext);
+    const theme = useTheme();
     const [values, setValues] = useState<IState>({
         showPassword: false,
         warning: "",
@@ -79,8 +81,8 @@ const LoginPage: FC = () => {
     return (
         <div className={loginPage}>
             <div className={flexr}>
-                <img src={logoHomeNet} alt={"HomeNet logo"}/>
-                <p className={[hFont].join(' ')}>&nbsp;Login</p>
+                <LogoHomeNet style={{ color: theme.palette.text.primary }} />
+                <Typography variant="h1" sx={{ml: 1, mt: 1}}>Login</Typography>
             </div><br/>
 
             <div>
@@ -126,7 +128,7 @@ const LoginPage: FC = () => {
                     />
                 }
                 label={
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography variant="body2" color="secondary">
                         Remember me?
                     </Typography>}
                 labelPlacement="end"
