@@ -1,6 +1,6 @@
-import {Controller, Body, Post, UseGuards, Param, Patch, ValidationPipe, Get} from '@nestjs/common';
+import {Controller, Body, Post, UseGuards, Param, Patch, ValidationPipe, Get, UsePipes} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {UserDto, FullUserDto, UserPwdDto} from '../users/dto/user.dto';
+import {UserLoginDto, FullUserDto, UserPwdDto} from '../users/dto/userLoginDto';
 import {UserNotExistGuard} from "../../core/guards/UserNotExist.guard";
 import {AuthGuard} from "@nestjs/passport";
 import {ForgotPasswordDto} from "./dto/forgotPassword_Dto";
@@ -12,19 +12,22 @@ export class AuthController {
     constructor(private authService: AuthService) {
     }
 
+    @UsePipes(new ValidationPipe({transform: true}))
     @Post('login')
-    async login(@Body() user: UserDto) {
+    async login(@Body() user: UserLoginDto) {
         return await this.authService.login(user.login, user.password);
     }
 
     @UseGuards(UserNotExistGuard)
+    @UsePipes(new ValidationPipe({transform: true}))
     @Post('signup')
     async signUp(@Body() user: FullUserDto) {
         return await this.authService.create(user);
     }
 
+    @UsePipes(new ValidationPipe({transform: true}))
     @Post('forgot')
-    async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto){
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto){
         return this.authService.forgot(forgotPasswordDto);
     }
 
@@ -35,7 +38,7 @@ export class AuthController {
 
     @Patch('change')
     // @UseGuards(AuthGuard())
-    async changePassword(@Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto){
+    async changePassword(@Body() changePasswordDto: ChangePasswordDto){
         return this.authService.changePassword(changePasswordDto);
     }
 }

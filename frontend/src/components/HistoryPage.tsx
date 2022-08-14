@@ -44,7 +44,7 @@ import {cntrContent, cntrVContent, flexG1, floatr} from "../styles/common/positi
 import moment from "moment";
 import logoSettings from "../assets/settings.svg";
 import {nestDeleteUserHistory, nestGetPagingHistoryPerUser} from "../http/rqData";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/providers/UserAuthProvider";
 import {NavSeq} from "./NavSeq";
 import {commonPage} from "../styles/common/pages.css";
 import logoLoadMore from "../assets/arrow-down-blue.svg";

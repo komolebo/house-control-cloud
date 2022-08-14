@@ -3,7 +3,7 @@ import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {h4Font, hFont, underline} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, TextField, useTheme} from "@mui/material";
+import {Button, TextField, Typography, useTheme} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {preLabel} from "../../styles/common/labels.css";
 import {LOGIN_PAGE} from "../../utils/consts";
@@ -54,12 +54,11 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
     return <div className={loginPage}>
         <div className={flexr}>
             <LogoHomeNet style={{ color: theme.palette.text.primary }} />
-            <p className={[hFont].join(' ')}>&nbsp;Forgot password</p>
+            <Typography variant="h1" sx={{ml: 2}}>Forgot password</Typography>
         </div><br/>
 
-        <div className={[h4Font].join(' ')}>Please enter your email address to receive
-            instructions for restoring a password
-        </div>
+        <Typography variant="h5">Please enter your email address to receive
+            instructions for restoring a password</Typography>
         <br/><br/>
 
         <TextField

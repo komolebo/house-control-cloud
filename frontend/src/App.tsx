@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import {privateRoutes, publicRoutes} from "./routes";
-import {UserGlobalContext} from "./globals/UserAuthProvider";
+import {UserGlobalContext} from "./globals/providers/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
 import {CssBaseline, darkScrollbar, GlobalStyles, ThemeProvider} from "@mui/material";
 import {darkTheme, lightTheme} from "./components/mui/muiOverride";
 import {ModalProvider} from "./components/modals/ModalProvider";
-import {DarkModeContext} from "./globals/DarkModeProvider";
+import {DarkModeContext} from "./globals/providers/DarkModeProvider";
 
 function AppRouter() {
     const  {authorized} = useContext(UserGlobalContext);

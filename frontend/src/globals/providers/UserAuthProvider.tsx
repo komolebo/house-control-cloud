@@ -1,6 +1,6 @@
 import {createContext, FC, useEffect, useState} from "react";
-import {nestGetUserFullInfo} from "../http/rqData";
-import {updateTokenInHostHeaders} from "../http";
+import {nestGetUserFullInfo} from "../../http/rqData";
+import {updateTokenInHostHeaders} from "../../http";
 import {
     clearUserFromStore,
     initUserInfoFromStore,
@@ -8,7 +8,7 @@ import {
     IUserModifySetting,
     IUserSetting,
     setAuthTokenToStore
-} from "./storage";
+} from "../storage";
 
 export const useUserGlobalInfo = () => {
     const [authorized, setAuthorized] = useState(isAuth());

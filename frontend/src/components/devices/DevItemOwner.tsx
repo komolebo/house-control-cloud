@@ -8,7 +8,7 @@ import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import {TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {fulWidMuiBtn, shortMuiBtn} from "../../styles/common/buttons.css";
 import {styleHeights} from "../../styles/common/customMuiStyle";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {fetchConnUsersByDevice} from "../../http/rqData";
 import {cntrVContent} from "../../styles/common/position.css";
 

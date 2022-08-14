@@ -16,7 +16,7 @@ import logoInviteUsr from "../../assets/modal-invite-bag.svg";
 import {DEFAULT_ROLE, ROLES, TDevRole} from "../../globals/DeviceData";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostInviteUser} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 interface IInvitElemProp {

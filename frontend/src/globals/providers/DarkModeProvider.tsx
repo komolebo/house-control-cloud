@@ -1,5 +1,5 @@
 import {createContext, FC, useState} from "react";
-import {getDarkModeFromStorage, setDarkModeToStorage} from "./storage";
+import {getDarkModeFromStorage, setDarkModeToStorage} from "../storage";
 
 
 export const useDarkModeSetting = () => {

@@ -8,7 +8,7 @@ import {TDevItem} from "../../globals/DeviceData";
 import {shortMuiBtn} from "../../styles/common/buttons.css";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 import {nestPostClearDeviceUsers} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 
 
 interface IState {

@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button} from "@mui/material";
+import {Button, Typography} from "@mui/material";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
 import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
@@ -11,8 +11,8 @@ export const CheckYourEmailPage: FC = () => {
 
 
     return <div className={loginPage}>
-        <div className={[hFont, stickCntr].join(' ')}>
-            <p >Check your email</p>
+        <div className={[stickCntr].join(' ')}>
+            <Typography variant="h1">Check your email</Typography>
         </div>
 
         <div className={stickCntr}>
@@ -20,8 +20,8 @@ export const CheckYourEmailPage: FC = () => {
         </div>
         <br/><br/>
 
-        <div className={[h4Font, stickCntr].join(' ')}>
-            We have sent you a reset pasword link on your registered email address
+        <div className={[stickCntr].join(' ')}>
+            <Typography variant="h3">We have sent you a reset pasword link on your registered email address</Typography>
         </div>
 
         <div className={delimiter} /><br/>

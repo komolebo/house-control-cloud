@@ -7,7 +7,7 @@ import {btn} from "../../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {register} from "../../http/auth";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {flexr} from "../../styles/common/position.css";
 import {
     Button,

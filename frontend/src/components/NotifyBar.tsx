@@ -10,7 +10,7 @@ import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colo
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
 import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/providers/UserAuthProvider";
 import {IO_NOTIFICATION_KEY, socket} from "../http/wssocket";
 import moment from "moment";
 

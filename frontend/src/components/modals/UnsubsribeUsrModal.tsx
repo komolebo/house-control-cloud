@@ -7,7 +7,7 @@ import logoDisconnect from "../../assets/disconnect-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 import {nestPostUnsubscribeFromDevice} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 
 interface IUnsubElemProp {
     onAction: (resInfo: IModalDoneDisplayInfo) => void,

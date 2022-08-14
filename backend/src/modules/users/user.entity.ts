@@ -5,6 +5,7 @@ import {Notifications} from "../notification/notification.entity";
 import {Histories} from "../history/history.entity"
 import {Preference} from "../preference/preference.entity";
 import {Blacklist} from "../preference/blacklist.entity";
+import {Auth} from "../auth/auth.entity";
 
 
 @Table({tableName: 'users'})
@@ -40,11 +41,6 @@ export class Users extends Model<Users> {
     })
     phone: string;
 
-    @Column({
-        type: DataType.STRING,
-    })
-    reset_token: string;
-
     @BelongsToMany(() => Devices, () => Roles)
     devices: Devices[]
 
@@ -70,4 +66,12 @@ export class Users extends Model<Users> {
         hooks: true
     })
     preference: Preference
+
+    @HasOne(() => Auth, {
+        foreignKey: "userAuthId",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
+    auth: Auth
 }

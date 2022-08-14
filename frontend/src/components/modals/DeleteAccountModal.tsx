@@ -10,7 +10,7 @@ import {wideMuiBtn} from "../../styles/common/buttons.css";
 import {colRedText} from "../../styles/common/colors.css";
 import {LoadingButton} from "@mui/lab";
 import {deleteSelfAccount} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 
 
 interface IProp {

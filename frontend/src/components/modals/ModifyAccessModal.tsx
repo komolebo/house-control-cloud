@@ -10,7 +10,7 @@ import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
 import {mediumMuiBtn} from "../../styles/common/buttons.css";
 import {nestDeleteAccess, nestPostModifyAccess} from "../../http/rqData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 interface IModifyElemProp {

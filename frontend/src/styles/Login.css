@@ -6,7 +6,9 @@
     transform: translate(-50%, -50%);
     width: 380px;
     padding: 25px 35px 25px 40px;
-    box-shadow: 0 2px 25px #dce8fd;
+    /*box-shadow: 0 2px 25px #dce8fd;*/
+    /*box-shadow: 0 2px 25px #4b4aa5;*/
+    box-shadow: 0 2px 25px ;
 }
 
 .stickRight {

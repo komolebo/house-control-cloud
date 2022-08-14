@@ -6,7 +6,7 @@ import logoAddDev from "../../assets/modal-add-dev.svg";
 import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostReqRoleAccess} from "../../http/rqData";
 import {TDevRole} from "../../globals/DeviceData";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 
 const MIN_CHAR_ID = 8;

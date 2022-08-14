@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, Param, Patch, UseGuards} from '@nestjs/common';
 import {UsersService} from "./users.service";
-import {UpdateUserInfoDto} from "./dto/user.dto";
+import {UpdateUserInfoDto} from "./dto/userLoginDto";
 import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
 import {OwnerForDeviceGuard} from "../../core/guards/OwnerForDevice.guard";
 

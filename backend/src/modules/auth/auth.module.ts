@@ -12,6 +12,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {Users} from "../users/user.entity";
 import {Histories} from "../history/history.entity";
 import {MailModule} from "../mail/mail.module";
+import {Auth} from "./auth.entity";
 
 @Module ({
     controllers: [AuthController],
@@ -28,7 +29,7 @@ import {MailModule} from "../mail/mail.module";
             secret: process.env.JWTKEY,
             signOptions: {expiresIn: process.env.TOKEN_EXPIRATION}
         }),
-        SequelizeModule.forFeature ([Users]),
+        SequelizeModule.forFeature ([Users, Auth]),
         forwardRef(() => HistoryModule),
         MailModule,
     ]

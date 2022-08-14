@@ -21,7 +21,7 @@ import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
 import {TBlItem, TUPref, TUser} from "../globals/AccountData";
 import {colBlue, darkBoxBg, lightBoxBg} from "../styles/common/colors.css";
 import logoDelete from "../assets/delete-account.svg";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/providers/UserAuthProvider";
 import {
     nestGetBlackList,
     nestGetUserFullInfo,
@@ -33,7 +33,7 @@ import {
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
 import PhoneInputComponent, {DEFAULT_COUNTRY_CODE} from "./elements/PhoneInputComponent";
-import {DarkModeContext} from "../globals/DarkModeProvider";
+import {DarkModeContext} from "../globals/providers/DarkModeProvider";
 
 interface IState {
     user: TUser,

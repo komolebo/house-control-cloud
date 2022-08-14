@@ -23,7 +23,7 @@ import logoMsgYes from "../assets/nav-notification-yes.svg";
 import logoMsgNo from "../assets/nav-notification-no.svg";
 import {NotifyBar} from "./NotifyBar";
 import {styleHeights} from "../styles/common/customMuiStyle";
-import {UserGlobalContext} from "../globals/UserAuthProvider";
+import {UserGlobalContext} from "../globals/providers/UserAuthProvider";
 import {nestGetPreference, isNotificationPerUser} from "../http/rqData";
 import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";

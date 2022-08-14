@@ -1,20 +1,22 @@
 import {HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {JwtService} from '@nestjs/jwt';
-import {UserPwdDto} from "../users/dto/user.dto";
 import {Users} from "../users/user.entity";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
 import {InjectModel} from "@nestjs/sequelize";
+import {Op} from "sequelize";
 import {MailService} from "../mail/mail.service";
 import {ForgotPasswordDto} from "./dto/forgotPassword_Dto";
 import {ChangePasswordDto} from "./dto/changePasswordDto";
 import {TokenPasswordDto} from "./dto/tokenPasswordDto";
 import { SignOptions } from 'jsonwebtoken';
+import {Auth} from "./auth.entity";
 
 @Injectable()
 export class AuthService {
     constructor(@InjectModel(Users) private userRepository: typeof Users,
+                @InjectModel(Auth) private authRepository: typeof Auth,
                 private readonly jwtService: JwtService,
                 private readonly historyService: HistoryService,
                 private mailService: MailService
@@ -25,106 +27,122 @@ export class AuthService {
         return null;
     }
 
-    public async login(login: string, pass: string) {
-        console.log("User login", login)
+    async signUser(user: Users, save_token?: boolean) {
+        const token = await this.generateToken(
+            {
+                id: user.id,
+                name: user.full_name,
+                email: user.email
+            }, {expiresIn: '1d'}
+        );
 
-        login = login.toLowerCase()
-
-        let user = await this.userRepository.findOne({where: {login: login}});
-        if (!user) {
-            user = await this.userRepository.findOne({where: {email: login}})
-            if (!user) {
-                return new UnauthorizedException({message: 'User not exist'})
-            }
+        let auth = user.auth;
+        if (!auth) {
+            auth = await this.authRepository.create();
+            await user.$set("auth", auth);
         }
 
-        // find if user password match
-        const match = await this.comparePassword(pass, user.password);
-        if (!match) {
+        if (save_token) {
+            await auth.setDataValue("reset_token", token);
+        } else {
+            await auth.setDataValue("reset_token", null);
+            await auth.setDataValue("reset_token_expire", null);
+        }
+        await auth.save()
+
+        const { password, ...userInfo } = user["dataValues"];
+        return { token, userInfo }
+    }
+
+    public async login(login: string, pass: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                [Op.or]: [{email: login}, {login: login}]
+            },
+            include: Auth
+        })
+        if (!user) {
+            return new UnauthorizedException({message: 'User not exist'})
+        }
+
+        const passwordMatch = await this.comparePassword(pass, user.password);
+        if (!passwordMatch) {
             return new UnauthorizedException({message: 'Wrong password'})
         }
 
-        user = user["dataValues"]
-
-        // tslint:disable-next-line: no-string-literal
-        const { password, ...result } = user;
-        const token = await this.generateToken(user);
+        const { token, userInfo } = await this.signUser(user)
 
         await this.historyService.createHistoryItem(user.id, {
             type: THistoryMsgType[THistoryMsgType.Account],
             text: "Signed in"
         })
 
-        return { user: result, token: token, status: HttpStatus.ACCEPTED };
+        return { user: userInfo, token: token, status: HttpStatus.ACCEPTED };
     }
 
     public async create(user) {
         // hash the password
         const pass = await this.hashPassword(user.password);
 
-        user.email = user.email.toLowerCase()
-        user.login = user.login.toLowerCase()
-
         // create the user
         const newUser = await this.userRepository.create({ ...user, password: pass});
 
-        // tslint:disable-next-line: no-string-literal
-        const { password, ...result } = newUser['dataValues'];
-
-        // generate token
-        const token = await this.generateToken(result);
+        const { token, userInfo } = await this.signUser(user)
 
         await this.historyService.createHistoryItem(newUser.id, {
             type: THistoryMsgType[THistoryMsgType.Account],
             text: "Successfully registered in HomeNET"
         })
         // return the user and the token
-        return { user: result, token };
+        return { user: userInfo, token };
     }
 
     public async forgot(forgotPasswordDto: ForgotPasswordDto) {
-        let user = await this.userRepository.findOne({where: {email: forgotPasswordDto.email}});
+        const user = await this.userRepository.findOne({
+            where: {email: forgotPasswordDto.email},
+            include: Auth
+        });
         if (!user) {
             return new UnauthorizedException({message: 'User does not exist'})
         }
 
-        const token = await this.generateToken(
-            {
-                id: user.id,
-                name: user.full_name,
-                email: user.email
-            },
-            {expiresIn: '1d'});
-        user.setDataValue("reset_token", token);
-        await user.save()
+        const {token} = await this.signUser(user, true)
 
-        await this.mailService.sendUserRestorePassword(
-            user.full_name,
-            user.email,
-            token
-        )
+        // await this.mailService.sendUserRestorePassword(
+        //     user.full_name,
+        //     user.email,
+        //     token
+        // )
     }
 
     public async changePassword(resetPasswordDto: ChangePasswordDto) {
-        let user = await this.userRepository.findOne({where: {reset_token: resetPasswordDto.token}});
-        if (!user) {
+        let auth = await this.authRepository.findOne({
+            where: {reset_token: resetPasswordDto.token},
+            include: [Users]
+        })
+        if (!auth || !auth.user) {
             return new UnauthorizedException({message: 'Incorrect token'})
         }
 
         const password = await this.hashPassword(resetPasswordDto.password);
-        user.setDataValue('password', password)
-        user.setDataValue('reset_token', null)
-        await user.save()
+        auth.user.setDataValue('password', password)
+        auth.setDataValue('reset_token', null)
+        auth.setDataValue('reset_token_expire', null)
+        await auth.user.save()
 
-        const token = await this.generateToken(user["dataValues"]);
+        const token = await this.generateToken(auth.user["dataValues"]);
 
         return { token: token, status: HttpStatus.ACCEPTED };
     }
 
     public async isTokenValid(tokenPasswordDto: TokenPasswordDto) {
         let tokenValid = true;
-        let user = await this.userRepository.findOne({where: {reset_token: tokenPasswordDto.token}});
-        if (!user) {
+        let auth = await this.authRepository.findOne({
+            where: {reset_token: tokenPasswordDto.token},
+            include: [Users]
+        });
+        // TODO: check expire date
+        if (!auth) {
             tokenValid = false;
         }
         return {"valid": tokenValid}

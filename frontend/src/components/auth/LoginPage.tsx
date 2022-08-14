@@ -6,13 +6,13 @@ import {
     stickRight
 } from "../../styles/Login.css";
 import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
-import {hFont, underline} from "../../styles/common/fonts.css";
+import {underline} from "../../styles/common/fonts.css";
 import {btn} from "../../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
 import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE} from "../../utils/consts";
 import {login} from "../../http/auth";
 import {flexr} from "../../styles/common/position.css";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 
 import {

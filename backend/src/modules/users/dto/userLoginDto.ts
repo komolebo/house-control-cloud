@@ -1,8 +1,10 @@
 import {IsEmail, IsEmpty, IsNotEmpty, IsPhoneNumber, MinLength} from "class-validator";
+import {Transform} from "class-transformer";
 
 export class FullUserDto {
     @IsNotEmpty()
     @IsEmail()
+    @Transform(param => param.value.toLowerCase())
     readonly email: string;
 
     @IsNotEmpty()
@@ -16,11 +18,13 @@ export class FullUserDto {
     readonly full_name: string;
 
     @IsNotEmpty()
+    @Transform(param => param.value.toLowerCase())
     readonly login: string;
 }
 
-export class UserDto {
+export class UserLoginDto {
     @IsNotEmpty()
+    @Transform(param => param.value.toLowerCase())
     readonly login: string;
 
     @IsNotEmpty()
@@ -30,6 +34,7 @@ export class UserDto {
 
 export class UpdateUserInfoDto {
     full_name?: string;
+    @Transform(param => param.value.toLowerCase())
     email?: string;
     phone?: string;
 }

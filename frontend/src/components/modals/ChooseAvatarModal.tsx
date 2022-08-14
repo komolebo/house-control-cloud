@@ -11,7 +11,7 @@ import logoAvaSelect from "../../assets/ava-select.svg";
 import logoAvaAdd from "../../assets/ava-add.svg";
 import AvatarEdit from 'react-avatar-edit'
 import {LoadingButton} from '@mui/lab';
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 
 enum EPageState {
     CHOOSE_DEFAULT,

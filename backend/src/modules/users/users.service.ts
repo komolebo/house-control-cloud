@@ -3,7 +3,7 @@ import { Users } from './user.entity';
 import { USER_REPOSITORY } from '../../core/globals/db_constants';
 import {InjectModel} from "@nestjs/sequelize";
 import {Devices} from "../devices/device.entity";
-import {UpdateUserInfoDto, UserDto} from "./dto/user.dto";
+import {UpdateUserInfoDto, UserLoginDto} from "./dto/userLoginDto";
 import {Preference} from "../preference/preference.entity";
 import {Blacklist} from "../preference/blacklist.entity";
 import {PreferenceService} from "../preference/preference.service";
@@ -17,7 +17,7 @@ export class UsersService {
                 private readonly prefService: PreferenceService,
                 private readonly devService: DevicesService) { }
 
-    async create(user: UserDto): Promise<Users> {
+    async create(user: UserLoginDto): Promise<Users> {
         return await this.userRepository.create<Users>(user);
     }
 

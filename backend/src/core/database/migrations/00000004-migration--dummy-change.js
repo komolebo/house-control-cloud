@@ -14,7 +14,6 @@ module.exports = {
       email: { type: Sequelize.STRING, unique: true, allowNull: false },
       password: { type: Sequelize.STRING, allowNull: false },
       phone: { type: Sequelize.STRING, allowNull: true },
-      reset_token: { type: Sequelize.STRING },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
@@ -153,6 +152,19 @@ module.exports = {
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
+    await queryInterface.createTable("auth", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      reset_token: { type: Sequelize.TEXT },
+      reset_token_expire: { type: Sequelize.DATE },
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+      updatedAt: { type: Sequelize.DATE, allowNull: false },
+      userAuthId: { type: Sequelize.INTEGER, allowNull: true },
+    });
     await queryInterface.addConstraint("roles", {
       references: { table: "users", field: "id" },
       onDelete: "CASCADE",
@@ -201,6 +213,14 @@ module.exports = {
       type: "foreign key",
       name: "fk_blacklist_prefId_preferences",
     });
+    await queryInterface.addConstraint("auth", {
+      references: { table: "users", field: "id" },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+      fields: ["userAuthId"],
+      type: "foreign key",
+      name: "fk_auth_userAuthId_users",
+    });
     await queryInterface.addConstraint("roles", {
       type: "unique",
       name: "roles_deviceId_userId_unique",
@@ -227,6 +247,7 @@ module.exports = {
       "blacklist",
       "fk_blacklist_prefId_preferences"
     );
+    await queryInterface.removeConstraint("auth", "fk_auth_userAuthId_users");
     await queryInterface.dropTable("users");
     await queryInterface.dropTable("roles");
     await queryInterface.dropTable("devices");
@@ -234,5 +255,6 @@ module.exports = {
     await queryInterface.dropTable("history");
     await queryInterface.dropTable("preferences");
     await queryInterface.dropTable("blacklist");
+    await queryInterface.dropTable("auth");
   },
 };

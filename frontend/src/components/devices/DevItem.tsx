@@ -6,7 +6,7 @@ import logoStart from "../../assets/arrow-start.svg"
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
-import {UserGlobalContext} from "../../globals/UserAuthProvider";
+import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {nestPatchDeviceAlias} from "../../http/rqData";
 
 

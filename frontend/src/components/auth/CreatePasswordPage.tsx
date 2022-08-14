@@ -5,7 +5,7 @@ import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, IconButton, InputAdornment, TextField, useTheme} from "@mui/material";
+import {Button, IconButton, InputAdornment, TextField, Typography, useTheme} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
@@ -100,13 +100,16 @@ export const CreatePwdPage: FC = () => {
     return <div className={loginPage}>
         <div className={flexr}>
             <LogoHomeNet style={{ color: theme.palette.text.primary }} />
-            <p className={[hFont].join(' ')}>&nbsp;Create password</p>
-        </div><br/>
+            <Typography variant="h1" sx={{ml: 2}}>Create password</Typography>
+        </div><br/><br/>
 
-        <div className={[h4Font, stickCntr].join(' ')}>
-            Your new password must be different drom previously used password
+        <div className={[stickCntr].join(' ')}>
+            <Typography variant="h3">
+                Your new password must be different drom previously used password
+            </Typography>
+
         </div>
-        <br/><br/>
+        <br/>
 
         <TextField
             id="create-password-field"
