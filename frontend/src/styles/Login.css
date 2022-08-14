@@ -37,20 +37,6 @@
     z-index: 2;
 }
 
-.pwd-show {
-    background:url(../../public/icons/password-show.svg) left top;
-    height: 22px;
-    width: 22px;
-    background-size: 22px 22px;
-}
-
-.pwd-hide {
-    background: url(../../public/icons/password-hide.svg);
-    height: 22px;
-    width: 22px;
-    background-size: 22px 22px;
-}
-
 .warn-container {
     padding: 20px 0;
 }
