@@ -41,18 +41,6 @@
     font-size: medium;
 }
 
-.rm-btn {
-    background:url(../../../public/button/remove-small.png);
-    height: 27px;
-    width: 27px;
-    background-size: 27px 27px;
-}
-.rm-btn:active {
-    background:url(../../../public/button/remove-small-clicked.png);
-    height: 27px;
-    width: 27px;
-    background-size: 27px 27px;
-}
 .rm-btn:hover {
     box-shadow: 0 0 0 2px #5e0000;
 }
