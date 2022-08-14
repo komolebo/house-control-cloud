@@ -85,7 +85,7 @@ export class AuthService {
         return { user: userInfo, token: token, status: HttpStatus.ACCEPTED };
     }
 
-    public async create(user) {
+    public async register(user) {
         // hash the password
         const pass = await this.hashPassword(user.password);
 
@@ -102,7 +102,7 @@ export class AuthService {
         return { userInfo, token };
     }
 
-    public async forgot(forgotPasswordDto: ForgotPasswordDto) {
+    public async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
         const user = await this.userRepository.findOne({
             where: {email: forgotPasswordDto.email},
             include: Auth

@@ -3,15 +3,16 @@ import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {h4Font, hFont, underline} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, TextField, Typography, useTheme} from "@mui/material";
-import {btn} from "../../styles/common/buttons.css";
+import {Button, Link, TextField, Typography, useTheme} from "@mui/material";
+import {btn, imgHover} from "../../styles/common/buttons.css";
 import {preLabel} from "../../styles/common/labels.css";
-import {LOGIN_PAGE} from "../../utils/consts";
+import {AUTH_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
 import {CheckYourEmailPage} from "./CheckEmailPage";
 import {LoadingButton} from "@mui/lab";
 import {bestOPostForgotPassword} from "../../http/rqData";
 import {log} from "util";
+import {colBlue} from "../../styles/common/colors.css";
 
 
 interface IPropRestorePwd {
@@ -89,11 +90,11 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         <div className={delimiter} /><br/>
 
         <div className={[stickCntr].join (' ')}>
-            <Button
-                style={{height: 18}}
-            >
-                Restore via phone
-            </Button>
+            <Link
+                underline="hover"
+                className={[imgHover, colBlue].join(' ')}
+                // onClick={() => navigate (AUTH_PAGE)}
+            > Restore via Phone </Link>
         </div>
 
         <div
@@ -104,13 +105,11 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         </div>
 
         <div className={[stickCntr].join (' ')}>
-            <Button
-                style={{height: 18 }}
-                onClick={() => navigate(LOGIN_PAGE)}
-                className={underline}
-            >
-                LOGIN
-            </Button>
+            <Link
+                underline="hover"
+                className={[imgHover, colBlue].join(' ')}
+                onClick={() => navigate (AUTH_PAGE)}
+            > SIGN-UP </Link>
         </div>
     </div>
 }

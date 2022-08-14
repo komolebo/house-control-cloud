@@ -7,11 +7,11 @@ import {
 } from "../../styles/Login.css";
 import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
 import {underline} from "../../styles/common/fonts.css";
-import {btn} from "../../styles/common/buttons.css";
+import {btn, imgHover} from "../../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
-import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE} from "../../utils/consts";
+import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {login} from "../../http/auth";
-import {flexr} from "../../styles/common/position.css";
+import {cntrContent, flexr} from "../../styles/common/position.css";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 
@@ -20,11 +20,12 @@ import {
     Checkbox,
     FormControlLabel,
     IconButton,
-    InputAdornment,
+    InputAdornment, Link,
     TextField,
     Typography, useTheme
 } from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {colBlue} from "../../styles/common/colors.css";
 
 interface IState {
     showPassword: boolean;
@@ -82,8 +83,8 @@ const LoginPage: FC = () => {
         <div className={loginPage}>
             <div className={flexr}>
                 <LogoHomeNet style={{ color: theme.palette.text.primary }} />
-                <Typography variant="h1" sx={{ml: 1, mt: 1}}>Login</Typography>
-            </div><br/>
+                <Typography variant="h1" sx={{ml: 2, mt: 2}}>Login</Typography>
+            </div><br/><br/>
 
             <div>
                 <TextField
@@ -120,7 +121,9 @@ const LoginPage: FC = () => {
                                 onClick={e => setValues({...values, showPassword: !values.showPassword})}
                                 edge="end"
                             >
-                                {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                                {values.showPassword
+                                    ? <VisibilityOff color="secondary"/>
+                                    : <Visibility color="secondary"/>}
                             </IconButton>
                         </InputAdornment>
                 }}
@@ -158,23 +161,24 @@ const LoginPage: FC = () => {
                 LOGIN
             </Button><br/>
 
-            <div>
-                <label
-                    className={[stickRight, point, preLabel].join(' ')}
-                    onClick={() => navigate(FORGOT_PWD_PAGE)}
-                >
-                    Forgot Password?
-                </label>
+            <div className={stickRight}>
+                <Link
+                    underline="hover"
+                    color="secondary"
+                    className={[imgHover].join(' ')}
+                    onClick={() => navigate (FORGOT_PWD_PAGE)}
+                > Forgot Password? </Link>
             </div>
 
-            <div className={delimiter} />
-
-            <div>
-                <label className={[point, stickCntr, preLabel, underline].join(' ')}>
-                    <NavLink to={AUTH_PAGE}>
-                        Need an account? SIGN-UP
-                    </NavLink>
-                </label>
+            <div className={delimiter}/><br/>
+            <div className={[cntrContent].join(' ')}>
+                <Typography variant="h6" sx={{mr: 1, mt: .2}}>Need an account??</Typography>
+                <Link
+                    underline="hover"
+                    color="info"
+                    className={[imgHover, colBlue].join(' ')}
+                    onClick={() => navigate (AUTH_PAGE)}
+                > SIGN-UP </Link>
             </div>
         </div>
     )

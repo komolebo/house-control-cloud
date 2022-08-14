@@ -50,8 +50,6 @@ import {commonPage} from "../styles/common/pages.css";
 import logoLoadMore from "../assets/arrow-down-blue.svg";
 import {ReactComponent as LogoMenuDelete} from '../assets/delete-item.svg';
 import {ReactComponent as LogoMenuFilter} from '../assets/menu-item-filter.svg';
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {PickersDay, pickersDayClasses, PickersDayProps} from "@mui/lab";
 
 
 enum EHistorySetting {

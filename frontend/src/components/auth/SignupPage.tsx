@@ -3,24 +3,26 @@ import {useNavigate} from "react-router-dom";
 import {delimiter, loginPage, stickCntr, warnContainer} from "../../styles/Login.css";
 import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
 import {hFont, underline} from "../../styles/common/fonts.css";
-import {btn} from "../../styles/common/buttons.css";
+import {btn, imgHover} from "../../styles/common/buttons.css";
 import {NavLink} from "react-router-dom";
 import {HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {register} from "../../http/auth";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
-import {flexr} from "../../styles/common/position.css";
+import {cntrContent, flexr} from "../../styles/common/position.css";
 import {
     Button,
     FormControl,
     IconButton,
     InputAdornment,
-    InputLabel,
+    InputLabel, Link,
     OutlinedInput,
-    TextField,
+    TextField, Typography,
     useTheme
 } from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
+import {blue} from "@mui/material/colors";
+import {colBlue} from "../../styles/common/colors.css";
 
 interface IState {
     showPassword: boolean;
@@ -66,87 +68,90 @@ const SignupPage: FC = () => {
         })
     }
 
-    return (
-        <div className={loginPage}>
-            <div className={flexr}>
-                <LogoHomeNet style={{ color: theme.palette.text.primary }} />
-                <p className={[hFont].join(' ')}>&nbsp;Sign up</p>
-            </div><br/>
+    return <div className={loginPage}>
+        <div className={flexr}>
+            <LogoHomeNet style={{color: theme.palette.text.primary}}/>
+            <Typography variant="h1" sx={{ml: 2, mt: 2}}>Sign up</Typography>
+        </div>
+        <br/>
 
-            <TextField
-                sx={{width: "100%"}}
-                id="login-input-field"
-                label="Login"
-                value={values.login}
-                onChange={e => setValues({...values, login: e.target.value})}
-            /><br/><br/>
+        <TextField
+            sx={{width: "100%"}}
+            id="login-input-field"
+            label="Login"
+            value={values.login}
+            onChange={e => setValues ({...values, login: e.target.value})}
+        /><br/><br/>
 
-            <TextField
-                sx={{width: "100%"}}
-                id="name-input-field"
-                label="Full name"
-                value={values.name}
-                onChange={e => setValues({...values, name: e.target.value})}
-            /><br/><br/>
+        <TextField
+            sx={{width: "100%"}}
+            id="name-input-field"
+            label="Full name"
+            value={values.name}
+            onChange={e => setValues ({...values, name: e.target.value})}
+        /><br/><br/>
 
-            <TextField
-                sx={{width: "100%"}}
-                id="email-input-field"
-                label="Email"
-                value={values.email}
-                onChange={e => setValues({...values, email: e.target.value})}
-            /><br/><br/>
+        <TextField
+            sx={{width: "100%"}}
+            id="email-input-field"
+            label="Email"
+            value={values.email}
+            onChange={e => setValues ({...values, email: e.target.value})}
+        /><br/><br/>
 
-            <FormControl sx={{ width: '100%' }} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={values.showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    onChange={e => setValues({...values, password: e.target.value})}
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={e => setValues({...values, showPassword: !values.showPassword})}
-                                edge="end"
-                            >
-                                {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    }
-                    label="Password"
-                />
-            </FormControl>
+        <FormControl sx={{width: '100%'}} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+                id="outlined-adornment-password"
+                type={values.showPassword ? 'text' : 'password'}
+                value={values.password}
+                onChange={e => setValues ({...values, password: e.target.value})}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={e => setValues ({...values, showPassword: !values.showPassword})}
+                            edge="end"
+                        >
+                            {values.showPassword
+                                ? <VisibilityOff color="secondary"/>
+                                : <Visibility color="secondary"/>}
+                        </IconButton>
+                    </InputAdornment>
+                }
+                label="Password"
+            />
+        </FormControl>
 
-            {values.warnings.length ? (
-                <div className={warnContainer}>
-                    <div className={warnLabel}>Please check warnings:</div>
-                    {values.warnings.map(warning => {
-                        return <div className={warnLabel}>- {warning};</div>
-                    })}
-                </div>
-                ): <div><br/><br/></div>
-            }
+        {values.warnings.length ? (
+            <div className={warnContainer}>
+                <div className={warnLabel}>Please check warnings:</div>
+                {values.warnings.map (warning => {
+                    return <div className={warnLabel}>- {warning};</div>
+                })}
+            </div>
+        ) : <div><br/><br/></div>
+        }
 
-            <Button variant={"contained"}
-                    onClick={() => signUp()}
-                    className={[btn].join(' ')}
-                    fullWidth
-            >
-                SIGN UP
-            </Button><br/>
+        <Button variant={"contained"}
+                onClick={() => signUp ()}
+                className={[btn].join (' ')}
+                fullWidth
+        >
+            SIGN UP
+        </Button><br/>
 
-            <div className={delimiter} />
-            <div>
-                <label className={[point, stickCntr, preLabel, underline].join(' ')}>
-                    <NavLink to={LOGIN_PAGE}>
-                        Already a user? LOGIN
-                    </NavLink>
-                </label>
+        <div className={delimiter}/><br/>
+            <div className={[cntrContent].join(' ')}>
+                <Typography variant="h6" sx={{mr: 1, mt: .2}}>Already a user?</Typography>
+                <Link
+                    underline="hover"
+                    color="info"
+                    className={[imgHover, colBlue].join(' ')}
+                    onClick={() => navigate (LOGIN_PAGE)}
+                > LOGIN </Link>
             </div>
         </div>
-    )
 }
 
 export default SignupPage;

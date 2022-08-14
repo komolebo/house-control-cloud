@@ -126,7 +126,9 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
                             onClick={e => setState({...state, showPassword: !state.showPassword})}
                             edge="end"
                         >
-                            {state.showPassword ? <VisibilityOff /> : <Visibility />}
+                            {state.showPassword
+                                ? <VisibilityOff color="secondary"/>
+                                : <Visibility color="secondary"/>}
                         </IconButton>
                     </InputAdornment>
             }}
@@ -157,7 +159,9 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
                             onClick={e => setState({...state, showConfirmPassword: !state.showConfirmPassword})}
                             edge="end"
                         >
-                            {state.showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            {state.showConfirmPassword
+                                ? <VisibilityOff color="secondary"/>
+                                : <Visibility color="secondary"/>}
                         </IconButton>
                     </InputAdornment>
             }}

@@ -148,7 +148,7 @@ export class NotificationService {
         const text =`${objUserName} lost an access to device \`${deviceName}\``
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            severity: ENotificationSeverity[ENotificationSeverity.INFO],
             deviceId: deviceId,
             userId: userId,
             sourceUserId: objUserId,

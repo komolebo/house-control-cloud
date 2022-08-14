@@ -22,13 +22,13 @@ export class AuthController {
     @UsePipes(new ValidationPipe({transform: true}))
     @Post('signup')
     async signUp(@Body() user: FullUserDto) {
-        return await this.authService.create(user);
+        return await this.authService.register(user);
     }
 
     @UsePipes(new ValidationPipe({transform: true}))
     @Post('forgot')
     async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto){
-        return this.authService.forgot(forgotPasswordDto);
+        return this.authService.forgotPassword(forgotPasswordDto);
     }
 
     @Post('isToken')
