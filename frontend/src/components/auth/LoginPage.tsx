@@ -94,6 +94,17 @@ const LoginPage: FC = () => {
                     onKeyUp={e => handleKeyUp(e, false)}
                     fullWidth
                     autoFocus
+                    inputProps={{
+                        input: {
+                            "&:-webkit-autofill": {
+                                WebkitBoxShadow: "0 0 0 1000px green inset",
+                                backgroundColor: "yellow"
+                            },
+                            "&:-webkit-autofill:focus": {
+                                transition: "background-color 600000s 0s, color 600000s 0s"
+                            },
+                        },
+                    }}
                 />
             </div><br/>
 

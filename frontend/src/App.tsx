@@ -5,9 +5,10 @@ import {UserGlobalContext} from "./globals/providers/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
 import {CssBaseline, darkScrollbar, GlobalStyles, ThemeProvider} from "@mui/material";
-import {darkTheme, lightTheme} from "./components/mui/muiOverride";
 import {ModalProvider} from "./components/modals/ModalProvider";
 import {DarkModeContext} from "./globals/providers/DarkModeProvider";
+import {lightTheme} from "./components/mui/lightThemeStyle";
+import {darkTheme} from "./components/mui/darkThemeStyle";
 
 function AppRouter() {
     const  {authorized} = useContext(UserGlobalContext);
