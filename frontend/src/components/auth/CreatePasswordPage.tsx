@@ -3,13 +3,13 @@ import {useParams} from 'react-router-dom'
 import {useNavigate} from "react-router-dom";
 import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
-import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
 import {Button, IconButton, InputAdornment, TextField, Typography, useTheme} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {nestGetTokenExist, nestPostChangePassword} from "../../http/rqData";
+import {InvalidLinkPage} from "./InvalidTokenPage";
 
 interface IState {
     password: string;
@@ -30,25 +30,28 @@ const initialState: IState = {
 
 const MIN_PWD_CHAR = 8
 
-export const CreatePwdPage: FC = () => {
+interface IProp {
+    callErr: () => void;
+}
+
+const CreatePwdElement: FC<IProp> = ({callErr}) => {
     const [state, setState] = useState<IState>(initialState)
     const navigate = useNavigate();
     const confirmRef = useRef<any>();
     const { token } = useParams();
     const theme = useTheme();
 
-    const redirectToLogin = () => {
-        navigate(LOGIN_PAGE);
-    }
-
     useEffect(() => {
         token && nestGetTokenExist(token).then(resp => {
+            console.log(resp.data)
+
             if (resp.status === 201) {
                 const valid = resp.data.valid;
 
-                if (!valid) redirectToLogin();
+                valid ? navigate(LOGIN_PAGE) : callErr()
             }
-        }).catch(() => redirectToLogin())
+        }).catch(() => callErr())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const checkPassword = () => {
@@ -70,9 +73,9 @@ export const CreatePwdPage: FC = () => {
         if(checkPassword()) {
             token && nestPostChangePassword(token, state.password).then(resp => {
                 if (resp.status === 200) {
-                    redirectToLogin()
+                    navigate(LOGIN_PAGE)
                 }
-            })
+            }).catch(() => callErr())
         }
     }
     const handleNewPwdInput = (e: any) => {
@@ -175,10 +178,18 @@ export const CreatePwdPage: FC = () => {
         <div className={[stickCntr].join (' ')}>
             <Button
                 style={{height: 18}}
-                onClick={() => redirectToLogin()}
+                onClick={() => navigate(LOGIN_PAGE)}
             >
                 LOGIN
             </Button>
         </div>
     </div>
+}
+
+export const CreatePwdPage: FC = () => {
+    const [errPage, setErrPage] = useState(false)
+
+    return errPage
+        ? <InvalidLinkPage/>
+        : <CreatePwdElement callErr={() => setErrPage(true)}/>
 }

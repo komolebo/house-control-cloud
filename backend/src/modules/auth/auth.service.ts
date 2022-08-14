@@ -1,4 +1,4 @@
-import {HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import {JwtService} from '@nestjs/jwt';
 import {Users} from "../users/user.entity";
@@ -12,6 +12,9 @@ import {ChangePasswordDto} from "./dto/changePasswordDto";
 import {TokenPasswordDto} from "./dto/tokenPasswordDto";
 import { SignOptions } from 'jsonwebtoken';
 import {Auth} from "./auth.entity";
+import * as moment from "moment";
+
+const RESET_TOKEN_EXP = [10, "m"]
 
 @Injectable()
 export class AuthService {
@@ -44,6 +47,8 @@ export class AuthService {
 
         if (save_token) {
             await auth.setDataValue("reset_token", token);
+            await auth.setDataValue("reset_token_expire",
+                moment().add(...RESET_TOKEN_EXP).toString())
         } else {
             await auth.setDataValue("reset_token", null);
             await auth.setDataValue("reset_token_expire", null);
@@ -94,7 +99,7 @@ export class AuthService {
             text: "Successfully registered in HomeNET"
         })
         // return the user and the token
-        return { user: userInfo, token };
+        return { userInfo, token };
     }
 
     public async forgot(forgotPasswordDto: ForgotPasswordDto) {
@@ -108,11 +113,11 @@ export class AuthService {
 
         const {token} = await this.signUser(user, true)
 
-        // await this.mailService.sendUserRestorePassword(
-        //     user.full_name,
-        //     user.email,
-        //     token
-        // )
+        await this.mailService.sendUserRestorePassword(
+            user.full_name,
+            user.email,
+            token
+        )
     }
 
     public async changePassword(resetPasswordDto: ChangePasswordDto) {
@@ -121,7 +126,10 @@ export class AuthService {
             include: [Users]
         })
         if (!auth || !auth.user) {
-            return new UnauthorizedException({message: 'Incorrect token'})
+            return new HttpException('Incorrect token', HttpStatus.FORBIDDEN)
+        }
+        if (!await this.isTokenNotExpired(auth)) {
+            return new HttpException('Token expired', HttpStatus.FORBIDDEN)
         }
 
         const password = await this.hashPassword(resetPasswordDto.password);
@@ -136,16 +144,18 @@ export class AuthService {
     }
 
     public async isTokenValid(tokenPasswordDto: TokenPasswordDto) {
-        let tokenValid = true;
         let auth = await this.authRepository.findOne({
             where: {reset_token: tokenPasswordDto.token},
             include: [Users]
         });
-        // TODO: check expire date
-        if (!auth) {
-            tokenValid = false;
+
+        const tokenValid = this.isTokenNotExpired(auth)
+        if (auth && !tokenValid) {
+            auth.setDataValue("reset_token", null)
+            auth.setDataValue("reset_token_expire", null)
+            await auth.save()
         }
-        return {"valid": tokenValid}
+        return tokenValid
     }
 
     private async generateToken(payload, options?: SignOptions) {
@@ -158,6 +168,14 @@ export class AuthService {
 
     private async comparePassword(enteredPassword, dbPassword) {
         return bcrypt.compare (enteredPassword, dbPassword);
+    }
+
+    private async isTokenNotExpired(auth: Auth) {
+        if (!auth) { return false }
+
+        const now = moment()
+        const expire_at = moment(auth.reset_token_expire)
+        return now.isBefore(expire_at)
     }
 
     parseHeaders(authorization): Users | null {

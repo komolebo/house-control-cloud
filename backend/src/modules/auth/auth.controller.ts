@@ -33,7 +33,7 @@ export class AuthController {
 
     @Post('isToken')
     async isTokenValid(@Body() tokenPasswordDto: TokenPasswordDto) {
-        return this.authService.isTokenValid(tokenPasswordDto)
+        return {"valid": await this.authService.isTokenValid(tokenPasswordDto)}
     }
 
     @Patch('change')
