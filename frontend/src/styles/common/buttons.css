@@ -45,10 +45,6 @@
     box-shadow: 0 0 0 2px #5e0000;
 }
 
-#btn-ico-add-dev {
-    background:url(../../../public/icons/add-device.svg) left top;
-}
-
 .img-hover:hover {
     cursor: pointer;
 }
