@@ -8,8 +8,8 @@ import {Button, IconButton, InputAdornment, TextField, Typography, useTheme} fro
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {nestGetTokenExist, nestPostChangePassword} from "../../http/rqData";
 import {InvalidLinkPage} from "./InvalidTokenPage";
+import {nestGetTokenExist, nestPostChangePassword} from "../../http/auth";
 
 interface IState {
     password: string;

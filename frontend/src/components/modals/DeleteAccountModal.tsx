@@ -48,7 +48,7 @@ export const DeleteAccountModal: FC<IProp> = () => {
                 <br/>
 
                 <div className={helpText}>
-                    Please acknowledge the account deletion consequences
+                    Please acknowledge consequences of account deletion
                 </div>
                 <br/><br/>
 

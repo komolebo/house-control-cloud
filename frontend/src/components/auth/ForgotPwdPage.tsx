@@ -6,13 +6,13 @@ import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
 import {Button, Link, TextField, Typography, useTheme} from "@mui/material";
 import {btn, imgHover} from "../../styles/common/buttons.css";
 import {preLabel} from "../../styles/common/labels.css";
-import {AUTH_PAGE, LOGIN_PAGE} from "../../utils/consts";
+import {SIGNUP_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
 import {CheckYourEmailPage} from "./CheckEmailPage";
 import {LoadingButton} from "@mui/lab";
-import {bestOPostForgotPassword} from "../../http/rqData";
 import {log} from "util";
 import {colBlue} from "../../styles/common/colors.css";
+import {nestPostForgotPassword} from "../../http/auth";
 
 
 interface IPropRestorePwd {
@@ -35,11 +35,14 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         } else {
             // setError("")
             setSending(true);
-            bestOPostForgotPassword(login).then(resp => {
+            nestPostForgotPassword(login).then(resp => {
                 if (resp.status === 201) {
                     onSent()
                 }
+            }).catch(({response}) => {
+                setError(response.data.message)
             })
+                .finally(() => setSending(false))
         }
     }
     const handleLoginInput = (e: any) => {
@@ -108,7 +111,7 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
             <Link
                 underline="hover"
                 className={[imgHover, colBlue].join(' ')}
-                onClick={() => navigate (AUTH_PAGE)}
+                onClick={() => navigate (SIGNUP_PAGE)}
             > SIGN-UP </Link>
         </div>
     </div>

@@ -8,12 +8,18 @@ export class Auth extends Model<Auth> {
     @Column({
         type: DataType.TEXT
     })
-    reset_token: string;
+    token: string;
 
     @Column({
         type: DataType.DATE,
     })
-    reset_token_expire: string;
+    token_expire: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false
+    })
+    activated: boolean;
 
     // @HasOne(() => Users)
     // user: Users

@@ -9,7 +9,7 @@ import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
 import {underline} from "../../styles/common/fonts.css";
 import {btn, imgHover} from "../../styles/common/buttons.css";
 import {NavLink, useNavigate} from "react-router-dom";
-import {AUTH_PAGE, FORGOT_PWD_PAGE, HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
+import {SIGNUP_PAGE, FORGOT_PWD_PAGE, HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
 import {login} from "../../http/auth";
 import {cntrContent, flexr} from "../../styles/common/position.css";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
@@ -49,8 +49,8 @@ const LoginPage: FC = () => {
     })
 
     const signIn = () => {
-        login(values.login, values.password).then(
-            ({data}) => {
+        login(values.login, values.password).then(({data}) => {
+                console.log(data)
                 switch (data.status) {
                     case 401:
                         setValues({...values, warning: "Wrong login or password"})
@@ -60,6 +60,8 @@ const LoginPage: FC = () => {
                         setAuthData(data.token);
                         navigate(HOME_PAGE);
                         break;
+                    default:
+                        setValues({...values, warning: data.message})
                 }
                 console.log("good: ", data);
             }
@@ -68,6 +70,8 @@ const LoginPage: FC = () => {
                 case 422:
                     setValues({...values, warning: "Login or password is invalid"})
                     break;
+                default:
+                    setValues({...values, warning: response.data.message})
             }
             console.log("catch: ", response);
         });
@@ -177,7 +181,7 @@ const LoginPage: FC = () => {
                     underline="hover"
                     color="info"
                     className={[imgHover, colBlue].join(' ')}
-                    onClick={() => navigate (AUTH_PAGE)}
+                    onClick={() => navigate (SIGNUP_PAGE)}
                 > SIGN-UP </Link>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {Box, Tab, Tabs} from "@mui/material";
+import {Box, Tab, Tabs, Typography} from "@mui/material";
 import {h3Font} from "../../styles/common/fonts.css";
 
 interface IPropDevList {
@@ -25,28 +25,28 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
 
     return <div style={{maxWidth: '100%'}}>
         {devices.length === 0
-                ? <div className={h3Font}>No device is connected yet...</div>
-                :
-                    <Box>
-                        <Tabs
-                            sx={{backgroundColor:"grey", p:0}}
-                            value={curSel}
-                            onChange={handleSelect}
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            aria-label="scrollable auto tabs example"
-                            allowScrollButtonsMobile
-                            textColor="primary"
-                            indicatorColor="primary"
-                        >
-                            {devices.map((device, i) =>
-                                <Tab
-                                    label={device}
-                                    key={i}
-                                />
-                            )}
-                        </Tabs>
-                    </Box>
+            ? <Typography variant="h4">No device is connected yet...</Typography>
+            :
+                <Box>
+                    <Tabs
+                        sx={{backgroundColor:"grey", p:0}}
+                        value={curSel}
+                        onChange={handleSelect}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        aria-label="scrollable auto tabs example"
+                        allowScrollButtonsMobile
+                        textColor="primary"
+                        indicatorColor="primary"
+                    >
+                        {devices.map((device, i) =>
+                            <Tab
+                                label={device}
+                                key={i}
+                            />
+                        )}
+                    </Tabs>
+                </Box>
         }
         </div>
 };

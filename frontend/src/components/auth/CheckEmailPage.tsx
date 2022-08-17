@@ -12,7 +12,7 @@ export const CheckYourEmailPage: FC = () => {
 
     return <div className={loginPage}>
         <div className={[stickCntr].join(' ')}>
-            <Typography variant="h1">Check your email</Typography>
+            <Typography variant="h1">Email send</Typography>
         </div>
 
         <div className={stickCntr}>

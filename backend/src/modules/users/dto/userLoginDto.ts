@@ -1,18 +1,15 @@
 import {IsEmail, IsEmpty, IsNotEmpty, IsPhoneNumber, MinLength} from "class-validator";
 import {Transform} from "class-transformer";
 
-export class FullUserDto {
+export class UserRegistrationDto {
     @IsNotEmpty()
-    @IsEmail()
+    // @IsEmail()
     @Transform(param => param.value.toLowerCase())
     readonly email: string;
 
     @IsNotEmpty()
     @MinLength(6)
     readonly password: string;
-
-    // // @IsPhoneNumber()
-    // readonly phone?: string;
 
     @IsNotEmpty()
     readonly full_name: string;

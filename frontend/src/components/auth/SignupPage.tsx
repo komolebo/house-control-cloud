@@ -1,16 +1,12 @@
-import React, {FC, useContext, useState} from "react";
+import React, {FC, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {delimiter, loginPage, stickCntr, warnContainer} from "../../styles/Login.css";
-import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
-import {hFont, underline} from "../../styles/common/fonts.css";
+import {delimiter, loginPage, warnContainer} from "../../styles/Login.css";
+import {warnLabel} from "../../styles/common/labels.css";
 import {btn, imgHover} from "../../styles/common/buttons.css";
-import {NavLink} from "react-router-dom";
-import {HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
+import {ACTIVATE_ACCOUNT_INFO, LOGIN_PAGE} from "../../utils/consts";
 import {register} from "../../http/auth";
-import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {cntrContent, flexr} from "../../styles/common/position.css";
 import {
-    Button,
     FormControl,
     IconButton,
     InputAdornment,
@@ -21,8 +17,8 @@ import {
 } from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
-import {blue} from "@mui/material/colors";
 import {colBlue} from "../../styles/common/colors.css";
+import {LoadingButton} from "@mui/lab";
 
 interface IState {
     showPassword: boolean;
@@ -31,6 +27,7 @@ interface IState {
     warnings: Array<string>;
     name: string;
     login: string;
+    loading: boolean;
 }
 
 const SignupPage: FC = () => {
@@ -40,32 +37,35 @@ const SignupPage: FC = () => {
         email: "",
         warnings: [],
         name: "",
-        login: ""
+        login: "",
+        loading: false
     })
     const navigate = useNavigate();
     const theme = useTheme();
-    const {setAuthData} = useContext(UserGlobalContext);
 
     const signUp = async () => {
-        await register(values.login, values.password, values.email, values.name).then(data => {
-                console.log("signed up, data: ", data);
-                setAuthData(data.data.token);
-                navigate(HOME_PAGE);
+        setValues({...values, loading: true})
+        await register(values.login, values.password, values.email, values.name).then(resp => {
+            console.log("register", resp)
+                if (resp.status === 201) {
+                    navigate(ACTIVATE_ACCOUNT_INFO + values.email);
+                }
             }
         ).catch(({response}) => {
+            console.log("register err", response)
             switch (response.status) {
                 case 403:
                     console.log(response.data.message);
-                    setValues({...values, warnings: response.data.message})
+                    values.warnings = [response.data.message]
                     break;
                 case 422:
                     console.log(response.data.response.message);
-                    setValues({...values, warnings: response.data.response.message})
+                    values.warnings = response.data.response.message
                     break;
                 default:
-                    setValues({...values, warnings: ["Unknown error happened, please try later"]})
+                    values.warnings = ["Unknown error happened, please try later"]
             }
-        })
+        }).finally(() => setValues({...values, loading: false}))
     }
 
     return <div className={loginPage}>
@@ -133,13 +133,14 @@ const SignupPage: FC = () => {
         ) : <div><br/><br/></div>
         }
 
-        <Button variant={"contained"}
+        <LoadingButton variant={"contained"}
                 onClick={() => signUp ()}
                 className={[btn].join (' ')}
+                loading={values.loading}
                 fullWidth
         >
             SIGN UP
-        </Button><br/>
+        </LoadingButton><br/>
 
         <div className={delimiter}/><br/>
             <div className={[cntrContent].join(' ')}>

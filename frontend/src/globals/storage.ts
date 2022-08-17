@@ -43,11 +43,18 @@ export function clearUserFromStore() {
 export function getAuthToken() {
     return localStorage.getItem (USER_TOKEN);
 }
-export function isAuth(): boolean {
+export function isAuthTokenSaved(): boolean {
     return getAuthToken () !== null;
 }
 export const initUserInfoFromStore = () => {
     const token = getAuthToken ()
-    const user: IUserSetting | null = token ? jwtDecode (token) : null
-    return user ? user : null
+
+    try {
+        if (token) {
+            return jwtDecode<IUserSetting>(token)
+        }
+        return null;
+    } catch (e) {
+        return null
+    }
 }

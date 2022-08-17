@@ -13,8 +13,15 @@ import {TokenPasswordDto} from "./dto/tokenPasswordDto";
 import { SignOptions } from 'jsonwebtoken';
 import {Auth} from "./auth.entity";
 import * as moment from "moment";
+import {ActivateAccountDto, CheckEmailActivationDto} from "./dto/tokenActivationDto";
+import {UserRegistrationDto} from "../users/dto/userLoginDto";
 
 const RESET_TOKEN_EXP = [10, "m"]
+enum ESignOption {
+    login,
+    register,
+    forgot
+}
 
 @Injectable()
 export class AuthService {
@@ -30,7 +37,7 @@ export class AuthService {
         return null;
     }
 
-    async signUser(user: Users, save_token?: boolean) {
+    async signUser(user: Users, signOption: ESignOption) {
         const token = await this.generateToken(
             {
                 id: user.id,
@@ -45,13 +52,21 @@ export class AuthService {
             await user.$set("auth", auth);
         }
 
-        if (save_token) {
-            await auth.setDataValue("reset_token", token);
-            await auth.setDataValue("reset_token_expire",
-                moment().add(...RESET_TOKEN_EXP).toString())
-        } else {
-            await auth.setDataValue("reset_token", null);
-            await auth.setDataValue("reset_token_expire", null);
+        switch (signOption) {
+            case ESignOption.forgot:
+                await auth.setDataValue("token", token);
+                await auth.setDataValue("token_expire",
+                    moment().add(...RESET_TOKEN_EXP).toString())
+                break;
+            case ESignOption.login:
+                await auth.setDataValue("token", null);
+                await auth.setDataValue("token_expire", null);
+                break;
+            case ESignOption.register:
+                await auth.setDataValue("token", token);
+                await auth.setDataValue("token_expire", null);
+                break;
+            default: break
         }
         await auth.save()
 
@@ -67,15 +82,18 @@ export class AuthService {
             include: Auth
         })
         if (!user) {
-            return new UnauthorizedException({message: 'User not exist'})
+            throw new HttpException("User does not exist", HttpStatus.FOUND);
+        }
+        if (!user.auth || !user.auth.activated) {
+            throw new HttpException("Account not activated", HttpStatus.AMBIGUOUS)
         }
 
         const passwordMatch = await this.comparePassword(pass, user.password);
         if (!passwordMatch) {
-            return new UnauthorizedException({message: 'Wrong password'})
+            throw new HttpException("Wrong password", HttpStatus.FORBIDDEN)
         }
 
-        const { token, userInfo } = await this.signUser(user)
+        const { token, userInfo } = await this.signUser(user, ESignOption.login)
 
         await this.historyService.createHistoryItem(user.id, {
             type: THistoryMsgType[THistoryMsgType.Account],
@@ -85,21 +103,22 @@ export class AuthService {
         return { user: userInfo, token: token, status: HttpStatus.ACCEPTED };
     }
 
-    public async register(user) {
-        // hash the password
+    public async register(user: UserRegistrationDto) {
+        console.log(user.password)
         const pass = await this.hashPassword(user.password);
 
-        // create the user
         const newUser = await this.userRepository.create({ ...user, password: pass});
 
-        const { token, userInfo } = await this.signUser(user)
+        const { token } = await this.signUser(newUser, ESignOption.register)
+
+        await this.mailService.sendUserAccountActivation(user.full_name, user.email, token)
 
         await this.historyService.createHistoryItem(newUser.id, {
             type: THistoryMsgType[THistoryMsgType.Account],
-            text: "Successfully registered in HomeNET"
+            text: "Created account in HomeNET [not activated yet]"
         })
         // return the user and the token
-        return { userInfo, token };
+        return { msg: "account created, please activate it in email" };
     }
 
     public async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -108,21 +127,17 @@ export class AuthService {
             include: Auth
         });
         if (!user) {
-            return new UnauthorizedException({message: 'User does not exist'})
+            throw new HttpException('User does not exist', HttpStatus.NOT_FOUND)
         }
 
-        const {token} = await this.signUser(user, true)
+        const {token} = await this.signUser(user, ESignOption.forgot)
 
-        await this.mailService.sendUserRestorePassword(
-            user.full_name,
-            user.email,
-            token
-        )
+        await this.mailService.sendUserRestorePassword(user.full_name, user.email, token)
     }
 
     public async changePassword(resetPasswordDto: ChangePasswordDto) {
         let auth = await this.authRepository.findOne({
-            where: {reset_token: resetPasswordDto.token},
+            where: {token: resetPasswordDto.token},
             include: [Users]
         })
         if (!auth || !auth.user) {
@@ -134,8 +149,8 @@ export class AuthService {
 
         const password = await this.hashPassword(resetPasswordDto.password);
         auth.user.setDataValue('password', password)
-        auth.setDataValue('reset_token', null)
-        auth.setDataValue('reset_token_expire', null)
+        auth.setDataValue('token', null)
+        auth.setDataValue('token_expire', null)
         await auth.user.save()
 
         const token = await this.generateToken(auth.user["dataValues"]);
@@ -144,25 +159,66 @@ export class AuthService {
     }
 
     public async isTokenValid(tokenPasswordDto: TokenPasswordDto) {
-        let auth = await this.authRepository.findOne({
-            where: {reset_token: tokenPasswordDto.token},
+        const auth = await this.authRepository.findOne({
+            where: {token: tokenPasswordDto.token},
             include: [Users]
         });
 
         const tokenValid = this.isTokenNotExpired(auth)
         if (auth && !tokenValid) {
-            auth.setDataValue("reset_token", null)
-            auth.setDataValue("reset_token_expire", null)
+            auth.setDataValue("token", null)
+            auth.setDataValue("token_expire", null)
             await auth.save()
         }
         return tokenValid
+    }
+
+    public async isActivationPending(checkEmailActivationDto: CheckEmailActivationDto) {
+        const user = await this.userRepository.findOne({
+            where: {email: checkEmailActivationDto.email},
+            include: Auth
+        })
+
+        return user && (!user.auth || user.auth && !user.auth.activated)
+    }
+
+    public async activateAccount(activateAccountDto: ActivateAccountDto) {
+        const auth = await this.authRepository.findOne({
+            where: {token: activateAccountDto.token},
+            include: [Users]
+        })
+        if(!auth || !auth.user) {
+            return new HttpException ("Invalid user data", HttpStatus.AMBIGUOUS);
+        }
+        auth.setDataValue("token", null);
+        auth.setDataValue("activated", true);
+        await auth.save()
+
+        const {password, ...userInfo} = auth.user["dataValues"]
+
+        return {token: activateAccountDto.token, userInfo}
+    }
+
+    public async resendEmail(checkEmailActivationDto: CheckEmailActivationDto) {
+        const user = await this.userRepository.findOne({
+            where: {email: checkEmailActivationDto.email},
+            include: Auth
+        })
+
+        const activationPending = user && (!user.auth || user.auth && !user.auth.activated);
+
+        if( !activationPending ) {
+            return new HttpException("This email does not need activation", HttpStatus.BAD_REQUEST)
+        }
+
+        await this.mailService.sendUserAccountActivation(user.full_name, user.email, user.auth.token)
     }
 
     private async generateToken(payload, options?: SignOptions) {
         return this.jwtService.signAsync (payload, options);
     }
 
-    private async hashPassword(password) {
+    private async hashPassword(password: string) {
         return bcrypt.hash (password, 10);
     }
 
@@ -174,7 +230,7 @@ export class AuthService {
         if (!auth) { return false }
 
         const now = moment()
-        const expire_at = moment(auth.reset_token_expire)
+        const expire_at = moment(auth.token_expire)
         return now.isBefore(expire_at)
     }
 

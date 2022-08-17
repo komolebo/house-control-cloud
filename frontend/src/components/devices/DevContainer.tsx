@@ -137,7 +137,7 @@ export const DevContainer: FC = () => {
             </div>
 
         </div>
-        { values.ind >= 0 && values.devices.length &&
+        { values.ind >= 0 && values.devices.length ?
         <div>
             <Typography variant="h4">Device information</Typography><br/>
 
@@ -159,7 +159,7 @@ export const DevContainer: FC = () => {
                 </Card>
             </div>
              }
-        </div>
+        </div> : <></>
         }
     </div>
 }
