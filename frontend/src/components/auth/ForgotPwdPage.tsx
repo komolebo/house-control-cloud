@@ -3,7 +3,7 @@ import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {h4Font, hFont, underline} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, Link, TextField, Typography, useTheme} from "@mui/material";
+import {Button, Card, Link, TextField, Typography, useTheme} from "@mui/material";
 import {btn, imgHover} from "../../styles/common/buttons.css";
 import {preLabel} from "../../styles/common/labels.css";
 import {SIGNUP_PAGE, LOGIN_PAGE} from "../../utils/consts";
@@ -55,7 +55,7 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         }
     };
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={flexr}>
             <LogoHomeNet style={{ color: theme.palette.text.primary }} />
             <Typography variant="h1" sx={{ml: 2}}>Forgot password</Typography>
@@ -88,7 +88,6 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         >
             SEND VERIFICATION EMAIL
         </LoadingButton>
-        <br/>
 
         <div className={delimiter} /><br/>
 
@@ -101,10 +100,10 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
         </div>
 
         <div
-            className={[stickCntr, preLabel].join(' ')}
+            className={[stickCntr].join(' ')}
             style={{padding: 0}}
         >
-            or
+            <Typography variant="h6" sx={{p:0}}>or</Typography>
         </div>
 
         <div className={[stickCntr].join (' ')}>
@@ -114,7 +113,7 @@ const RestorePwdByEmail: FC<IPropRestorePwd> = ({onSent}) => {
                 onClick={() => navigate (SIGNUP_PAGE)}
             > SIGN-UP </Link>
         </div>
-    </div>
+    </Card>
 }
 
 export const ForgotPwdPage: FC = () => {

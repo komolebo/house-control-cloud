@@ -485,11 +485,11 @@ export const AccountPage: FC = () => {
 
         <div style={{gap: 20, display: "flex"}}>
             <div className={[leftCasket].join(' ')}>
-                <Card>
+                <Card className="blur">
                     <AccountDataElementL user={state.user} onChange={() => syncAllData()}/>
                 </Card>
             </div>
-            <Card className={[rightCasket].join(' ')}>
+            <Card className={[rightCasket, "blur"].join(' ')}>
                 <AccountDataElementR user={state.user} onChange={() => syncAllData()} blackList={state.blackList}/>
             </Card>
         </div>

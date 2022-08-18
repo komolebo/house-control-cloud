@@ -16,7 +16,8 @@ import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 
 import {
-    Button,
+    Box,
+    Button, Card,
     Checkbox,
     FormControlLabel,
     IconButton,
@@ -83,35 +84,34 @@ const LoginPage: FC = () => {
         }
     };
 
-    return (
-        <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
+        {/*<div className={loginPage}>*/}
             <div className={flexr}>
                 <LogoHomeNet style={{ color: theme.palette.text.primary }} />
                 <Typography variant="h1" sx={{ml: 2, mt: 2}}>Login</Typography>
             </div><br/><br/>
 
-            <div>
-                <TextField
-                    id="outlined-multiline-flexible"
-                    label="Login or email"
-                    value={values.login}
-                    onChange={e => setValues({...values, login: e.target.value})}
-                    onKeyUp={e => handleKeyUp(e, false)}
-                    fullWidth
-                    autoFocus
-                    inputProps={{
-                        input: {
-                            "&:-webkit-autofill": {
-                                WebkitBoxShadow: "0 0 0 1000px green inset",
-                                backgroundColor: "yellow"
-                            },
-                            "&:-webkit-autofill:focus": {
-                                transition: "background-color 600000s 0s, color 600000s 0s"
-                            },
+            <TextField
+                id="outlined-multiline-flexible"
+                label="Login or email"
+                value={values.login}
+                onChange={e => setValues({...values, login: e.target.value})}
+                onKeyUp={e => handleKeyUp(e, false)}
+                fullWidth
+                autoFocus
+                inputProps={{
+                    input: {
+                        "&:-webkit-autofill": {
+                            WebkitBoxShadow: "0 0 0 1000px green inset",
+                            backgroundColor: "yellow"
                         },
-                    }}
-                />
-            </div><br/>
+                        "&:-webkit-autofill:focus": {
+                            transition: "background-color 600000s 0s, color 600000s 0s"
+                        },
+                    },
+                }}
+            />
+            <br/><br/>
 
             <TextField
                 id="outlined-adornment-password"
@@ -176,7 +176,7 @@ const LoginPage: FC = () => {
 
             <div className={delimiter}/><br/>
             <div className={[cntrContent].join(' ')}>
-                <Typography variant="h6" sx={{mr: 1, mt: .2}}>Need an account??</Typography>
+                <Typography variant="h6" sx={{mr: 1, mt: .4}}>Need an account??</Typography>
                 <Link
                     underline="hover"
                     color="info"
@@ -184,8 +184,8 @@ const LoginPage: FC = () => {
                     onClick={() => navigate (SIGNUP_PAGE)}
                 > SIGN-UP </Link>
             </div>
-        </div>
-    )
+        {/*</div>*/}
+        </Card>
 }
 
 export default LoginPage;

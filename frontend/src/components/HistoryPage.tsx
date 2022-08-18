@@ -467,7 +467,7 @@ export const HistoryPage: FC = () => {
             </div>
         }
 
-        <Card id={historyTable}>
+        <Card id={historyTable} className="blur">
             <table style={{width: "100%", border: 0}}>
                 <tbody>
                 {

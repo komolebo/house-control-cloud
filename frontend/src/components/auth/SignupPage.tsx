@@ -7,6 +7,7 @@ import {ACTIVATE_ACCOUNT_INFO, LOGIN_PAGE} from "../../utils/consts";
 import {register} from "../../http/auth";
 import {cntrContent, flexr} from "../../styles/common/position.css";
 import {
+    Card,
     FormControl,
     IconButton,
     InputAdornment,
@@ -68,7 +69,7 @@ const SignupPage: FC = () => {
         }).finally(() => setValues({...values, loading: false}))
     }
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={flexr}>
             <LogoHomeNet style={{color: theme.palette.text.primary}}/>
             <Typography variant="h1" sx={{ml: 2, mt: 2}}>Sign up</Typography>
@@ -144,7 +145,7 @@ const SignupPage: FC = () => {
 
         <div className={delimiter}/><br/>
             <div className={[cntrContent].join(' ')}>
-                <Typography variant="h6" sx={{mr: 1, mt: .2}}>Already a user?</Typography>
+                <Typography variant="h6" sx={{mr: 1, mt: .4}}>Already a user?</Typography>
                 <Link
                     underline="hover"
                     color="info"
@@ -152,7 +153,7 @@ const SignupPage: FC = () => {
                     onClick={() => navigate (LOGIN_PAGE)}
                 > LOGIN </Link>
             </div>
-        </div>
+    </Card>
 }
 
 export default SignupPage;

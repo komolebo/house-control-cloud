@@ -124,6 +124,7 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                         p: 3, position: "absolute", left: "50%", top: "50%",
                         transform: "translate(-50%, -50%)",
                     }}
+                    className="blur"
                 >
                     <div className={floatr} style={{width: 20, height: 20}}>
                         <img alt={"Logo close"}

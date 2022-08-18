@@ -1,7 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, Link, Typography} from "@mui/material";
+import {Button, Card, Link, Typography} from "@mui/material";
 import {ACTIVATE_ACCOUNT_PAGE, HOME_PAGE, LOGIN_PAGE, SIGNUP_PAGE} from "../../utils/consts";
 import {useNavigate, useParams} from "react-router-dom";
 import {ReactComponent as LogoActivate} from "../../assets/activate-account.svg";
@@ -43,7 +43,7 @@ export const AccountActivationDisplayInfo: FC = () => {
         }).finally(() => setLoading(false))
     }
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={[stickCntr].join(' ')}>
             <Typography variant="h1">Activate your account</Typography>
         </div>
@@ -82,7 +82,7 @@ export const AccountActivationDisplayInfo: FC = () => {
                 onClick={() => navigate (SIGNUP_PAGE)}
             > SIGN-UP </Link>
         </div>
-    </div>
+    </Card>
 }
 
 export const ActivateAccountPage: FC = () => {

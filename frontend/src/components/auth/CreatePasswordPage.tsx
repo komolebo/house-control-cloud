@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {flexr} from "../../styles/common/position.css";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, IconButton, InputAdornment, TextField, Typography, useTheme} from "@mui/material";
+import {Button, Card, IconButton, InputAdornment, TextField, Typography, useTheme} from "@mui/material";
 import {btn} from "../../styles/common/buttons.css";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
@@ -100,7 +100,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
         }
     };
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={flexr}>
             <LogoHomeNet style={{ color: theme.palette.text.primary }} />
             <Typography variant="h1" sx={{ml: 2}}>Create password</Typography>
@@ -187,7 +187,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
                 LOGIN
             </Button>
         </div>
-    </div>
+    </Card>
 }
 
 export const CreatePwdPage: FC = () => {

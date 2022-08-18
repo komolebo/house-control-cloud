@@ -17,7 +17,7 @@ darkTheme = createTheme(darkTheme, {
             main: lightTheme.palette.info.light
         },
         primary: {
-            // main: "#1B1A43"
+            light: "#3f3e8b",
         },
         secondary: {
             main: "#8D8D8D"
@@ -29,6 +29,9 @@ darkTheme = createTheme(darkTheme, {
             main: "#1B1A43"
         }
     },
+})
+
+darkTheme = createTheme(darkTheme, {
     typography: {
         ...typographyStyle,
     },
@@ -63,9 +66,16 @@ darkTheme = createTheme(darkTheme, {
                 root: {
                     // backgroundColor: "#141432",
                     backgroundColor: "#1B1A43",
-                    boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.05)",
                     borderRadius: "12px",
-                }
+
+                    "&.blur": {
+                        boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.05)",
+                    },
+                    "&.glow": {
+                        boxShadow: `0px 2px 15px rgba(0, 0, 0, 0.2)`
+                    }
+                },
+
             }
         },
         MuiTab: {

@@ -1,6 +1,6 @@
 import React, {FC} from "react";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, Typography} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
 import {ReactComponent as LogoFail} from "../../assets/stop.svg";
@@ -8,7 +8,7 @@ import {ReactComponent as LogoFail} from "../../assets/stop.svg";
 export const InvalidLinkPage: FC = () => {
     const navigate = useNavigate();
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={stickCntr}>
             <LogoFail width={100} height={100}/>
         </div>
@@ -29,5 +29,5 @@ export const InvalidLinkPage: FC = () => {
                 LOGIN
             </Button>
         </div>
-    </div>
+    </Card>
 }

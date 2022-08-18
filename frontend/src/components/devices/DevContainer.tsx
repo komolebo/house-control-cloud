@@ -142,7 +142,7 @@ export const DevContainer: FC = () => {
             <Typography variant="h4">Device information</Typography><br/>
 
             <div className={leftCasket}>
-                <Card className={[casket].join(' ')}>
+                <Card className={[casket, "blur"].join(' ')}>
                     <DevItem
                         dev={values.devices[values.ind]}
                     />
@@ -151,7 +151,7 @@ export const DevContainer: FC = () => {
 
             { values.devices[values.ind].role === TDevRole.OWNER &&
             <div className={rightCasket}>
-                <Card className={[casket].join(' ')}>
+                <Card className={[casket, "blur"].join(' ')}>
                     <DevItemOwner
                         devInfo={values.devices[values.ind]}
                         onDevDataChanged={() => {}}

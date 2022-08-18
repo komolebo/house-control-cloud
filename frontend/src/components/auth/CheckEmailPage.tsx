@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {h4Font, hFont} from "../../styles/common/fonts.css";
 import {delimiter, loginPage, stickCntr} from "../../styles/Login.css";
-import {Button, Typography} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 import {LOGIN_PAGE} from "../../utils/consts";
 import {useNavigate} from "react-router-dom";
 import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
@@ -10,7 +10,7 @@ export const CheckYourEmailPage: FC = () => {
     const navigate = useNavigate();
 
 
-    return <div className={loginPage}>
+    return <Card id={loginPage} className="glow" >
         <div className={[stickCntr].join(' ')}>
             <Typography variant="h1">Email send</Typography>
         </div>
@@ -21,7 +21,7 @@ export const CheckYourEmailPage: FC = () => {
         <br/><br/>
 
         <div className={[stickCntr].join(' ')}>
-            <Typography variant="h3">We have sent you a reset pasword link on your registered email address</Typography>
+            <Typography variant="h3">We have sent you a reset password link on your registered email address</Typography>
         </div>
 
         <div className={delimiter} /><br/>
@@ -34,5 +34,5 @@ export const CheckYourEmailPage: FC = () => {
                 LOGIN
             </Button>
         </div>
-    </div>
+    </Card>
 }

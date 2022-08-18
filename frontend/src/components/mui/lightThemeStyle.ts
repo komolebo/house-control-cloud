@@ -1,5 +1,6 @@
 import {createTheme} from "@mui/material";
 import {commonMuiComponentStyles, typographyStyle} from "./bothThemeStyles";
+import {darkTheme} from "./darkThemeStyle";
 
 export let lightTheme = createTheme ({});
 
@@ -19,8 +20,14 @@ lightTheme = createTheme(lightTheme, {
         },
         special: {
             main: "#FAFAFB"
+        },
+        primary: {
+            light: "#dce8fd"
         }
     },
+})
+
+lightTheme = createTheme(lightTheme, {
     components: {
         ...commonMuiComponentStyles,
         MuiButton: {
@@ -76,9 +83,15 @@ lightTheme = createTheme(lightTheme, {
             styleOverrides: {
                 root: {
                     backgroundColor: "white",
-                    boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.15)",
+                    boxShadow: "",
                     borderRadius: "15px",
 
+                    "&.blur": {
+                        boxShadow: `0 0px 15px rgba(0, 0, 0, 0.15)`
+                    },
+                    "&.glow": {
+                        boxShadow: `0 2px 25px ${lightTheme.palette.primary.light}`
+                    }
                 }
             }
         },
