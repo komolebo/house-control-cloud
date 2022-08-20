@@ -96,7 +96,7 @@ export class AuthService {
         const { token, userInfo } = await this.signUser(user, ESignOption.login)
 
         await this.historyService.createHistoryItem(user.id, {
-            type: THistoryMsgType[THistoryMsgType.Account],
+            type: THistoryMsgType.Account,
             text: "Signed in"
         })
 
@@ -114,7 +114,7 @@ export class AuthService {
         await this.mailService.sendUserAccountActivation(user.full_name, user.email, token)
 
         await this.historyService.createHistoryItem(newUser.id, {
-            type: THistoryMsgType[THistoryMsgType.Account],
+            type: THistoryMsgType.Account,
             text: "Created account in HomeNET [not activated yet]"
         })
         // return the user and the token

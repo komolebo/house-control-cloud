@@ -35,7 +35,7 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
                 console.log(resp)
                 onAction({
                     success: true,
-                    message: `User ${objUserInfo.login} has now  ${role} access to ${devInfo.name}`,
+                    message: `User ${objUserInfo.login} has now  ${TDevRole[role]} access to ${devInfo.name}`,
                     header: "Access rights updated"
                 });
             })

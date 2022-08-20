@@ -30,6 +30,13 @@ lightTheme = createTheme(lightTheme, {
 lightTheme = createTheme(lightTheme, {
     components: {
         ...commonMuiComponentStyles,
+        MuiDivider: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: lightTheme.palette.secondary.main
+                }
+            }
+        },
         MuiButton: {
             styleOverrides: {
                 root: {

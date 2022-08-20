@@ -94,7 +94,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
         })
     }
@@ -114,7 +114,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
         })
     }
@@ -134,7 +134,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
         })
     }
@@ -157,7 +157,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
             uId: objLogin
         })
@@ -182,7 +182,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
             uId: objLogin
         })
@@ -207,7 +207,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
             uId: objLogin
         })
@@ -227,7 +227,7 @@ export class NotificationService {
         })
         await this.historyService.createHistoryItem(userId, {
             text: text,
-            type: THistoryMsgType[THistoryMsgType.Notification],
+            type: THistoryMsgType.Notification,
             devId: devHex,
         })
     }

@@ -4,7 +4,7 @@ import {
     AppBar,
     Avatar,
     Box, Card,
-    ClickAwayListener,
+    ClickAwayListener, Divider,
     IconButton,
     Menu,
     MenuItem, MenuList, Paper, Popper, Select,
@@ -29,12 +29,14 @@ import {IO_NOTIFICATION_KEY, SocketContext} from "../http/wssocket";
 import {useNavigate} from "react-router-dom";
 import {ACCOUNT_PAGE, HISTORY_PAGE, HOME_PAGE} from "../utils/consts";
 import {cntrContent} from "../styles/common/position.css";
+import set = Reflect.set;
 
 
 export const NavBar: React.FC = () => {
     const settingsMenu = [
         {name: 'Account', handler: () => navigate(ACCOUNT_PAGE), icon: <LogoMenuAccount fill='currentColor'/>},
         {name: 'History', handler: () => navigate(HISTORY_PAGE), icon: <LogoMenuHistory fill='currentColor'/>},
+        {name: "", handler: () => {}},
         {name: 'Logout', handler: () => clearUserData(), icon: <LogoMenuLogout stroke='currentColor'/>},
     ];
     const {clearUserData, avatarSrc, setAvatarSrc, userInfo} = useContext(UserGlobalContext);
@@ -165,23 +167,25 @@ export const NavBar: React.FC = () => {
                             sx: {backgroundColor: "special.main"}
                         }}
                     >
-                        {settingsMenu.map((setting) => (
-                            <MenuItem
-                                dense={true}
-                                key={setting.name}
-                                onClick={() => setting.handler()}
-                                // sx={{backgroundColor: "yellow"}}
-                            >
-                                <Box
-                                    sx={{mr: 1, width: 24}}
-                                     className={cntrContent}
-                                >
-                                    {setting.icon}
-                                </Box>
+                        {settingsMenu.map((setting, i) => (
+                                !setting.name
+                                ? <Divider key={i}/>
+                                : <MenuItem
+                                        dense={true}
+                                        key={i}
+                                        onClick={() => setting.handler()}
+                                        // sx={{backgroundColor: "yellow"}}
+                                    >
+                                        <Box
+                                            sx={{mr: 1, width: 24}}
+                                            className={cntrContent}
+                                        >
+                                            {setting.icon}
+                                        </Box>
 
-                                <Typography textAlign="right" color="2F3542">{setting.name}</Typography>
-                            </MenuItem>
-                        ))}
+                                        <Typography textAlign="right" color="2F3542">{setting.name}</Typography>
+                                    </MenuItem>
+                            ))}
                     </Menu>
                 </Box>
             </Toolbar>

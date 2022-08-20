@@ -106,18 +106,7 @@ module.exports = {
         autoIncrement: true,
       },
       type: {
-        type: Sequelize.ENUM(
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "Devices",
-          "Account",
-          "Notification",
-          "None",
-          "TYPE_NUMBER"
-        ),
+        type: Sequelize.ENUM("Devices", "Account", "Notification", "None"),
         allowNull: false,
       },
       text: { type: Sequelize.STRING, allowNull: false },

@@ -14,7 +14,8 @@ darkTheme = createTheme(darkTheme, {
             disabled: '#9e9e9e'
         },
         info: {
-            main: lightTheme.palette.info.light
+            main: lightTheme.palette.info.light,
+            dark: "grey"
         },
         primary: {
             light: "#3f3e8b",
@@ -38,13 +39,20 @@ darkTheme = createTheme(darkTheme, {
 
     components: {
         ...commonMuiComponentStyles,
-        MuiCheckbox: {
+        MuiDivider: {
             styleOverrides: {
                 root: {
-                    color: "#4a7197"
+                    backgroundColor: darkTheme.palette.secondary.main
                 }
             }
         },
+        // MuiCheckbox: {
+        //     styleOverrides: {
+        //         root: {
+        //             color: "#4a7197"
+        //         }
+        //     }
+        // },
         MuiMenuItem: {
             styleOverrides: {
                 root: {
@@ -76,6 +84,13 @@ darkTheme = createTheme(darkTheme, {
                     }
                 },
 
+            }
+        },
+        MuiTypography: {
+            styleOverrides: {
+                caption: {
+                    color: 'green'
+                },
             }
         },
         MuiTab: {
@@ -124,6 +139,52 @@ darkTheme = createTheme(darkTheme, {
                     color: "#8D8D8D"
                 }
             }
-        }
-    }
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    // backgroundColor: "rgba(120, 120, 120, 0.2)"
+                }
+            }
+        },
+        MuiCalendarPicker: {
+            styleOverrides: {
+                root: {
+                    "& .MuiTypography-caption": {
+                        color: "white"
+                    },
+                    "& .MuiIconButton-root.Mui-disabled": {
+                        "& .MuiSvgIcon-root": {
+                          color: darkTheme.palette.background.default
+                        },
+                    },
+                    backgroundColor:  darkTheme.palette.background.default,
+                },
+            }
+        },
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: darkTheme.palette.secondary.main,
+                    "& .Mui-disabled": {
+                        color: "green"
+                    }
+                }
+            }
+        },
+        MuiPickersDay: {
+          styleOverrides: {
+              root: {
+                  // backgroundColor: "green"
+              },
+              dayWithMargin: {
+                  backgroundColor: darkTheme.palette.primary.light
+              },
+              selectedDays: {
+                  backgroundColor: "red"
+              }
+          }
+        },
+    },
 })
+//teasing-near-the-plumper-4/

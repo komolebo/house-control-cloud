@@ -1,11 +1,10 @@
-import {Table, Column, Model, DataType, ForeignKey, Default, BelongsTo} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, Default, BelongsTo} from 'sequelize-typescript';
 import {Users} from "../users/user.entity";
 import {THistoryMsgType} from "./dto/history_dto";
-import {Devices} from "../devices/device.entity";
 
 @Table({tableName: 'history', updatedAt: false})
 export class Histories extends Model<Histories> {
-    @Default(THistoryMsgType[THistoryMsgType.None])
+    @Default(THistoryMsgType.None)
     @Column({
         type: DataType.ENUM({values: Object.keys(THistoryMsgType)}),
         allowNull: false,

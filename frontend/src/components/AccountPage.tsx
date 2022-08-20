@@ -11,7 +11,7 @@ import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
 import {Avatar, Button, Card, FormControlLabel, IconButton, Switch, TextField, Typography} from "@mui/material";
-import {cntrVContent, floatr} from "../styles/common/position.css";
+import {cntrVContent, flexr, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
 import logoUncollapse from "../assets/uncollapse.svg";
@@ -295,7 +295,11 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                         className={[spaceTextEdit].join (' ')} variant="h3">{user.email}
                     </Typography>
                 }
-                <div className={[colBlue, h5Font].join(' ')}>&nbsp; Verified &nbsp;
+                <div className={[flexr].join(' ')}>
+                    <Typography
+                        variant="h5" sx={{ml: 1, mr: 1}}
+                        className={colBlue}
+                    >Verified</Typography>
                     <img src={logoVerified} alt="logo verified"/>
                 </div>
             </div>

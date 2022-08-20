@@ -1,6 +1,7 @@
 import {host} from "./index";
 import {TConnectedUser, TDevRole} from "../globals/DeviceData";
 import {TUPref} from "../globals/AccountData";
+import {THistoryMsgType} from "../globals/HistoryData";
 
 
 export function roleStrToId(role: string) {
@@ -109,8 +110,19 @@ export function nestDeleteUserHistory(userId: number, idArr: Array<number>) {
 export function nestGetCountHistoryPerUser(userId: number) {
     return host.get(`api/history/count/${userId}`)
 }
-export function nestGetPagingHistoryPerUser(userId: number, size: number, offset: number) {
-    return host.get(`api/history/${userId}/${size}/${offset}`)
+export function nestGetFilteredUserHistoryChunk(userId: number,
+                                                size: number,
+                                                offset: number,
+                                                type: string,
+                                                text: string,
+                                                from: string | undefined,
+                                                to: string | undefined,
+                                                uId: string,
+                                                devId: string) {
+    return host.post(`api/history/${userId}`, {
+        limit: size, offset: offset, type: type, text: text,
+        from: from, to: to, uId: uId, devId: devId
+    })
 }
 
 // Preferences

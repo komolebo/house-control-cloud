@@ -1,6 +1,8 @@
-import {Body, Controller, Delete, Get, Param, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, UseGuards, UsePipes, ValidationPipe} from '@nestjs/common';
 import {HistoryService} from "./history.service";
 import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsUser.guard";
+import {UserLoginDto} from "../users/dto/userLoginDto";
+import {HistoryRetrieval_Dto} from "./dto/history_dto";
 
 @Controller('api/history')
 export class HistoryController {
@@ -18,15 +20,14 @@ export class HistoryController {
         return await this.historyService.countHistoryOfUser(Number(userId));
     }
 
-    @UseGuards(UserIsUserGuard)
-    @Get(`:${ENDPOINT_PARAM_USER_ID}/:size/:offset`)
-    async getPagedHistoryPerUser(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
-                                 @Param('offset') offset: number,
-                                 @Param('size') size: number) {
-        return await this.historyService.getPagedHistoryOfUser(
+    // @UseGuards(UserIsUserGuard)
+    @Post(`:${ENDPOINT_PARAM_USER_ID}`)
+    async getFilteredUserHistoryChunk(@Param(ENDPOINT_PARAM_USER_ID) userId: number,
+                                      @Body() historyRetrievalDto: HistoryRetrieval_Dto) {
+        console.log(historyRetrievalDto)
+        return await this.historyService.getFilteredHistoryChunk(
             Number(userId),
-            Number(offset),
-            Number(size)
+            historyRetrievalDto
         )
     }
 

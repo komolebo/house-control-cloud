@@ -12,6 +12,7 @@ import logoAvaAdd from "../../assets/ava-add.svg";
 import AvatarEdit from 'react-avatar-edit'
 import {LoadingButton} from '@mui/lab';
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
+import {hover} from "@testing-library/user-event/dist/hover";
 
 enum EPageState {
     CHOOSE_DEFAULT,
@@ -137,8 +138,9 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                     type="file"
                     onChange={handleUpload}
                 />
-                <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}/>
-            </label> : <></>
+                <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}
+                />
+            </label>
         </div><br/>
 
         <div className={cntrContent}>

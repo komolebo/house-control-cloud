@@ -130,8 +130,8 @@ export const NotifyBar: FC<INotificationProp> = ({onNotificationStatusChange}) =
         sx={{
             pt: 2, pb: 2, opacity: 1,
             width: "410px", borderRadius: "12px",
-
         }}
+        className="blur"
     >
         {/* Notifications header */}
         <Box sx={{

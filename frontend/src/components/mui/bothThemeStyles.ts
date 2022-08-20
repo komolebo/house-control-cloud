@@ -14,6 +14,9 @@ export const typographyStyle = {
     button: {
         textTransform: "none"
     },
+    caption: {
+        color: "red"
+    },
     fontFamily: "Roboto Light, 'Roboto', sans-serif",
     h1: {
         fontSize: 32,
