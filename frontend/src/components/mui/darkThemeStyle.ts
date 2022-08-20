@@ -10,8 +10,8 @@ darkTheme = createTheme(darkTheme, {
             default: "#141432"
         },
         action: {
-            disabledBackground: '#404040',
-            disabled: '#9e9e9e'
+            disabledBackground: 'rgba(255,255,255,0.1)',
+            disabled: "rgba(255,255,255,0.4)"
         },
         info: {
             main: lightTheme.palette.info.light,
@@ -127,9 +127,12 @@ darkTheme = createTheme(darkTheme, {
             styleOverrides: {
                 root: {
                     backgroundColor: "#26245e",
-                    borderRadius: "6px",
-                    boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.04)",
-                    border: "solid 1px rgba(255, 255, 255, 0.25)",
+                    borderRadius: "12px",
+                    "& .MuiInputBase-inputSizeSmall": {
+                        boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.04)",
+                        border: "solid 1px rgba(255, 255, 255, 0.25)",
+                        borderRadius: "12px",
+                    },
                 }
             }
         },

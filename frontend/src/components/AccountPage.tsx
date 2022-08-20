@@ -265,6 +265,7 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
                             variant="outlined"
                             color="info"
                             onKeyPress={e => e.key === 'Enter' && handleSave()}
+                            className="border"
                         />
                     </div>
                     : <Typography

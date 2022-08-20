@@ -298,6 +298,7 @@ export const HistoryPage: FC = () => {
                 <InputLabel id="demo-simple-select-label2">Filter</InputLabel>
                 <Select
                     labelId="label-simple-select-msgtype"
+                    color={"info"}
                     id="simple-select-msgtype"
                     value={filterState.msgType !== THistoryMsgType[THistoryMsgType.None] ? filterState.msgType : ""}
                     label="Filter"
