@@ -166,9 +166,13 @@ darkTheme = createTheme(darkTheme, {
             styleOverrides: {
                 root: {
                     color: darkTheme.palette.secondary.main,
-                    "& .Mui-disabled": {
-                        color: "green"
-                    }
+                }
+            }
+        },
+        MuiSelect: {
+            styleOverrides: {
+                icon: {
+                    color: darkTheme.palette.secondary.main,
                 }
             }
         },
