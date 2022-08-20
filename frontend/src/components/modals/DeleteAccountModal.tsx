@@ -53,13 +53,17 @@ export const DeleteAccountModal: FC<IProp> = () => {
                 <br/><br/>
 
 
-                <div className={[h4Font, cntrVContent, colRedText].join (' ')} style={{marginBottom: 10}}>
+                <div className={[cntrVContent].join (' ')} style={{marginBottom: 10}}>
                     <img src={logoAttention} id="logo-clr-sett" alt={"logo-clr-sett"} style={{marginRight: 10}}/>
-                    You will be removed from connected devices
+                    <Typography variant="h3" className={colRedText}>
+                        You will be removed from connected devices
+                    </Typography>
                 </div>
-                <div className={[h4Font, cntrVContent, colRedText].join (' ')}>
+                <div className={[cntrVContent].join (' ')}>
                     <img src={logoAttention} id="logo-clr-sett" alt={"logo-clr-sett"} style={{marginRight: 10}}/>
+                    <Typography variant="h3" className={colRedText}>
                     Devices you own alone will be cleared out of users
+                    </Typography>
                 </div>
                 <br/>
             </div>

@@ -57,7 +57,8 @@ const DevItemOwner: FC<IDevOwnerProps> = ({devInfo,
                             <div style={{display: "flex"}} className={cntrVContent}>
                                 <Avatar alt="Remy Sharp"
                                         src={conn_user.urlPic}
-                                        style={{width: 50, height: 50, marginRight: 10, border: "2px solid #1690E9"}} />
+                                        className="small"
+                                        style={{marginRight: 10, borderColor: "#1690E9"}} />
                                 <Typography variant="h3">{conn_user.fullName} </Typography>
                             </div>
                         </td>

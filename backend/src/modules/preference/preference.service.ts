@@ -183,6 +183,7 @@ export class PreferenceService {
 
         const photo_profile_id = curUser.preference.profile_photo_id;
 
+
         const result = await this.removeImageFromCloudinary(photo_profile_id);
         if (result) {
             await this.updateUserPref(userId, {
@@ -198,6 +199,7 @@ export class PreferenceService {
         });
     }
     async removeImageFromCloudinary(profile_id: string | null) {
-        return await this.cloudinary.removeImage (profile_id);
+        const noUploadedAvatar = profile_id === null;
+        return noUploadedAvatar || await this.cloudinary.removeImage (profile_id);
     }
 }

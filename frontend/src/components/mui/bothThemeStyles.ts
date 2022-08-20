@@ -9,6 +9,22 @@ export const commonMuiComponentStyles = {
             },
         },
     },
+    MuiAvatar: {
+        styleOverrides: {
+            root: {
+                width: 100,
+                height: 100,
+                "&.disable": {
+                    opacity: 0.3
+                },
+                "&.small": {
+                    width: 50,
+                    height: 50,
+                    border: "2px solid white"
+                },
+            }
+        }
+    }
 }
 export const typographyStyle = {
     button: {

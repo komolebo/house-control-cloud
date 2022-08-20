@@ -126,10 +126,11 @@ export const ModalProvider: FC<IPropGlobalModal> = ({children}) => {
                     }}
                     className="blur"
                 >
-                    <div className={floatr} style={{width: 20, height: 20}}>
+                    <div className={floatr} style={{width: 20, height: 20}}
+                         onClick={() => hideModal()}
+                    >
                         <img alt={"Logo close"}
                              src={logoClose} className={imgHover}
-                             onClick={() => hideModal()}
                          />
                     </div>
                     {renderComponent()}

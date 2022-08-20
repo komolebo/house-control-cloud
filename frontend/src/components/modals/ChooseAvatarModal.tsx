@@ -1,18 +1,18 @@
 import React, {FC, useContext, useRef, useState} from "react";
 import {ModalProps, useGlobalModalContext} from "./ModalProvider";
-import {Avatar as Ava, Box, Button, Typography} from "@mui/material";
+import {Avatar, Avatar as Ava, Box, Button, Typography} from "@mui/material";
 import {cntrContent, cntrVContent, flexCont6} from "../../styles/common/position.css";
 import {ReactComponent as LogoDone} from "../../assets/done-big.svg";
 import {h2Font, hBold} from "../../styles/common/fonts.css";
 import logoBack from "../../assets/arrow-back.svg";
 import {wideMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
-import {DataURIToBlob, nestPatchUserPref, nestPostUploadAvatar} from "../../http/rqData";
+import {DataURIToBlob, nestPatchUserPref, nestPostRemoveAvatar, nestPostUploadAvatar} from "../../http/rqData";
 import logoAvaSelect from "../../assets/ava-select.svg";
 import logoAvaAdd from "../../assets/ava-add.svg";
 import AvatarEdit from 'react-avatar-edit'
 import {LoadingButton} from '@mui/lab';
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
-import {hover} from "@testing-library/user-event/dist/hover";
+import logoAvaDelete from "../../assets/ava-delete.svg";
 
 enum EPageState {
     CHOOSE_DEFAULT,
@@ -36,6 +36,7 @@ interface IPropDoneElem {
 interface IStateChooseDefElem {
     selected: number,
     enableSave: boolean;
+    loadingRemoval: boolean;
 }
 interface IStateCropElem {
     loading: boolean,
@@ -44,6 +45,7 @@ interface IStateCropElem {
 const initialStateChooseDef: IStateChooseDefElem = {
     selected: -1,
     enableSave: false,
+    loadingRemoval: false
 }
 const initialStateCropElem: IStateCropElem = {
     loading: false,
@@ -65,7 +67,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
     const [values, setValues] = useState<IStateChooseDefElem>(initialStateChooseDef)
     const {data, onAct, onClose} = modalProps;
     const curAvatarSrc = data.curAvatarSrc;
-    const {userInfo} = useContext(UserGlobalContext);
+    const {userInfo, avatarSrc, setAvatarSrc} = useContext(UserGlobalContext);
 
     const handleSelect = (ind: number, isCurrent: boolean) => {
         setValues({...values,
@@ -80,6 +82,15 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
             switchModalState(EPageState.CROP_CUSTOM)
         }
     };
+    const handleRemoveAvatar = () => {
+        setValues({...values, loadingRemoval: true})
+        userInfo && nestPostRemoveAvatar(userInfo.id).then(res => {
+            console.log(res);
+            setAvatarSrc("");
+            // onChange();
+            setValues({...values, loadingRemoval: false})
+        })
+    }
     const handleSave = () => {
         const newAvatarSrc: string = getDefaultAvatarPath(values.selected)
         userInfo && nestPatchUserPref(userInfo.id, {
@@ -91,6 +102,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
             }
         })
     }
+
     return <div>
         <Typography variant="h2"
                     className={hBold}
@@ -105,22 +117,7 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                     <Ava
                         alt="Remy Sharp"
                         src={path}
-                        sx={
-                            isCurrentAvatar
-                                ? {
-                                    width: 100, height: 100,
-                                    p: "0 0 0 0",
-                                    border: "3px solid #58ACE9",
-                                    borderImageSlice: 1,
-                                    // background: "-webkit-linear-gradient(left top, #C0E1F9 15%, #C0E1F9 100%)",
-                                    // background: "-webkit-radial-gradient(left top, #C0E1F9 15%, #0883DC 50%, #003F6C 100%)",
-                                    // borderImageSource: "radial-gradient(to left, #DDDDDD 0%, #C0E1F9 100%)"
-                                }
-                                : {
-                                    width: 100, height: 100,
-                                    p: "1px",
-                                }
-                        }
+                        className={isCurrentAvatar ? "disable" : ""}
                         onClick={() => handleSelect (avaInd, isCurrentAvatar)}
                     />
                     {
@@ -131,6 +128,24 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                 </div>
             })}
 
+            { avatarSrc
+                ? <div style={{textAlign: "center", position: "relative"}}>
+                    <Avatar
+                        sx={{
+                            m: "10px 0 15px 0",
+                            // border: "2px solid #1690E9"
+                        }}
+                        src={avatarSrc}
+                    />
+                    <img
+                        src={logoAvaDelete}
+                        style={{position: "absolute", right: 10, top: 10}}
+                        alt={"edit"}
+                        onClick={handleRemoveAvatar}
+                    />
+                </div> : <></>
+            }
+
             <label>
                 <input
                     // accept=".png"
@@ -138,9 +153,9 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                     type="file"
                     onChange={handleUpload}
                 />
-                <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}
-                />
+                <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}/>
             </label>
+
         </div><br/>
 
         <div className={cntrContent}>
@@ -149,6 +164,9 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                 onClick={handleSave}
                 className={wideMuiBtn}
                 disabled={!values.enableSave}
+                loading={values.loadingRemoval}
+                loadingPosition="end"
+                endIcon={<></>}
             > Update photo </LoadingButton>
         </div>
     </div>
@@ -239,8 +257,8 @@ const DoneElement: FC<IPropDoneElem> = ({modalProps}) => {
             <LogoDone fill="#2ED573"/>
         </div><br/>
 
-        <div className={[h2Font, cntrContent].join(' ')}>
-            Avatar uploaded
+        <div className={[cntrContent].join(' ')}>
+            <Typography variant="h2">Avatar uploaded</Typography>
         </div><br/>
 
         <div className={cntrContent}>

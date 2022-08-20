@@ -34,6 +34,7 @@ import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
 import {LoadingButton} from "@mui/lab";
 import PhoneInputComponent, {DEFAULT_COUNTRY_CODE} from "./elements/PhoneInputComponent";
 import {DarkModeContext} from "../globals/providers/DarkModeProvider";
+import logoAvaEdit from "../assets/ava-edit.svg";
 
 interface IState {
     user: TUser,
@@ -101,15 +102,6 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
     const handleUpdateAvatar = (newAvaSrc: string) => {
         setAvatarSrc(newAvaSrc);
         onChange();
-    }
-    const handleRemoveAvatar = () => {
-        setState({...state, loadingRemoval: true})
-        userInfo && nestPostRemoveAvatar(userInfo.id).then(res => {
-            console.log(res);
-            setAvatarSrc("");
-            onChange();
-            setState({...state, loadingRemoval: false})
-        })
     }
     const isDataEdited = () => {
         return user.full_name !== state.name || user.email !== state.email ||
@@ -181,48 +173,34 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
             })
         }
     }
+    const handleEditAvatar = () => {
+        showModal(MODAL_TYPE.ChooseAvatarModal, {
+            onClose: () => hideModal(),
+            onAct: (data) => handleUpdateAvatar(data),
+            data: { curAvatarSrc: avatarSrc }
+        })
+    }
 
     return <div className={casket}>
         <div className={cntrVContent}>
-            <div style={{textAlign: "center"}}>
+            <div style={{textAlign: "center", position: "relative"}}>
                 <Avatar
                     sx={{
-                        // m: "15px 5px",
-                        width: 100, height: 100,
                         m: "10px 0 15px 0",
                         border: "2px solid #1690E9"
                     }}
                     src={avatarSrc}
+                    onClick={handleEditAvatar}
+                />
+                <img
+                    src={logoAvaEdit}
+                    style={{position: "absolute", right: 10, top: 10}}
+                    alt={"edit"}
+                    onClick={handleEditAvatar}
                 />
                 <Typography variant="h3">{user.login}</Typography>
             </div>
-
-            <Button
-                onClick={() => showModal(MODAL_TYPE.ChooseAvatarModal, {
-                    onClose: () => hideModal(),
-                    onAct: (data) => handleUpdateAvatar(data),
-                    data: { curAvatarSrc: avatarSrc }
-                })}
-                variant="outlined"
-                color="info"
-                sx={{ ml: 1 }}
-                className={[shortMuiBtn].join(' ')}
-            >
-                Upload
-            </Button>
-
-            <LoadingButton
-                endIcon={<></>}
-                onClick={() => handleRemoveAvatar()}
-                color="secondary"
-                variant="outlined" sx={{ ml: 2 }}
-                className={[shortMuiBtn].join(' ')}
-                loading={state.loadingRemoval}
-                loadingPosition="end"
-            >
-                Remove
-            </LoadingButton>
-        </div><br/><br/>
+        </div><br/>
 
         {state.editMode
             ? <Button
@@ -436,7 +414,8 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
                                 </td>
                                 <td className={[cntrVContent, simpleCasketRo].join(' ')}>
                                         <Avatar alt="Remy Sharp" src={blEl.urlPic}
-                                                style={{width: 40, height: 40, marginRight: 10, border: "2px solid #1690E9"}} />
+                                                style={{width: 40, height: 40, marginRight: 10, border: "2px solid #1690E9"}}
+                                        />
                                     <Typography variant="h3">{blEl.login}</Typography>
 
                                     {/*{blEl.login}*/}
