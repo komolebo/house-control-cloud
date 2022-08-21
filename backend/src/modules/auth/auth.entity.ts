@@ -1,7 +1,5 @@
-import {BelongsTo, BelongsToMany, Column, DataType, HasOne, Model, Sequelize, Table} from "sequelize-typescript";
+import {BelongsTo, Column, DataType, Model, Table} from "sequelize-typescript";
 import {Users} from "../users/user.entity";
-import {Devices} from "../devices/device.entity";
-import {Roles} from "../devices/role.entity";
 
 @Table({tableName: 'auth'})
 export class Auth extends Model<Auth> {

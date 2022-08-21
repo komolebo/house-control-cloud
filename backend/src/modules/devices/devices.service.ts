@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
 import {Devices} from "./device.entity";
 import {InjectModel} from "@nestjs/sequelize";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
@@ -12,6 +12,8 @@ export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
                 @InjectModel(Users) private readonly  usersRepository: typeof Users,
                 private notificationService: NotificationWrapService) { }
+
+    private logger = new Logger(DevicesService.name);
 
     async create(new_device: CreateDevice_Dto): Promise<Devices> {
         return await this.deviceRepository.create<Devices>(new_device);
@@ -149,7 +151,7 @@ export class DevicesService {
     }
 
     async clearUsersOfDevice(hexId: string, thisUserId: number) {
-        console.log("clearUsersOfDevice:", hexId, thisUserId)
+        this.logger.warn(`clearUsersOfDevice: ${hexId} by userId=${thisUserId}`)
         const device = await this.deviceRepository.findOne({
             where: { hex: hexId },
             include: {model: Users},
@@ -183,7 +185,7 @@ export class DevicesService {
     }
 
     async modifyRoleAccess(uId: number, thisUID: number, devHex: string, newRole: RoleValues) {
-        console.log("modifyRoleAccess, uid=", uId, "hex=", devHex, " by req of:", thisUID, " role:", newRole);
+        this.logger.warn(`modifyRoleAccess: uid=${uId}, hex=${devHex}, by req of userId=${thisUID}, role=${newRole}`);
 
         // check if you are an owner for this device
         const device = await this.deviceRepository.findOne({
@@ -215,7 +217,7 @@ export class DevicesService {
     }
 
     async removeRole(uId: number, thisUID: number, devHex: string) {
-        console.log("removeRole, uid=", uId, "hex=", devHex, " by req of:", thisUID);
+        this.logger.warn(`removeRole: uid=${uId}, hex${devHex}, by req of ${thisUID}`);
 
         // check if you are an owner for this device
         const device = await this.deviceRepository.findOne({
@@ -248,7 +250,7 @@ export class DevicesService {
         const objUser = await this.usersRepository.findOne({where: {login: uLogin}})
         if(!objUser) throw new HttpException("User does not exist", HttpStatus.NOT_FOUND)
 
-        console.log("inviteUser, uLogin=", uLogin, "hex=", devHex, " by req of:", thisUID, " role=", role);
+        this.logger.warn(`inviteUser: uLogin=${uLogin} hex=${devHex} by req of thisUid=${thisUID} role=${role}`);
         uLogin = uLogin.toLowerCase()
 
         // check if you are an owner for this device

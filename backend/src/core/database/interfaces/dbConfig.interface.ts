@@ -6,6 +6,7 @@ export interface IDatabaseConfigAttributes {
     port?: number | string;
     dialect?: string;
     urlDatabase?: string;
+    logging: (sql: any) => void
 }
 
 export interface IDatabaseConfig {

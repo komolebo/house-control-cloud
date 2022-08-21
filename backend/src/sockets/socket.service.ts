@@ -32,14 +32,14 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
     }
 
     afterInit(server: Server) {
-        this.logger.error ('Init');
+        this.logger.log('Service initialized successfully');
     }
 
     handleDisconnect(client: Socket) {
-        this.logger.error (`Client disconnected: ${client.id}`);
+        this.logger.debug(`Client disconnected: ${client.id}`);
         const uInfo = this.authService.parseHeaders(client.handshake.headers.authorization);
         if(uInfo) {
-            this.logger.warn(`Removing user ${uInfo.full_name} with ID: ${uInfo.id}`)
+            this.logger.log(`Removing user ${uInfo.full_name} with ID: ${uInfo.id}`)
             this.uMap[uInfo.id] = this.uMap[uInfo.id].filter(el => el !== client.id)
         }
     }
@@ -48,17 +48,18 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
         this.logger.debug (`Client connected: ${client.id}`);
         const uInfo = this.authService.parseHeaders(client.handshake.headers.authorization);
         if (uInfo) {
-            if (Object.keys(this.uMap).findIndex(dId => dId === uInfo.id.toString()) < 0)
+            if (Object.keys(this.uMap).findIndex(dId => dId === uInfo.id.toString()) < 0) {
                 this.uMap[uInfo.id] = []
+            }
             this.uMap[uInfo.id].push(client.id);
 
-            this.logger.warn(`Adding user ${uInfo.full_name} and clientId: ${client.id}, arr len now: ${this.uMap[uInfo.id].length}`)
+            this.logger.log(`Adding user ${uInfo.full_name} and clientId: ${client.id}, arr len now: ${this.uMap[uInfo.id].length}`)
         }
     }
 
     dispatchMsg(userId: number, topic: string, data: any = {}) {
         if (Object.keys(this.uMap).findIndex(dId => dId === userId.toString()) >= 0) {
-            this.logger.warn(`Dispatching to userId=${userId} and clientId array=${this.uMap[userId]}`)
+            this.logger.log(`Dispatching to userId=${userId} and clientId array=${this.uMap[userId]}`)
             this.uMap[userId].forEach(clientId => {
                 this.server.to(clientId).emit(topic, data);
             })
