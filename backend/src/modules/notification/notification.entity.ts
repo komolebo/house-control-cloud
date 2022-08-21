@@ -2,7 +2,6 @@ import {Table, Column, Model, DataType, ForeignKey, PrimaryKey, BelongsToMany, B
 import {Users} from "../users/user.entity";
 import {ENotificationSeverity, ENotificationTypes} from "./messages/ENotificationTypes";
 import {Devices} from "../devices/device.entity";
-import {Roles} from "../devices/role.entity";
 
 @Table({tableName: 'notifications'})
 export class Notifications extends Model<Notifications> {

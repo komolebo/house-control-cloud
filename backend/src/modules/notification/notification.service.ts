@@ -78,7 +78,7 @@ export class NotificationService {
     }
 
     private async removeIrrelevantNotification(userId: number, devId: number,
-                                               notificationTypes: ENotificationTypes[] | string[]) {
+                                               notificationTypes: ENotificationTypes[]) {
         const user = await this.userRepository.findOne({
             where: {
                 id: userId,
@@ -103,12 +103,12 @@ export class NotificationService {
                                           deviceName: string) {
         const text = `You lost an access to device \`${deviceName}\``;
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
-            ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS]
+            ENotificationTypes.YOU_LOST_ACCESS,
+            ENotificationTypes.YOU_GOT_ACCESS
         ]);
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            msgType: ENotificationTypes.YOU_LOST_ACCESS,
+            severity: ENotificationSeverity.ERROR,
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
@@ -127,12 +127,12 @@ export class NotificationService {
                                          role: string) {
         const text = `You got an ${role} access to device \`${deviceName}\``;
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
-            ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS]
+            ENotificationTypes.YOU_GOT_ACCESS,
+            ENotificationTypes.YOU_LOST_ACCESS
         ])
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            msgType: ENotificationTypes.YOU_GOT_ACCESS,
+            severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
@@ -151,11 +151,11 @@ export class NotificationService {
                                             role: string) {
         const text = `Your role is changed to '${role}' for device \`${deviceName}\``;
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.YOU_ARE_MODIFIED]
+            ENotificationTypes.YOU_ARE_MODIFIED
         ])
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_MODIFIED],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            msgType: ENotificationTypes.YOU_ARE_MODIFIED,
+            severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,
@@ -176,12 +176,12 @@ export class NotificationService {
                                            deviceName: string) {
         const text =`${objUserName} lost an access to device \`${deviceName}\``
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
-            ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS]
+            ENotificationTypes.USER_LOST_ACCESS,
+            ENotificationTypes.USER_GOT_ACCESS
         ])
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            msgType: ENotificationTypes.USER_LOST_ACCESS,
+            severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
             sourceUserId: objUserId,
@@ -205,11 +205,11 @@ export class NotificationService {
                                             role: string) {
         const text =`Role of ${objUserName} is changed to ${role} for device \`${deviceName}\``
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED]
+            ENotificationTypes.USER_IS_MODIFIED
         ]);
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            msgType: ENotificationTypes.USER_IS_MODIFIED,
+            severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
             sourceUserId: objUserId,
@@ -233,12 +233,12 @@ export class NotificationService {
                                           role: string) {
         const text =`${objUserName} got '${role}' access to device \`${deviceName}\``
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS],
-            ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS]
+            ENotificationTypes.USER_GOT_ACCESS,
+            ENotificationTypes.USER_LOST_ACCESS
         ])
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS],
-            severity: ENotificationSeverity[ENotificationSeverity.INFO],
+            msgType: ENotificationTypes.USER_GOT_ACCESS,
+            severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
             sourceUserId: objUserId,
@@ -258,11 +258,11 @@ export class NotificationService {
                                        deviceName: string) {
         const text = `User list of device \`${deviceName}\` is cleared`;
         await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes[ENotificationTypes.ALL_USERS_CLEAR]
+            ENotificationTypes.ALL_USERS_CLEAR
         ])
         await this.createNotification({
-            msgType: ENotificationTypes[ENotificationTypes.ALL_USERS_CLEAR],
-            severity: ENotificationSeverity[ENotificationSeverity.ERROR],
+            msgType: ENotificationTypes.ALL_USERS_CLEAR,
+            severity: ENotificationSeverity.ERROR,
             deviceId: deviceId,
             userId: userId,
             deviceHex: devHex,

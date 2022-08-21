@@ -65,17 +65,6 @@ module.exports = {
       sourceUserId: { type: Sequelize.INTEGER, allowNull: true },
       msgType: {
         type: Sequelize.ENUM(
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "10",
           "YOU_GOT_ACCESS",
           "USER_GOT_ACCESS",
           "YOU_LOST_ACCESS",
@@ -91,7 +80,7 @@ module.exports = {
         allowNull: false,
       },
       severity: {
-        type: Sequelize.ENUM("0", "1", "2", "INFO", "ACTION", "ERROR"),
+        type: Sequelize.ENUM("INFO", "ACTION", "ERROR"),
         allowNull: false,
       },
       text: { type: Sequelize.STRING },
