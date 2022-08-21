@@ -2,21 +2,18 @@ import React, {FC, useContext, useRef, useState} from "react";
 import {
     delimiter,
     loginPage,
-    stickCntr,
     stickRight
 } from "../../styles/Login.css";
-import {point, preLabel, warnLabel} from "../../styles/common/labels.css";
-import {underline} from "../../styles/common/fonts.css";
+import {warnLabel} from "../../styles/common/labels.css";
 import {btn, imgHover} from "../../styles/common/buttons.css";
-import {NavLink, useNavigate} from "react-router-dom";
-import {SIGNUP_PAGE, FORGOT_PWD_PAGE, HOME_PAGE, LOGIN_PAGE} from "../../utils/consts";
+import {useNavigate} from "react-router-dom";
+import {SIGNUP_PAGE, FORGOT_PWD_PAGE, HOME_PAGE} from "../../utils/consts";
 import {login} from "../../http/auth";
 import {cntrContent, flexr} from "../../styles/common/position.css";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {ReactComponent as LogoHomeNet} from "../../assets/home-net.svg";
 
 import {
-    Box,
     Button, Card,
     Checkbox,
     FormControlLabel,
@@ -176,7 +173,7 @@ const LoginPage: FC = () => {
 
             <div className={delimiter}/><br/>
             <div className={[cntrContent].join(' ')}>
-                <Typography variant="h6" sx={{mr: 1, mt: .4}}>Need an account??</Typography>
+                <Typography variant="h6" sx={{mr: 1, mt: .4}}>Need an account?</Typography>
                 <Link
                     underline="hover"
                     color="info"

@@ -69,7 +69,9 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
         return true
     }
     const handleSavePassword = () => {
+        console.log("handleSavePassword")
         if(checkPassword()) {
+            console.log("Password checked, requesting")
             token && nestPostChangePassword(token, state.password).then(resp => {
                 if (resp.status === 200) {
                     navigate(LOGIN_PAGE)
@@ -124,6 +126,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
                         <IconButton
                             onClick={e => setState({...state, showPassword: !state.showPassword})}
                             edge="end"
+                            tabIndex={1}
                         >
                             {state.showPassword
                                 ? <VisibilityOff color="secondary"/>
@@ -157,6 +160,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
                         <IconButton
                             onClick={e => setState({...state, showConfirmPassword: !state.showConfirmPassword})}
                             edge="end"
+                            tabIndex={1}
                         >
                             {state.showConfirmPassword
                                 ? <VisibilityOff color="secondary"/>
@@ -182,6 +186,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
             <Button
                 style={{height: 18}}
                 onClick={() => navigate(LOGIN_PAGE)}
+                // tabIndex={-4}
             >
                 LOGIN
             </Button>

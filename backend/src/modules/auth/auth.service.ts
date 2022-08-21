@@ -151,7 +151,10 @@ export class AuthService {
         auth.user.setDataValue('password', password)
         auth.setDataValue('token', null)
         auth.setDataValue('token_expire', null)
+        // consider changing account as activation too
+        auth.setDataValue('activated', true)
         await auth.user.save()
+        await auth.save()
 
         const token = await this.generateToken(auth.user["dataValues"]);
 
