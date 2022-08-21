@@ -183,21 +183,24 @@ const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
 
     return <div className={casket}>
         <div className={cntrVContent}>
+
             <div style={{textAlign: "center", position: "relative"}}>
-                <Avatar
-                    sx={{
-                        m: "10px 0 15px 0",
-                        border: "2px solid #1690E9"
-                    }}
-                    src={avatarSrc}
-                    onClick={handleEditAvatar}
-                />
-                <img
-                    src={logoAvaEdit}
-                    style={{position: "absolute", right: 10, top: 10}}
-                    alt={"edit"}
-                    onClick={handleEditAvatar}
-                />
+                <IconButton onClick={handleEditAvatar} sx={{p: 0}}>
+                    <Avatar
+                        sx={{
+                            m: "10px 0 15px 0",
+                            border: "2px solid #1690E9"
+                        }}
+                        src={avatarSrc}
+                        onClick={handleEditAvatar}
+                    />
+                    <img
+                        src={logoAvaEdit}
+                        style={{position: "absolute", right: 10, top: 10}}
+                        alt={"edit"}
+                        onClick={handleEditAvatar}
+                    />
+                </IconButton>
                 <Typography variant="h3">{user.login}</Typography>
             </div>
         </div><br/>

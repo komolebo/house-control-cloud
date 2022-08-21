@@ -127,7 +127,9 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                     }
                 </div>
             })}
+        </div>
 
+        <div className={flexCont6}>
             { avatarSrc
                 ? <div style={{textAlign: "center", position: "relative"}}>
                     <Avatar
@@ -155,7 +157,6 @@ const ChooseDefaultElement: FC<IPropChooseDefElem> = ({
                 />
                 <img src={logoAvaAdd} alt={"Add avatar"} style={{margin: 10}}/>
             </label>
-
         </div><br/>
 
         <div className={cntrContent}>
