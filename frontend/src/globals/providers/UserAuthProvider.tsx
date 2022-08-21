@@ -11,8 +11,6 @@ import {
 } from "../storage";
 
 export const useUserGlobalInfo = () => {
-    console.log("START")
-
     const [authorized, setAuthorized] = useState(isAuthTokenSaved());
     const [avatarSrc, setAvatarSrc] = useState<string>("")
 
@@ -21,7 +19,6 @@ export const useUserGlobalInfo = () => {
     )
 
     useEffect(() => {
-        console.log("USE EFFECT")
         if (authorized) {
             const userStorageData = initUserInfoFromStore()
             console.log("INIT DONE")

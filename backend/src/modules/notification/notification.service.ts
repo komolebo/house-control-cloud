@@ -7,7 +7,6 @@ import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from 
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
 import {THistoryMsgType} from "../history/dto/history_dto";
-import {Devices} from "../devices/device.entity";
 
 
 function notificationInterpretData(notification: Notifications) {
@@ -65,7 +64,6 @@ export class NotificationService {
         })
     }
 
-
     private async createNotification(notificationDto: CreateNotification_Dto) {
         const user = await this.userRepository.findOne({
             where: {id: notificationDto.userId},
@@ -79,11 +77,35 @@ export class NotificationService {
         return await user.$add("notifications", notification);
     }
 
+    private async removeIrrelevantNotification(userId: number, devId: number,
+                                               notificationTypes: ENotificationTypes[] | string[]) {
+        const user = await this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+            include: {
+                model: Notifications,
+                where: {
+                    deviceId: devId,
+                    msgType: notificationTypes
+                }
+            }
+        })
+        if(!user || !user.notifications) return;
+
+        const notificationRemoveIdList = user.notifications.map(el => el.id)
+        await this.notificationRepository.destroy({ where: {id: notificationRemoveIdList} })
+    }
+
     async createNotificationYouLostAccess(userId: number,
                                           deviceId: number,
                                           devHex: string,
                                           deviceName: string) {
         const text = `You lost an access to device \`${deviceName}\``;
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
+            ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS]
+        ]);
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.ERROR],
@@ -104,6 +126,10 @@ export class NotificationService {
                                          deviceName: string,
                                          role: string) {
         const text = `You got an ${role} access to device \`${deviceName}\``;
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
+            ENotificationTypes[ENotificationTypes.YOU_LOST_ACCESS]
+        ])
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_GOT_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -124,6 +150,9 @@ export class NotificationService {
                                             deviceName: string,
                                             role: string) {
         const text = `Your role is changed to '${role}' for device \`${deviceName}\``;
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.YOU_ARE_MODIFIED]
+        ])
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.YOU_ARE_MODIFIED],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -146,6 +175,10 @@ export class NotificationService {
                                            devHex: string,
                                            deviceName: string) {
         const text =`${objUserName} lost an access to device \`${deviceName}\``
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
+            ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS]
+        ])
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -171,6 +204,9 @@ export class NotificationService {
                                             deviceName: string,
                                             role: string) {
         const text =`Role of ${objUserName} is changed to ${role} for device \`${deviceName}\``
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED]
+        ]);
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.USER_IS_MODIFIED],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -196,6 +232,10 @@ export class NotificationService {
                                           deviceName: string,
                                           role: string) {
         const text =`${objUserName} got '${role}' access to device \`${deviceName}\``
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS],
+            ENotificationTypes[ENotificationTypes.USER_LOST_ACCESS]
+        ])
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.USER_GOT_ACCESS],
             severity: ENotificationSeverity[ENotificationSeverity.INFO],
@@ -217,6 +257,9 @@ export class NotificationService {
                                        devHex: string,
                                        deviceName: string) {
         const text = `User list of device \`${deviceName}\` is cleared`;
+        await this.removeIrrelevantNotification(userId, deviceId, [
+            ENotificationTypes[ENotificationTypes.ALL_USERS_CLEAR]
+        ])
         await this.createNotification({
             msgType: ENotificationTypes[ENotificationTypes.ALL_USERS_CLEAR],
             severity: ENotificationSeverity[ENotificationSeverity.ERROR],

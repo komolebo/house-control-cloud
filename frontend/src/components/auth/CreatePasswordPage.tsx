@@ -47,8 +47,7 @@ const CreatePwdElement: FC<IProp> = ({callErr}) => {
 
             if (resp.status === 201) {
                 const valid = resp.data.valid;
-
-                valid ? navigate(LOGIN_PAGE) : callErr()
+                if (!valid) callErr();
             }
         }).catch(() => callErr())
         // eslint-disable-next-line react-hooks/exhaustive-deps

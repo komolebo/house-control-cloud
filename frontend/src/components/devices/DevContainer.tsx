@@ -31,7 +31,6 @@ export const DevContainer: FC = () => {
     })
 
     const syncData = () => {
-        console.log("Before: ", values)
         userInfo && nestGetDevListByUser(userInfo.id).then(resp => {
             let devList: Array<TDevItem> = [];
 

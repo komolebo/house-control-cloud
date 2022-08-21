@@ -43,16 +43,6 @@ const typeStr = (type: ENotificationTypes): string => {
 
 export function ExplainNotificationMap(type: ENotificationTypes, dbObj: Notifications): IExplainMap {
     switch (type.toString()) {
-        // case typeStr(ENotificationTypes.YOU_ARE_ADDED):
-        //     return {
-        //         text: `You are now added to the device ${dbObj.deviceId}`,
-        //         actions: NO_ACTION_STR,
-        //     };
-        // case typeStr(ENotificationTypes.DEVICE_ADDED):
-        //     return {
-        //         text: "Device is successfully added",
-        //         actions: "OK"
-        //     };
         case typeStr(ENotificationTypes.ACCEPT_USER_ADD):
             return {
                 text: "Please accept user adding",
