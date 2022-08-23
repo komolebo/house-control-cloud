@@ -2,9 +2,8 @@ import React, {FC, useContext, useState} from "react";
 import {useGlobalModalContext} from "./ModalProvider";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
 import {cntrVContent} from "../../styles/common/position.css";
-import {h2Font, h3Font, h4Font, hBold, helpText} from "../../styles/common/fonts.css";
+import {hBold, helpText} from "../../styles/common/fonts.css";
 import logoUpdateAccess from "../../assets/modal-update-access.svg";
-import {devItemDelim} from "../../styles/DeviceItem.css";
 import {ColorRoleLabel} from "../elements/ColorRoleLabel";
 import logoTransition from "../../assets/transition-arrow.svg"
 import {ROLES, TConnectedUser, TDevItem, TDevRole} from "../../globals/DeviceData";
@@ -12,6 +11,9 @@ import {mediumMuiBtn} from "../../styles/common/buttons.css";
 import {nestDeleteAccess, nestPostModifyAccess} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
+
+
+import {StatusCodes} from "http-status-codes/build/es";
 
 interface IModifyElemProp {
     onAction: (resInfo: IModalDoneDisplayInfo) => void,
@@ -29,23 +31,37 @@ const UpdUsrAccessElement: FC<IModifyElemProp> = ({onAction, devInfo, objUserInf
     };
 
     const handleUpdAccess = () => {
-        objUserInfo.role = role; // TODO: check why is it needed
         userInfo && nestPostModifyAccess(userInfo.id, devInfo.hex, objUserInfo.id, TDevRole[role])
             .then(resp => {
-                console.log(resp)
-                onAction({
-                    success: true,
-                    message: `User ${objUserInfo.login} has now  ${TDevRole[role]} access to ${devInfo.name}`,
-                    header: "Access rights updated"
-                });
+                if (resp.data === StatusCodes.CREATED) {
+                    onAction({
+                        success: true,
+                        header: "Access rights updated",
+                        message: `User ${objUserInfo.login} has now ${TDevRole[role]} access to ${devInfo.name}`,
+                    });
+                } else if (resp.data === StatusCodes.ACCEPTED) {
+                    onAction({
+                        success: true,
+                        header: "Access rights requested",
+                        message: `Owners have to approve OWNER rights for '${objUserInfo.login}'`
+                    })
+                }
             })
             .catch(resp => {
                 console.log(resp)
-                onAction({
-                    success: false,
-                    header: "Access right not updated",
-                    message: `Please retry later`,
-                });
+                if (resp.response.status === StatusCodes.CONFLICT) {
+                    onAction({
+                        success: false,
+                        header: "Pending request",
+                        message: `Access rights not updated`,
+                    });
+                } else {
+                    onAction({
+                        success: false,
+                        header: "Access rights not updated",
+                        message: `Please retry later`,
+                    });
+                }
             })
     }
 

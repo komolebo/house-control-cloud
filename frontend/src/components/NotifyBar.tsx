@@ -5,11 +5,11 @@ import logoBellBlue from "../assets/bell-blue.svg"
 import logoBellGreen from "../assets/bell-green.svg"
 import logoBellRed from "../assets/bell-red.svg"
 import logoClose from "../assets/close.svg"
-import {imgHover} from "../styles/common/buttons.css";
+import {imgHover, mediumMuiBtn, shorterMuiBtn, shortMuiBtn} from "../styles/common/buttons.css";
 import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
-import {deleteNotification, getNotificationsListPerUser} from "../http/rqData";
+import {deleteNotification, getNotificationsListPerUser, nestPostRoutine} from "../http/rqData";
 import {UserGlobalContext} from "../globals/providers/UserAuthProvider";
 import {IO_NOTIFICATION_KEY, socket} from "../http/wssocket";
 import moment from "moment";
@@ -18,9 +18,27 @@ interface INotificationProp {
     onNotificationStatusChange: () => void
 }
 
+const buttonStyleByAction = (action: string) => {
+    switch (action.toLowerCase()) {
+        case "accept":
+            return "info";
+        case "block":
+            return "error";
+        default: return "success"
+    }
+}
 
 const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
+    const {userInfo} = useContext(UserGlobalContext)
+
     console.log(item)
+    const handleClick = (notifId: number, cmd: string) => {
+        userInfo && nestPostRoutine(userInfo.id, notifId, cmd).then(resp => {
+            if (resp.status === 201) {
+                onAct();
+            }
+        })
+    }
 
     return <Box sx={{
                 borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
@@ -34,39 +52,36 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
                      : colBorderRed
              }
         >
-            <div style={{paddingLeft: 15}}
-                 // className={item.severity === TNotifySeverity.Action
-                 //     ? colBorderBlue
-                 //    : item.severity === TNotifySeverity.Info
-                 //         ? colBorderGreen
-                 //         : colBorderRed
-                 // }
-            >
+            <div style={{paddingLeft: 15}}>
                 {item.severity === TNotifySeverity.Action
                     ? <img src={logoBellBlue} alt={"Logo bel blue"}/>
                     : item.severity === TNotifySeverity.Info
                         ? <img src={logoBellGreen} alt={"Logo bel green"}/>
                         : <img src={logoBellRed} alt={"Logo bel red"}/>
                 }
-
             </div>
 
             <Box sx={{flexGrow: 6, pl: 2, pr: 2}}>
                 <Typography variant="h3">{item.text}</Typography>
-                <Typography variant="h5" sx={{pt: "10px"}}>{moment(item.createdAt).fromNow()}</Typography>
+                <Typography variant="h6" sx={{pt: "10px"}}>{moment(item.createdAt).fromNow()}</Typography>
 
-                {item.actions
-                    ? <Button variant={"contained"}
-                            sx={{...styleHeights.midHiBtn,
-                                width: "50%"
-                            }}
-                            onClick={onAct}
-                    >
-                        {item.actions}
-                    </Button>
-                    : <></>
+                <br/>
+                {item.actions && item.actions.length
+                    ? item.actions.map((action, i) =>
+                        <Button variant={"contained"}
+                                sx={{...styleHeights.midHiBtn,
+                                    // width: "50%",
+                                    mr: 1
+                                }}
+                                onClick={() => handleClick(item.id, action)}
+                                color={buttonStyleByAction(action)}
+                                className={shortMuiBtn}
+                                key={i}
+                        >
+                            {action}
+                        </Button>
+                    ) : <></>
                 }
-
             </Box>
 
             <div>

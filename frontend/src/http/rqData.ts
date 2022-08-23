@@ -95,6 +95,12 @@ export function deleteNotification(userId: number, notifId: number) {
 }
 
 
+// Routines
+export function nestPostRoutine(userId: number, notifId: number, cmd: string) {
+    return host.post(`api/routine/${userId}/${notifId}/${cmd}`)
+}
+
+
 // History
 export function nestPostGetHistoryPerUser(userId: number) {
     return host.get("api/history/list/" + userId)

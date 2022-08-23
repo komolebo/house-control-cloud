@@ -10,8 +10,7 @@ const HomePage: FC = () => {
         <SocketContext.Provider value={socket}>
             <div className={commonPage}>
                 <Typography sx={{mb: 1}} variant="h1">Home</Typography>
-                <div className={helpText}>Here you can manage your devices</div>
-                <br/>
+                <Typography variant="h6" sx={{mt: 1}}>Here you can manage your devices</Typography>
                 <DevContainer/>
             </div>
         </SocketContext.Provider>

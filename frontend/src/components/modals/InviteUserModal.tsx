@@ -56,7 +56,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                     onAction({
                         success: true,
                         header: `User invited`,
-                        message: `User ${userLogin} can now access with rights ${role}`
+                        message: `User ${userLogin} can now access with rights ${TDevRole[role]}`
                     });
                 }
             })

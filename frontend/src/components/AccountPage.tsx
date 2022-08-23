@@ -466,7 +466,7 @@ export const AccountPage: FC = () => {
         <Typography variant="h1">
             Account
         </Typography>
-        <div className={helpText}>Here you can view device actions history or your activity</div><br/>
+        <Typography variant="h6" sx={{mb: 3, mt: 1}}>Here you can view device actions history or your activity</Typography>
 
         <NavSeq currentPage={ACCOUNT_PAGE}/><br/>
 

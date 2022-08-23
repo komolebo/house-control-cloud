@@ -45,6 +45,7 @@ export class Users extends Model<Users> {
     devices: Devices[]
 
     @HasMany(() => Notifications, {
+        foreignKey: "userNotificationFkId",
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
         hooks: true,

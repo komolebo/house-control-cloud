@@ -1,19 +1,36 @@
 import {Injectable} from '@nestjs/common';
-import {InjectModel} from "@nestjs/sequelize";
-import {Notifications} from "./notification.entity";
+import {NotificationFunctionService} from "./notification-function.service";
+import {Devices} from "../devices/device.entity";
 import {Users} from "../users/user.entity";
 import {SocketService} from "../../sockets/socket.service";
 import {HistoryService} from "../history/history.service";
-import {Devices} from "../devices/device.entity";
-import {NotificationService} from "./notification.service";
+import {InjectModel} from "@nestjs/sequelize";
+import {Notifications} from "./notification.entity";
+import {RoutineService} from "./routine.service";
+import {ENotificationSeverity} from "./messages/msgTypes";
 
 @Injectable()
-export class NotificationWrapService extends NotificationService {
+export class NotificationService extends NotificationFunctionService {
     constructor(@InjectModel(Notifications) protected readonly notificationRepository: typeof Notifications,
                 @InjectModel(Users) protected readonly userRepository: typeof Users,
                 protected readonly historyService: HistoryService,
-                protected readonly socketService: SocketService) {
+                protected readonly socketService: SocketService,
+                protected readonly routineService: RoutineService) {
         super (notificationRepository, userRepository, historyService, socketService);}
+
+    async handleRqRemoveNotification(userId: number, notificationId: number) {
+        const notification = await this.notificationRepository.findOne({
+            where: {id: notificationId},
+            include: Users
+        })
+
+        if(notification.severity === ENotificationSeverity.ACTION) {
+            await this.routineService.processRoutineNotificationRemove(notificationId);
+        } else {
+            await notification.destroy()
+            this.socketService.dispatchNotificationMsg([userId]);
+        }
+    }
 
     async handleLostAccess(owners: Array<Users>, objUser: Users, device: Devices) {
         for (const owner of owners) {
@@ -73,4 +90,9 @@ export class NotificationWrapService extends NotificationService {
             device.id, device.hex, device.name, role)
     }
 
+    async handleAcceptUpgradeRightsToOwner(ownerId: number,
+                                           objUserId: number,
+                                           deviceId: number) {
+
+    }
 }

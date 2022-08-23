@@ -39,7 +39,7 @@ export class DispatchPreInterceptor implements NestInterceptor {
               const dispatchList = device.users.map(el => el.id);
 
               dispatchList.forEach(conn_user => {
-                this.socketService.dispatchDevUpdateMsg(conn_user);
+                this.socketService.dispatchDevUpdateMsg([conn_user]);
             })
           }
         })

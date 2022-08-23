@@ -12,6 +12,7 @@ import {Histories} from "../../modules/history/history.entity";
 import {Preference} from "../../modules/preference/preference.entity";
 import {Blacklist} from "../../modules/preference/blacklist.entity";
 import {Auth} from "../../modules/auth/auth.entity";
+import {Routines} from "../../modules/notification/routine.entity";
 
 
 function getRealPathFromGenFiles(js_path: string) : string {
@@ -46,7 +47,8 @@ export const databaseProviders = [{
             Histories,
             Preference,
             Blacklist,
-            Auth
+            Auth,
+            Routines
         ])
 
         const cur_dir = getRealPathFromGenFiles(__dirname);

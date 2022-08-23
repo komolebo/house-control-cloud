@@ -8,6 +8,7 @@ import {nestPostReqRoleAccess} from "../../http/rqData";
 import {TDevRole} from "../../globals/DeviceData";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
+import {StatusCodes} from "http-status-codes/build/es";
 
 const MIN_CHAR_ID = 8;
 interface IFinDevElem {
@@ -32,17 +33,30 @@ const FindDevElement: FC<IFinDevElem> = ({onAction}) => {
     const handleReqAccess = () => {
         userInfo && nestPostReqRoleAccess(userInfo.id, devHex, TDevRole[TDevRole.OWNER])
             .then(res => {
-                if (res && res.status === 201) {
+                if (res.status === StatusCodes.CREATED) {
                     onAction({
                         success: true,
                         header: "Access requested",
-                        message: "Please check device screen of wait"
+                        message: "Please check device screen"
+                    })
+                } else if (res.status === StatusCodes.ACCEPTED) {
+                    onAction({
+                        success: true,
+                        header: "Access sent",
+                        message: "Please wait for owners approval"
                     })
                 }
             })
             .catch(res => {
+                console.log(res)
                 if (res.response.status === 404) {
-                    setWarning("Device does not exist")
+                    setWarning(res.response.data.message)
+                } else if(res.response.status === StatusCodes.CONFLICT) {
+                    onAction({
+                        success: false,
+                        header: "Pending request",
+                        message: "Your already requested access to this device"
+                    })
                 } else if(res.response.status === 400) {
                     onAction({
                         success: false,

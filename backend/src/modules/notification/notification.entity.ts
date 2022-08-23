@@ -1,7 +1,18 @@
-import {Table, Column, Model, DataType, ForeignKey, PrimaryKey, BelongsToMany, BelongsTo} from 'sequelize-typescript';
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    ForeignKey,
+    PrimaryKey,
+    BelongsToMany,
+    BelongsTo,
+    HasOne
+} from 'sequelize-typescript';
 import {Users} from "../users/user.entity";
-import {ENotificationSeverity, ENotificationTypes} from "./messages/ENotificationTypes";
+import {ENotificationSeverity, MsgTypes} from "./messages/msgTypes";
 import {Devices} from "../devices/device.entity";
+import {Routines} from "./routine.entity";
 
 @Table({tableName: 'notifications'})
 export class Notifications extends Model<Notifications> {
@@ -20,15 +31,13 @@ export class Notifications extends Model<Notifications> {
     })
     deviceId: number;
 
-    @ForeignKey(() => Users)
     @Column({
         type: DataType.INTEGER,
-        allowNull: true,
     })
-    sourceUserId: number;
+    objUserId: number;
 
     @Column({
-        type: DataType.ENUM({values: Object.keys(ENotificationTypes)}),
+        type: DataType.ENUM({values: Object.keys(MsgTypes)}),
         allowNull: false
     })
     msgType: string;
@@ -44,6 +53,16 @@ export class Notifications extends Model<Notifications> {
     })
     text: string;
 
-    @BelongsTo(() => Users)
+    @ForeignKey(() => Users)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    userNotificationFkId: number;
+
+    @BelongsTo(() => Users, "userNotificationFkId")
     user: Users
+
+    @BelongsTo(() => Routines, "routineId")
+    routine: Routines
 }

@@ -5,13 +5,17 @@ import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {Users} from "../users/user.entity";
 import {RoleValues} from "./dto/roles__dto";
 import {Roles} from "./role.entity";
-import {NotificationWrapService} from "../notification/notification-wrapper.service";
+import {NotificationService} from "../notification/notification-wrapper.service";
+import {RoutineService} from "../notification/routine.service";
+import {SocketService} from "../../sockets/socket.service";
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
                 @InjectModel(Users) private readonly  usersRepository: typeof Users,
-                private notificationService: NotificationWrapService) { }
+                private notificationService: NotificationService,
+                private routineService: RoutineService,
+                private socketService: SocketService) { }
 
     private logger = new Logger(DevicesService.name);
 
@@ -47,7 +51,7 @@ export class DevicesService {
                 device,
                 role
             )
-            return result
+            return HttpStatus.CREATED
         }
         throw new HttpException("User not added to device", HttpStatus.BAD_REQUEST)
     }
@@ -111,10 +115,19 @@ export class DevicesService {
             include: {model: Users}
         })
         if (!device)
-            throw new HttpException("Device cannot be empty", HttpStatus.NOT_FOUND)
+            throw new HttpException("Device does not exist", HttpStatus.NOT_FOUND)
+        if (device.users.map(el => el.id).includes(thisUserId))
+            throw new HttpException("User already connected to device", HttpStatus.NOT_FOUND)
 
         if(device.users.length) {
-            throw new HttpException("Device already owned to be owned again", HttpStatus.BAD_REQUEST)
+            // throw new HttpException("Device already owned to be owned again", HttpStatus.BAD_REQUEST)
+            const owners = await this._getOwnersListPerDevice(device);
+            const objUser = await this.usersRepository.findByPk(thisUserId);
+            await this.routineService.createRoutineUserGrantAccess(
+                device,
+                owners,
+                objUser)
+            return HttpStatus.ACCEPTED
         } else {
             // await this.notificationService.createNotificationYouAreAdded(
             //     thisUserId, device.id, device.name, device.hex, role)
@@ -195,25 +208,41 @@ export class DevicesService {
 
         if (!device || !device.users)
             throw new HttpException("Device data not found", HttpStatus.NOT_FOUND)
-        if (! await this._isUserAnOwner(thisUID, device))
+        if (!await this._isUserAnOwner(thisUID, device))
             throw new HttpException("You need to be an owner to modify roles", HttpStatus.FORBIDDEN)
-
-        const objUser = device.users.find(el => el.id === uId);
-
-        if (! await this._isUserAnOwner (uId, device)) {
-            const role = objUser["dataValues"]["Roles"]
-            const result = role.set("role", newRole)
-            await role.save()
-            await this.notificationService.handleModifyUser(
-                this._getOwnersListPerDevice(device),
-                objUser,
-                device,
-                newRole
-            )
-            return result
+        if (await this._isUserAnOwner(uId, device)) {
+            throw new HttpException("Cannot modify role of owner", HttpStatus.FORBIDDEN)
         }
 
-        throw new HttpException("User role not changed", HttpStatus.NOT_FOUND)
+        const objUser = device.users.find(el => el.id === uId);
+        const manyOwners = await this._calcOwnerPerDevice(device) > 1;
+        if(newRole === RoleValues.Owner && manyOwners) {
+            // coordinate access rights upgrade to OWNER between all owners
+            const curOwner = device.users.find(el => el.id === thisUID);
+            const allOwners = await this._getOwnersListPerDevice(device)
+            await this.routineService.createRoutineModifyToOwner(device,
+                curOwner,
+                allOwners.filter(el => el.id !== thisUID),
+                objUser)
+            return HttpStatus.ACCEPTED
+        } else {
+            await this.setNewRole (objUser, newRole, device);
+            return HttpStatus.CREATED
+        }
+    }
+
+    async setNewRole(objUser: Users, newRole: RoleValues, device: Devices) {
+        if(!objUser || !objUser.get('Roles')) throw new HttpException("Incorrect user data", HttpStatus.NOT_FOUND);
+
+        const objRole = objUser["dataValues"]["Roles"]
+        objRole.set ("role", newRole)
+        await objRole.save ()
+        await this.notificationService.handleModifyUser (
+            this._getOwnersListPerDevice (device),
+            objUser,
+            device,
+            newRole
+        )
     }
 
     async removeRole(uId: number, thisUID: number, devHex: string) {
@@ -260,21 +289,28 @@ export class DevicesService {
         })
         if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
 
-        if (!this._isUserLoginConnectedToDevice(uLogin, device)) {
-            const result = await device.$add('users', objUser, {through: {role: role}});
-            if (result) {
-                await this.notificationService.handleAddUser(
-                    this._getOwnersListPerDevice(device),
-                    objUser,
-                    device,
-                    role
-                )
-                // await this.notificationService.createNotificationYouAreInvited(
-                //     objUser.id, device.id, device.name, device.hex, role)
-                return device
-            }
-            throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
-        } else throw new HttpException("User already connected", HttpStatus.CONFLICT)
+        if (this._isUserLoginConnectedToDevice(uLogin, device)) {
+            throw new HttpException("User already connected", HttpStatus.CONFLICT)
+        }
+        return await this.addUserToDevice (device, objUser, role);
+        // throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
+    }
+
+    async addUserToDevice(device: Devices, objUser: Users, role: string) {
+        const owners = this._getOwnersListPerDevice (device);
+        await device.$add ('users', objUser, {through: {role: role}});
+        await this.notificationService.handleAddUser (
+            owners,
+            objUser,
+            device,
+            role
+        )
+        this.socketService.dispatchDevUpdateMsg([
+            objUser.id, ...owners.map(el => el.id)
+        ])
+        // await this.notificationService.createNotificationYouAreInvited(
+        //     objUser.id, device.id, device.name, device.hex, role)
+        return device
     }
 
     async updateDeviceAlias(thisUID: number, devHex: string, alias: string) {

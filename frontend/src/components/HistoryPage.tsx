@@ -19,6 +19,7 @@ import logoHistoryAccount from "../assets/history-item-account.svg";
 import logoHistoryDevice from "../assets/history-item-device.svg";
 import {HISTORY_PAGE} from "../utils/consts";
 import {
+    DEFAULT_HISTORY_TYPE,
     HISTORY_MSG_TYPES,
     IHistoryItem, PAGE_ENTRIES_NUM,
     TFilterCriteria,
@@ -103,7 +104,7 @@ const initialState = {
 };
 const initialFilterState: IFilterState = {
     // filters
-    msgType: THistoryMsgType[THistoryMsgType.None],
+    msgType: DEFAULT_HISTORY_TYPE,
     from: null,
     to: null,
     keyword: "",
@@ -118,7 +119,7 @@ export const HistoryPage: FC = () => {
     const {userInfo} = useContext(UserGlobalContext)
     const today = moment().toDate()
 
-    console.log(">>>>>>>>>", filterState)
+    console.log(">>>>>>>>>", state)
 
     useEffect(() => {
         syncData();
@@ -199,7 +200,8 @@ export const HistoryPage: FC = () => {
         syncData();
     }
     const handleClearFilters = () => {
-        filterState = {...initialFilterState, from: null, to: null}
+        filterState = {...filterState, from: null, to: null, msgType: DEFAULT_HISTORY_TYPE,
+            filterDevId: "", filterUid: ""}
         setFilterState(filterState)
         clearLoadedData();
         syncData();
@@ -229,17 +231,17 @@ export const HistoryPage: FC = () => {
                 anchorElSetting: event.currentTarget
             }})
     }
-    const handleCloseSettings = () => {
-        setState({...state, setting: {
-                ...state.setting, anchorElSetting: null, clickInd: -1
-            }})
+    const handleCloseSettings = (updateView?: boolean) => {
+        state.setting.anchorElSetting = null;
+        state.setting.clickInd = -1;
+        if(updateView) setState({...state})
     }
     const handleDeleteByInd = () => {
         const historyId = state.filteredData[state.setting.clickInd].id;
 
+        handleCloseSettings();
         userInfo && nestDeleteUserHistory(userInfo.id, [historyId]).then(resp => {
             console.log(resp.status)
-
             if (resp.status === 200) {
                 console.log("history deleted")
                 clearLoadedData();
@@ -265,6 +267,7 @@ export const HistoryPage: FC = () => {
 
     const handleFilterBySelectedItem = (clickInd: number, criteria: TFilterCriteria) => {
         clearSelection(false);
+        handleCloseSettings();
         if (criteria === TFilterCriteria.By_user) {
             const val = state.filteredData[clickInd].uId;
             filterState.filterUid = val ? val.toString() : "";
@@ -288,7 +291,7 @@ export const HistoryPage: FC = () => {
 
     return <div className={commonPage}>
         <Typography variant="h1" sx={{mb: 1}}>History</Typography>
-        <div className={helpText}>Here you can view device actions history or your activitivity</div><br/>
+        <Typography variant="h6" sx={{mt: 1, mb: 3}}>Here you can view device actions history or your activity</Typography>
 
         <NavSeq currentPage={HISTORY_PAGE}/><br/>
 
@@ -543,16 +546,13 @@ export const HistoryPage: FC = () => {
                     horizontal: 'right',
                 }}
                 open={Boolean(state.setting.anchorElSetting)}
-                onClose={handleCloseSettings}
+                onClose={() => handleCloseSettings(true)}
                 MenuListProps={{
                     sx: {backgroundColor: "special.main"}
                 }}
             >
                 <MenuItem key={state.setting.setup[EHistorySetting.delete].name}
-                          onClick={() => {
-                              handleDeleteByInd();
-                              handleCloseSettings();
-                          }}>
+                          onClick={handleDeleteByInd}>
                     <Box
                         sx={{mr: 2, width: 24}}
                         className={cntrContent}
@@ -565,7 +565,6 @@ export const HistoryPage: FC = () => {
                     !filterState.filterDevId &&
                     <MenuItem onClick={() => {
                             handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_device);
-                            handleCloseSettings();
                         }
                     }>
                         <Box
@@ -581,7 +580,6 @@ export const HistoryPage: FC = () => {
                     !filterState.filterUid &&
                     <MenuItem onClick={() => {
                         handleFilterBySelectedItem (state.setting.clickInd, TFilterCriteria.By_user);
-                        handleCloseSettings();
                     }}>
                         <Box
                             sx={{mr: 2, width: 24}}

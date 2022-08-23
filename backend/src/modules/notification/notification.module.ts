@@ -1,25 +1,31 @@
 import {forwardRef, Module} from '@nestjs/common';
-import { NotificationService } from './notification.service';
+import { NotificationFunctionService } from './notification-function.service';
 import { NotificationController } from './notification.controller';
+import {NotificationService} from "./notification-wrapper.service";
 import {SequelizeModule} from "@nestjs/sequelize";
-import {Notifications} from "./notification.entity";
-import {DatabaseModule} from "../../core/database/database.module";
-import {Users} from "../users/user.entity";
+import {Routines} from "./routine.entity";
 import {SocketModule} from "../../sockets/socket.module";
-import {AuthModule} from "../auth/auth.module";
 import {HistoryModule} from "../history/history.module";
+import {DatabaseModule} from "../../core/database/database.module";
+import {AuthModule} from "../auth/auth.module";
 import {UsersModule} from "../users/users.module";
-import {NotificationWrapService} from "./notification-wrapper.service";
+import {Users} from "../users/user.entity";
+import {Roles} from "../devices/role.entity";
+import {Notifications} from "./notification.entity";
+import {RoutineService} from "./routine.service";
+import {Devices} from "../devices/device.entity";
+import {DevicesModule} from "../devices/devices.module";
 
 @Module({
   controllers: [NotificationController],
-  providers: [NotificationService, NotificationWrapService],
-  exports: [NotificationService, NotificationWrapService],
+  providers: [NotificationService, RoutineService, NotificationFunctionService],
+  exports: [NotificationService, RoutineService],
   imports: [
       forwardRef(() => UsersModule),
       forwardRef(() => AuthModule),
+      forwardRef(() => DevicesModule),
       DatabaseModule,
-      SequelizeModule.forFeature([Notifications, Users]),
+      SequelizeModule.forFeature([Notifications, Users, Devices, Roles, Routines]),
       SocketModule,
       HistoryModule,
   ]

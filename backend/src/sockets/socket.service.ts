@@ -59,18 +59,18 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
 
     dispatchMsg(userId: number, topic: string, data: any = {}) {
         if (Object.keys(this.uMap).findIndex(dId => dId === userId.toString()) >= 0) {
-            this.logger.log(`Dispatching to userId=${userId} and clientId array=${this.uMap[userId]}`)
+            this.logger.log(`Dispatching '${topic}' to userId=${userId} and clientId array=${this.uMap[userId]}`)
             this.uMap[userId].forEach(clientId => {
                 this.server.to(clientId).emit(topic, data);
             })
         }
     }
 
-    dispatchNotificationMsg(userId: number) {
-        this.dispatchMsg(userId, "notification")
+    dispatchNotificationMsg(userIdList: number[]) {
+        userIdList.forEach(userId => this.dispatchMsg(userId, "notification"))
     }
 
-    dispatchDevUpdateMsg(userId: number) {
-        this.dispatchMsg(userId, "dev_update")
+    dispatchDevUpdateMsg(userIdList: number[]) {
+        userIdList.forEach(userId => this.dispatchMsg(userId, "dev_update"))
     }
 }

@@ -1,17 +1,19 @@
 import {Injectable} from '@nestjs/common';
-import {InjectModel} from "@nestjs/sequelize";
 import {Notifications} from "./notification.entity";
-import {CreateNotification_Dto} from "./dto/create_notification__dto";
-import {Users} from "../users/user.entity";
-import {ENotificationSeverity, ENotificationTypes, ExplainNotificationMap} from "./messages/ENotificationTypes";
-import {SocketService} from "../../sockets/socket.service";
-import {HistoryService} from "../history/history.service";
+import {ENotificationSeverity, MsgTypes, NotificationActionMap} from "./messages/msgTypes";
 import {THistoryMsgType} from "../history/dto/history_dto";
+import {InjectModel} from "@nestjs/sequelize";
+import {Users} from "../users/user.entity";
+import {HistoryService} from "../history/history.service";
+import {SocketService} from "../../sockets/socket.service";
+import {RoutineService} from "./routine.service";
+import {CreateNotification_Dto} from "./dto/create_notification__dto";
+import {Op} from "sequelize";
 
 
-function notificationInterpretData(notification: Notifications) {
+function fillActionListInNotification(notification: Notifications) {
     const notifyObj = notification["dataValues"];
-    const explainInfo = ExplainNotificationMap(notifyObj.msgType, notifyObj);
+    const explainInfo = NotificationActionMap(notifyObj.msgType, notifyObj);
     if (explainInfo) {
         notifyObj["actions"] = explainInfo.actions;
         // notifyObj.createdAt = moment(notifyObj.createdAt).fromNow();
@@ -19,30 +21,31 @@ function notificationInterpretData(notification: Notifications) {
 }
 
 @Injectable()
-export class NotificationService {
+export class NotificationFunctionService {
     constructor(@InjectModel(Notifications) protected readonly notificationRepository: typeof Notifications,
                 @InjectModel(Users) protected readonly userRepository: typeof Users,
                 protected readonly historyService: HistoryService,
                 protected readonly socketService: SocketService) {}
 
-    async remove(notificationId: number) {
-        return await this.notificationRepository.destroy({where: {id: notificationId}});
-    }
 
-    async removeNotificationFromUser(userId: number, notificationId: number) {
-        const uObj = await this.userRepository.findOne({
-            where: {id: userId},
-            include: {model: Notifications, where: {id: notificationId}}
+    async removeNotificationById(notificationId: number) {
+        const notification = await this.notificationRepository.findOne({
+            where: {id: notificationId},
+            include: Users
         })
-        if (uObj && uObj.notifications.length) {
-            const nObj = uObj.notifications[0];
-            const objDestroy = await nObj.destroy()
-
-            this.socketService.dispatchNotificationMsg(userId);
-
-            return objDestroy
+        await notification.destroy()
+        if (notification.user) {
+            this.socketService.dispatchNotificationMsg([notification.user.id]);
         }
     }
+    async removeNotificationObj(notificationObj: Notifications) {
+        await notificationObj.destroy();
+        if (notificationObj.user) {
+            this.socketService.dispatchNotificationMsg([notificationObj.user.id]);
+        }
+    }
+
+
 
     async getNotificationsByUser(userId: number) {
         const curUser = await this.userRepository.findOne({
@@ -53,14 +56,14 @@ export class NotificationService {
 
         // console.log(user.notifications)
         for (const notification of curUser.notifications) {
-            notificationInterpretData(notification);
+            fillActionListInNotification(notification);
         }
         return curUser.notifications
     }
 
     async countNotificationsByUser(userId: number) {
         return await this.notificationRepository.count ({
-            where: {sourceUserId: userId},
+            where: {userNotificationFkId: userId},
         })
     }
 
@@ -72,13 +75,16 @@ export class NotificationService {
 
         const notification = await this.notificationRepository.create<Notifications>(notificationDto);
         if (notification) {
-            this.socketService.dispatchNotificationMsg (notificationDto.userId);
+            this.socketService.dispatchNotificationMsg ([notificationDto.userId]);
         }
-        return await user.$add("notifications", notification);
+        await user.$add("notifications", notification);
+        return notification
     }
 
-    private async removeIrrelevantNotification(userId: number, devId: number,
-                                               notificationTypes: ENotificationTypes[]) {
+    private async removeIrrelevantNotification(userId: number,
+                                               notificationTypes: MsgTypes[],
+                                               devId: number,
+                                               uId?: number) {
         const user = await this.userRepository.findOne({
             where: {
                 id: userId,
@@ -86,9 +92,13 @@ export class NotificationService {
             include: {
                 model: Notifications,
                 where: {
-                    deviceId: devId,
-                    msgType: notificationTypes
-                }
+                    [Op.and]: [
+                        {msgType: notificationTypes},
+                        devId !== undefined ? {deviceId: devId} : {},
+                        uId !== undefined ? {objUserId: uId} : {},
+                    ],
+                },
+                // include: [Users]
             }
         })
         if(!user || !user.notifications) return;
@@ -101,13 +111,13 @@ export class NotificationService {
                                           deviceId: number,
                                           devHex: string,
                                           deviceName: string) {
-        const text = `You lost an access to device \`${deviceName}\``;
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.YOU_LOST_ACCESS,
-            ENotificationTypes.YOU_GOT_ACCESS
-        ]);
+        const text = `You lost access to device \`${deviceName}\``;
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.YOU_LOST_ACCESS,
+            MsgTypes.YOU_GOT_ACCESS
+        ], deviceId);
         await this.createNotification({
-            msgType: ENotificationTypes.YOU_LOST_ACCESS,
+            msgType: MsgTypes.YOU_LOST_ACCESS,
             severity: ENotificationSeverity.ERROR,
             deviceId: deviceId,
             userId: userId,
@@ -126,12 +136,12 @@ export class NotificationService {
                                          deviceName: string,
                                          role: string) {
         const text = `You got an ${role} access to device \`${deviceName}\``;
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.YOU_GOT_ACCESS,
-            ENotificationTypes.YOU_LOST_ACCESS
-        ])
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.YOU_GOT_ACCESS,
+            MsgTypes.YOU_LOST_ACCESS
+        ], deviceId)
         await this.createNotification({
-            msgType: ENotificationTypes.YOU_GOT_ACCESS,
+            msgType: MsgTypes.YOU_GOT_ACCESS,
             severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
@@ -150,11 +160,11 @@ export class NotificationService {
                                             deviceName: string,
                                             role: string) {
         const text = `Your role is changed to '${role}' for device \`${deviceName}\``;
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.YOU_ARE_MODIFIED
-        ])
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.YOU_ARE_MODIFIED
+        ], deviceId)
         await this.createNotification({
-            msgType: ENotificationTypes.YOU_ARE_MODIFIED,
+            msgType: MsgTypes.YOU_ARE_MODIFIED,
             severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
@@ -174,17 +184,17 @@ export class NotificationService {
                                            deviceId: number,
                                            devHex: string,
                                            deviceName: string) {
-        const text =`${objUserName} lost an access to device \`${deviceName}\``
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.USER_LOST_ACCESS,
-            ENotificationTypes.USER_GOT_ACCESS
-        ])
+        const text =`${objUserName} lost access to device \`${deviceName}\``
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.USER_LOST_ACCESS,
+            MsgTypes.USER_GOT_ACCESS
+        ], deviceId, objUserId)
         await this.createNotification({
-            msgType: ENotificationTypes.USER_LOST_ACCESS,
+            msgType: MsgTypes.USER_LOST_ACCESS,
             severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
-            sourceUserId: objUserId,
+            objUserId: objUserId,
             deviceHex: devHex,
             text: text
         })
@@ -204,15 +214,15 @@ export class NotificationService {
                                             deviceName: string,
                                             role: string) {
         const text =`Role of ${objUserName} is changed to ${role} for device \`${deviceName}\``
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.USER_IS_MODIFIED
-        ]);
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.USER_IS_MODIFIED
+        ], deviceId, objUserId);
         await this.createNotification({
-            msgType: ENotificationTypes.USER_IS_MODIFIED,
+            msgType: MsgTypes.USER_IS_MODIFIED,
             severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
-            sourceUserId: objUserId,
+            objUserId: objUserId,
             deviceHex: devHex,
             text: text
         })
@@ -232,16 +242,16 @@ export class NotificationService {
                                           deviceName: string,
                                           role: string) {
         const text =`${objUserName} got '${role}' access to device \`${deviceName}\``
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.USER_GOT_ACCESS,
-            ENotificationTypes.USER_LOST_ACCESS
-        ])
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.USER_GOT_ACCESS,
+            MsgTypes.USER_LOST_ACCESS
+        ], deviceId, objUserId)
         await this.createNotification({
-            msgType: ENotificationTypes.USER_GOT_ACCESS,
+            msgType: MsgTypes.USER_GOT_ACCESS,
             severity: ENotificationSeverity.INFO,
             deviceId: deviceId,
             userId: userId,
-            sourceUserId: objUserId,
+            objUserId: objUserId,
             deviceHex: devHex,
             text: text
         })
@@ -257,11 +267,11 @@ export class NotificationService {
                                        devHex: string,
                                        deviceName: string) {
         const text = `User list of device \`${deviceName}\` is cleared`;
-        await this.removeIrrelevantNotification(userId, deviceId, [
-            ENotificationTypes.ALL_USERS_CLEAR
-        ])
+        await this.removeIrrelevantNotification(userId, [
+            MsgTypes.ALL_USERS_CLEAR
+        ], deviceId)
         await this.createNotification({
-            msgType: ENotificationTypes.ALL_USERS_CLEAR,
+            msgType: MsgTypes.ALL_USERS_CLEAR,
             severity: ENotificationSeverity.ERROR,
             deviceId: deviceId,
             userId: userId,
@@ -273,5 +283,64 @@ export class NotificationService {
             type: THistoryMsgType.Notification,
             devId: devHex,
         })
+    }
+    async createNotificationAcceptUpgrade(ownerId: number,
+                                          deviceId: number,
+                                          objUserId: number,
+                                          objUserName: string,
+                                          objLogin: string,
+                                          devHex: string,
+                                          deviceName: string) {
+        await this.removeIrrelevantNotification(ownerId, [
+            MsgTypes.ACCEPT_OWNER_RIGHTS
+        ], deviceId, objUserId)
+        const text = `${objUserName} is going to become an owner for ${deviceName}`
+        const notification = await this.createNotification({
+            userId: ownerId,
+            msgType: MsgTypes.ACCEPT_OWNER_RIGHTS,
+            severity: ENotificationSeverity.ACTION,
+            deviceId: deviceId,
+            deviceHex: devHex,
+            objUserId: objUserId,
+            objUserName: objUserName,
+            text: text
+        })
+        await this.historyService.createHistoryItem(ownerId, {
+            text: text,
+            type: THistoryMsgType.Notification,
+            devId: devHex,
+            uId: objLogin
+        })
+        return notification
+    }
+
+    async createNotificationAcceptAccessRequest(ownerId: number,
+                                                deviceId: number,
+                                                objUserId: number,
+                                                objUserName: string,
+                                                objLogin: string,
+                                                devHex: string,
+                                                deviceName: string) {
+        await this.removeIrrelevantNotification(ownerId, [
+            MsgTypes.ACCEPT_USER_ADD
+        ], deviceId, objUserId)
+        const text = `${objUserName} is asking for an access to ${deviceName}`
+        const notification = await this.createNotification({
+            userId: ownerId,
+            msgType: MsgTypes.ACCEPT_USER_ADD,
+            severity: ENotificationSeverity.ACTION,
+            deviceId: deviceId,
+            deviceHex: devHex,
+            objUserId: objUserId,
+            objUserName: objUserName,
+            text: text
+        })
+        await this.historyService.createHistoryItem(ownerId, {
+            text: text,
+            type: THistoryMsgType.Notification,
+            devId: devHex,
+            uId: objLogin
+        })
+        return notification
     }
 }

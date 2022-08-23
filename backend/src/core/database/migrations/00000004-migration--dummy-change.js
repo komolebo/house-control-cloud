@@ -62,7 +62,7 @@ module.exports = {
         primaryKey: true,
       },
       deviceId: { type: Sequelize.INTEGER, allowNull: false },
-      sourceUserId: { type: Sequelize.INTEGER, allowNull: true },
+      objUserId: { type: Sequelize.INTEGER },
       msgType: {
         type: Sequelize.ENUM(
           "YOU_GOT_ACCESS",
@@ -74,6 +74,7 @@ module.exports = {
           "ALL_USERS_CLEAR",
           "ACCEPT_USER_ADD",
           "ACCEPT_USER_REMOVE",
+          "ACCEPT_OWNER_RIGHTS",
           "SUBSCRIPTION_EXPIRED",
           "SUBSCRIPTION_PROLONGED"
         ),
@@ -84,8 +85,10 @@ module.exports = {
         allowNull: false,
       },
       text: { type: Sequelize.STRING },
+      userNotificationFkId: { type: Sequelize.INTEGER, allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
+      routineId: { type: Sequelize.INTEGER, allowNull: true },
     });
     await queryInterface.createTable("history", {
       id: {
@@ -144,6 +147,24 @@ module.exports = {
       updatedAt: { type: Sequelize.DATE, allowNull: false },
       userAuthId: { type: Sequelize.INTEGER, allowNull: true },
     });
+    await queryInterface.createTable("routines", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      type: {
+        type: Sequelize.ENUM(
+          "ACCEPT_MEMBER_BECOME_OWNER",
+          "ACCEPT_USER_GRANT_ACCESS"
+        ),
+        allowNull: false,
+      },
+      objUserId: { type: Sequelize.INTEGER },
+      objDeviceId: { type: Sequelize.INTEGER },
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+    });
     await queryInterface.addConstraint("roles", {
       references: { table: "users", field: "id" },
       onDelete: "CASCADE",
@@ -164,9 +185,17 @@ module.exports = {
       references: { table: "users", field: "id" },
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
-      fields: ["sourceUserId"],
+      fields: ["userNotificationFkId"],
       type: "foreign key",
-      name: "fk_notifications_sourceUserId_users",
+      name: "fk_notifications_userNotificationFkId_users",
+    });
+    await queryInterface.addConstraint("notifications", {
+      references: { table: "routines", field: "id" },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
+      fields: ["routineId"],
+      type: "foreign key",
+      name: "fk_notifications_routineId_routines",
     });
     await queryInterface.addConstraint("history", {
       references: { table: "users", field: "id" },
@@ -215,7 +244,11 @@ module.exports = {
     await queryInterface.removeConstraint("roles", "fk_roles_deviceId_devices");
     await queryInterface.removeConstraint(
       "notifications",
-      "fk_notifications_sourceUserId_users"
+      "fk_notifications_userNotificationFkId_users"
+    );
+    await queryInterface.removeConstraint(
+      "notifications",
+      "fk_notifications_routineId_routines"
     );
     await queryInterface.removeConstraint("history", "fk_history_userId_users");
     await queryInterface.removeConstraint(
@@ -235,5 +268,6 @@ module.exports = {
     await queryInterface.dropTable("preferences");
     await queryInterface.dropTable("blacklist");
     await queryInterface.dropTable("auth");
+    await queryInterface.dropTable("routines");
   },
 };

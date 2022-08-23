@@ -14,8 +14,8 @@ darkTheme = createTheme(darkTheme, {
             disabled: "rgba(255,255,255,0.4)"
         },
         info: {
-            main: lightTheme.palette.info.light,
-            dark: "grey"
+            // main: lightTheme.palette.info.light,
+            // dark: "grey"
         },
         primary: {
             light: "#3f3e8b",

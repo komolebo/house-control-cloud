@@ -30,4 +30,4 @@ export const HISTORY_MSG_TYPES = [
     THistoryMsgType[THistoryMsgType.Account],
     THistoryMsgType[THistoryMsgType.Notification],
     ];
-
+export const DEFAULT_HISTORY_TYPE = THistoryMsgType[THistoryMsgType.None]
