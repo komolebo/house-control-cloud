@@ -8,6 +8,7 @@ import {Roles} from "./role.entity";
 import {NotificationService} from "../notification/notification-wrapper.service";
 import {RoutineService} from "../notification/routine.service";
 import {SocketService} from "../../sockets/socket.service";
+import {InviteUser_Dto} from "./dto/cruDto";
 
 @Injectable()
 export class DevicesService {
@@ -275,12 +276,12 @@ export class DevicesService {
         throw new HttpException("User is not restrocted from device", HttpStatus.NOT_MODIFIED)
     }
 
-    async inviteUser(uLogin: string, thisUID: number, devHex: string, role: string) {
-        const objUser = await this.usersRepository.findOne({where: {login: uLogin}})
+    async inviteUser(thisUID: number, devHex: string, inviteUser_Dto: InviteUser_Dto) {
+        const objUser = await this.usersRepository.findOne({where: {login: inviteUser_Dto.login}})
         if(!objUser) throw new HttpException("User does not exist", HttpStatus.NOT_FOUND)
 
-        this.logger.warn(`inviteUser: uLogin=${uLogin} hex=${devHex} by req of thisUid=${thisUID} role=${role}`);
-        uLogin = uLogin.toLowerCase()
+        this.logger.warn(`inviteUser: uLogin=${inviteUser_Dto.login} hex=${devHex} by req 
+            of thisUid=${thisUID} role=${inviteUser_Dto.role}`);
 
         // check if you are an owner for this device
         const device = await this.deviceRepository.findOne({
@@ -289,10 +290,10 @@ export class DevicesService {
         })
         if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
 
-        if (this._isUserLoginConnectedToDevice(uLogin, device)) {
+        if (this._isUserLoginConnectedToDevice(inviteUser_Dto.login, device)) {
             throw new HttpException("User already connected", HttpStatus.CONFLICT)
         }
-        return await this.addUserToDevice (device, objUser, role);
+        return await this.addUserToDevice (device, objUser, inviteUser_Dto.role);
         // throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
     }
 

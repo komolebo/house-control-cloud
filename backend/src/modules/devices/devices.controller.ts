@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    UseGuards,
+    UseInterceptors,
+    UsePipes,
+    ValidationPipe
+} from '@nestjs/common';
 import {DevicesService} from "./devices.service";
 import {CreateDevice_Dto} from "./dto/create_device__dto";
 import {BindDevice_Dto, RoleValues} from "./dto/roles__dto";
@@ -6,6 +18,8 @@ import {ENDPOINT_PARAM_USER_ID, UserIsUserGuard} from "../../core/guards/UserIsU
 import {ENDPOINT_PARAM_DEVICE_ID, OwnerForDeviceGuard} from "../../core/guards/OwnerForDevice.guard";
 import {DispatchPreInterceptor} from "../../core/interceptors/dispatch-pre-interceptor.service";
 import {DispatchPostInterceptor} from "../../core/interceptors/dispatch-post-interceptor.service";
+import {UserRegistrationDto} from "../users/dto/userLoginDto";
+import {InviteUser_Dto} from "./dto/cruDto";
 
 
 @Controller('api/devices')
@@ -77,15 +91,15 @@ export class DevicesController {
         return this.devicesService.removeRole(Number(objUserId), Number(userId), devHex);
     }
 
+    @UsePipes(new ValidationPipe({transform: true}))
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
     @UseInterceptors(DispatchPostInterceptor)
-    @Post(`invite/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}/:login/:role`)
+    @Post(`invite/:${ENDPOINT_PARAM_DEVICE_ID}/:${ENDPOINT_PARAM_USER_ID}`)
     async reqInviteUser(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
                         @Param(ENDPOINT_PARAM_USER_ID) userId: number,
-                        @Param('login') userLogin: string,
-                        @Param('role') role: string) {
-        return this.devicesService.inviteUser(userLogin, Number(userId), devHex, role);
+                        @Body() body: InviteUser_Dto) {
+        return this.devicesService.inviteUser(Number(userId), devHex, body);
     }
 
     @UseGuards(UserIsUserGuard)

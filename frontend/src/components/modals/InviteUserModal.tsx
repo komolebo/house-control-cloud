@@ -62,7 +62,7 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
             })
             .catch(resp => {
                 if (resp.response.status === 404) {
-                    setWarning("User ID not found")
+                    setWarning("User not found")
                 } else if (resp.response.status === 409) {
                     onAction({
                         success: false,

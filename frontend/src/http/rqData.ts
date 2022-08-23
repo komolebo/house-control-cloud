@@ -70,7 +70,9 @@ export function nestPostUnsubscribeFromDevice(userId: number, devHex: string) {
     return host.post(`api/devices/forget/${devHex}/${userId}`) // Add guard not the last
 }
 export function nestPostInviteUser(userId: number, devHex: string, userLogin: string, role: string) {
-    return host.post(`api/devices/invite/${devHex}/${userId}/${userLogin}/${role}`)
+    return host.post(`api/devices/invite/${devHex}/${userId}`, {
+        login: userLogin, role: role
+    })
 }
 export function nestPostClearDeviceUsers(userId: number, devHex: string) {
     return host.post(`api/devices/reset/${userId}/${devHex}`)
