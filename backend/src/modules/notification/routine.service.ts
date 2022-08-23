@@ -106,9 +106,8 @@ export class RoutineService {
             const isLastNotification = routine.notifications.length === 1;
             if (isLastNotification) {
                 const device = await this.deviceRepository.findByPk(routine.objDeviceId, {include: Users});
-                const objUser = device.users.find(u => u.id === routine.objUserId)
+                const objUser = await this.userRepository.findByPk(routine.objUserId);
                 await this.deviceService.setNewRole(objUser, RoleValues.Owner, device)
-                this.socketService.dispatchDevUpdateMsg(device.users.map(el => el.id))
             }
             await this.removeRoutine(routine)
         }

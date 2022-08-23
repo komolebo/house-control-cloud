@@ -72,7 +72,7 @@ export class DevicesController {
 
     @UseGuards(UserIsUserGuard)
     @UseGuards(OwnerForDeviceGuard)
-    @UseInterceptors(DispatchPreInterceptor)
+    // @UseInterceptors(DispatchPreInterceptor)
     @Post(`modify/:${ENDPOINT_PARAM_USER_ID}/:${ENDPOINT_PARAM_DEVICE_ID}/:obj_user_id/:role`)
     async reqModifyAccess(@Param(ENDPOINT_PARAM_DEVICE_ID) devHex: string,
                           @Param(ENDPOINT_PARAM_USER_ID) userId: number,

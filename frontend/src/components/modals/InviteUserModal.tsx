@@ -18,6 +18,7 @@ import {widerMuiBtn} from "../../styles/common/buttons.css";
 import {nestPostInviteUser} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
+import {StatusCodes} from "http-status-codes/build/es";
 
 interface IInvitElemProp {
     onAction: (resInfo: IModalDoneDisplayInfo) => void
@@ -52,12 +53,21 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
     const handleUserInvite = () => {
         userInfo && nestPostInviteUser(userInfo.id, data.devInfo.hex, userLogin, TDevRole[role])
             .then(resp => {
+                console.error(resp)
                 if (resp.status === 201) {
-                    onAction({
-                        success: true,
-                        header: `User invited`,
-                        message: `User ${userLogin} can now access with rights ${TDevRole[role]}`
-                    });
+                    if (resp.data === StatusCodes.CREATED) {
+                        onAction({
+                            success: true,
+                            header: `User invited`,
+                            message: `User ${userLogin} can now access with ${TDevRole[role]} rights`
+                        });
+                    } else if (resp.data === StatusCodes.ACCEPTED) {
+                        onAction({
+                            success: true,
+                            header: `User access requested`,
+                            message: `Waiting for other owners to provide new OWNER rights`
+                        });
+                    }
                 }
             })
             .catch(resp => {
@@ -67,7 +77,8 @@ const InviteUsrElement: FC<IInvitElemProp> = ({onAction}) => {
                     onAction({
                         success: false,
                         header: `User not invited`,
-                        message: `User ${userLogin} already connected to device ${data.devInfo.hex}`
+                        message: resp.response.data.message
+                        // message: `User ${userLogin} already connected to device ${data.devInfo.hex}`
                     });
                 }
             })

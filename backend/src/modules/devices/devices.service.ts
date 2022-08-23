@@ -219,12 +219,7 @@ export class DevicesService {
         const manyOwners = await this._calcOwnerPerDevice(device) > 1;
         if(newRole === RoleValues.Owner && manyOwners) {
             // coordinate access rights upgrade to OWNER between all owners
-            const curOwner = device.users.find(el => el.id === thisUID);
-            const allOwners = await this._getOwnersListPerDevice(device)
-            await this.routineService.createRoutineModifyToOwner(device,
-                curOwner,
-                allOwners.filter(el => el.id !== thisUID),
-                objUser)
+            await this.setModifyOwnerRoutine(device, thisUID, objUser);
             return HttpStatus.ACCEPTED
         } else {
             await this.setNewRole (objUser, newRole, device);
@@ -232,18 +227,35 @@ export class DevicesService {
         }
     }
 
-    async setNewRole(objUser: Users, newRole: RoleValues, device: Devices) {
-        if(!objUser || !objUser.get('Roles')) throw new HttpException("Incorrect user data", HttpStatus.NOT_FOUND);
+    private async setModifyOwnerRoutine(device: Devices, thisUID: number, objUser: Users) {
+        const curOwner = device.users.find (el => el.id === thisUID);
+        const allOwners = await this._getOwnersListPerDevice (device)
+        await this.routineService.createRoutineModifyToOwner (device,
+            curOwner,
+            allOwners.filter (el => el.id !== thisUID),
+            objUser)
+    }
 
-        const objRole = objUser["dataValues"]["Roles"]
-        objRole.set ("role", newRole)
-        await objRole.save ()
-        await this.notificationService.handleModifyUser (
-            this._getOwnersListPerDevice (device),
-            objUser,
-            device,
-            newRole
-        )
+    async setNewRole(objUser: Users, newRole: RoleValues, device: Devices) {
+        if(!objUser) throw new HttpException("Incorrect user data", HttpStatus.NOT_FOUND);
+
+        const objUserIsConnected = objUser.get('Roles');
+        if(objUserIsConnected) {
+            const objRole = objUser["dataValues"]["Roles"]
+            objRole.set ("role", newRole)
+            await objRole.save ()
+            await this.notificationService.handleModifyUser (
+                this._getOwnersListPerDevice (device),
+                objUser,
+                device,
+                newRole
+            )
+        }
+        else {
+            await this.addUserToDevice(device, objUser, newRole)
+        }
+        this.socketService.dispatchDevUpdateMsg(device.users.map(el => el.id))
+        return HttpStatus.CREATED;
     }
 
     async removeRole(uId: number, thisUID: number, devHex: string) {
@@ -283,7 +295,6 @@ export class DevicesService {
         this.logger.warn(`inviteUser: uLogin=${inviteUser_Dto.login} hex=${devHex} by req 
             of thisUid=${thisUID} role=${inviteUser_Dto.role}`);
 
-        // check if you are an owner for this device
         const device = await this.deviceRepository.findOne({
             where: {hex: devHex},
             include: {model: Users},
@@ -291,9 +302,15 @@ export class DevicesService {
         if(!device || !device.users) throw new HttpException("Incorrect device data", HttpStatus.NOT_FOUND)
 
         if (this._isUserLoginConnectedToDevice(inviteUser_Dto.login, device)) {
-            throw new HttpException("User already connected", HttpStatus.CONFLICT)
+            throw new HttpException(`User ${inviteUser_Dto.login} already connected to device ${device.hex}`, HttpStatus.CONFLICT)
         }
-        return await this.addUserToDevice (device, objUser, inviteUser_Dto.role);
+
+        if (inviteUser_Dto.role === RoleValues.Owner) {
+            await this.setModifyOwnerRoutine(device, thisUID, objUser);
+            return HttpStatus.ACCEPTED;
+        }
+        await this.addUserToDevice (device, objUser, inviteUser_Dto.role);
+        return HttpStatus.CREATED;
         // throw new HttpException("User is not invited", HttpStatus.NOT_MODIFIED)
     }
 
