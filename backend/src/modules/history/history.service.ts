@@ -3,7 +3,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Users} from "../users/user.entity";
 import {Histories} from "./history.entity";
 import {CreateHistoryItem_Dto, HistoryRetrieval_Dto, THistoryMsgType} from "./dto/history_dto";
-import {Op} from "sequelize";
+import sequelize, {Op} from "sequelize";
 import * as moment from "moment";
 
 @Injectable()
@@ -58,9 +58,12 @@ export class HistoryService {
                 [Op.and]: [
                     type ? {type: type} : {},
                     queryParam.text ? {
-                        text: {
-                            [Op.like]: '%' + queryParam.text + '%'
-                        }
+                            text: sequelize.where(sequelize.fn(
+                                    'LOWER',
+                                    sequelize.col('text')),
+                                'LIKE',
+                                '%' + queryParam.text.toLowerCase() + '%'
+                            )
                     } : {},
 
                     {

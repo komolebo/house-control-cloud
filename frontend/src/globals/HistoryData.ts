@@ -23,7 +23,7 @@ export type IHistoryItem = {
 }
 
 
-export const PAGE_ENTRIES_NUM = 30;
+export const PAGE_ENTRIES_NUM = 50;
 export const HISTORY_MSG_TYPES = [
     THistoryMsgType[THistoryMsgType.None],
     THistoryMsgType[THistoryMsgType.Devices],

@@ -525,7 +525,7 @@ export const HistoryPage: FC = () => {
                             startIcon={
                                 <img src={logoLoadMore} alt={"Load more entries"}/>
                             }
-                    > Load more [{PAGE_ENTRIES_NUM}]
+                    > Load more ({PAGE_ENTRIES_NUM})
                     </Button>
                 </div> : <></>
             }

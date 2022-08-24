@@ -135,10 +135,6 @@ export class RoutineService {
             const notificationIdList = routine.notifications.map(el => el.userNotificationFkId);
             this.socketService.dispatchNotificationMsg(notificationIdList);
         }
-
-        if (cmd === NotificationCmd.Block) {
-            await this.preferenceService.putUIdToBlackList(notification.userNotificationFkId, notification.objUserId);
-        }
     }
 
     async processRoutineAction(notifId: number,
@@ -161,6 +157,10 @@ export class RoutineService {
             case ERoutineType.ACCEPT_USER_GRANT_ACCESS:
                 await this.processGrantAccess(notification, notification.routine, cmd);
                 break;
+        }
+
+        if (cmd === NotificationCmd.Block) {
+            await this.preferenceService.putUIdToBlackList(notification.userNotificationFkId, notification.objUserId);
         }
     }
 

@@ -1,8 +1,8 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {devItemDelim} from "../../styles/DeviceItem.css"
-import {h3Font, h4Font} from "../../styles/common/fonts.css";
+import {h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField, Typography} from "@mui/material";
-import logoStart from "../../assets/arrow-start.svg"
+import {ReactComponent as LogoStart} from "../../assets/arrow-start.svg";
 import logoEdit from "../../assets/edit-device.svg";
 import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
@@ -90,7 +90,10 @@ const DevItem: FC<IProps> = ({dev}) => {
                       sx={{
                           mt: 2
                       }}
-                      endIcon={<img src={logoStart} alt={"Logo start"}/>}
+                      endIcon={
+                          // <img src={logoStart} alt={"Logo start"}/>
+                          <LogoStart fill={dev.active ? "white" : "grey"}/>
+                      }
                       className={shortMuiBtn}
                       disabled={!dev.active}
             > START </Button>

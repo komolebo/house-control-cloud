@@ -16,7 +16,7 @@ import logoEdit from "../assets/edit-device.svg";
 import logoVerified from "../assets/verified.svg";
 import logoUncollapse from "../assets/uncollapse.svg";
 import logoCollapse from "../assets/collapse.svg";
-import logoMinus from "../assets/blue-minus2.svg";
+import {ReactComponent as LogoMinus} from "../assets/filled-minus.svg";
 import {spaceNoPad, spaceTextEdit} from "../styles/common/spaces.css";
 import {TBlItem, TUPref, TUser} from "../globals/AccountData";
 import {colBlue, darkBoxBg, lightBoxBg} from "../styles/common/colors.css";
@@ -411,7 +411,7 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
                         return <tr key={i} className={simpleCasketTr}>
                                 <td className={[floatr, cntrVContent, simpleCasketRo].join(' ')}>
                                     <IconButton onClick={ () => handleUnblockUser(i) }>
-                                        <img src={logoMinus} alt={"Minus user"}/>
+                                        <LogoMinus fill="#1690E9"/>
                                     </IconButton>
                                 </td>
                                 <td className={[cntrVContent, simpleCasketRo].join(' ')}>

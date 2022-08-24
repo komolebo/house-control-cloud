@@ -1,12 +1,9 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {Box, Button, Card, Typography} from "@mui/material";
-import {h4Font, h4FontBlue, h5Font} from "../styles/common/fonts.css";
-import logoBellBlue from "../assets/bell-blue.svg"
-import logoBellGreen from "../assets/bell-green.svg"
-import logoBellRed from "../assets/bell-red.svg"
+import {h4FontBlue} from "../styles/common/fonts.css";
+import {ReactComponent as LogoBell} from "../assets/bell.svg";
 import logoClose from "../assets/close.svg"
-import {imgHover, mediumMuiBtn, shorterMuiBtn, shortMuiBtn} from "../styles/common/buttons.css";
-import {colBorderBlue, colBorderGreen, colBorderRed} from "../styles/common/colors.css"
+import {imgHover, shortMuiBtn} from "../styles/common/buttons.css";
 import {styleHeights} from "../styles/common/customMuiStyle";
 import {INotifyItemProps, TNotifyItem, TNotifySeverity} from "../globals/NotificationData";
 import {deleteNotification, getNotificationsListPerUser, nestPostRoutine} from "../http/rqData";
@@ -16,6 +13,19 @@ import moment from "moment";
 
 interface INotificationProp {
     onNotificationStatusChange: () => void
+}
+
+const colorBySeverity = (severity: TNotifySeverity): string => {
+    switch (severity) {
+        case TNotifySeverity.Action:
+            return "#1690E9";
+        case TNotifySeverity.Error:
+            return "#C0392B";
+        case TNotifySeverity.Info:
+            return "#2ED573";
+        default:
+            return colorBySeverity(TNotifySeverity.Info);
+    }
 }
 
 const buttonStyleByAction = (action: string) => {
@@ -40,25 +50,18 @@ const NotifyElement: FC<INotifyItemProps> = ({item, onAct, onDelete}) => {
         })
     }
 
-    return <Box sx={{
-                borderBottom: "0.5px solid rgba(47, 53, 66, 0.5)",
+    return <Box
+            sx={{
+                borderBottom: "0.5px solid rgba(120, 120, 120, 0.3)",
                 display: "flex",
                 flexDirection: "row", pt: 2, pb: 2, mr: 2,
+                borderRadius: "0 7px 7px 0",
+                borderLeft: "5px solid"
             }}
-             className={item.severity === TNotifySeverity.Action
-                 ? colBorderBlue
-                 : item.severity === TNotifySeverity.Info
-                     ? colBorderGreen
-                     : colBorderRed
-             }
+            style={{borderLeftColor: colorBySeverity(item.severity)}}
         >
             <div style={{paddingLeft: 15}}>
-                {item.severity === TNotifySeverity.Action
-                    ? <img src={logoBellBlue} alt={"Logo bel blue"}/>
-                    : item.severity === TNotifySeverity.Info
-                        ? <img src={logoBellGreen} alt={"Logo bel green"}/>
-                        : <img src={logoBellRed} alt={"Logo bel red"}/>
-                }
+                <LogoBell fill={ colorBySeverity(item.severity) }/>
             </div>
 
             <Box sx={{flexGrow: 6, pl: 2, pr: 2}}>
