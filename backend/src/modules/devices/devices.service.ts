@@ -228,10 +228,8 @@ export class DevicesService {
     }
 
     private async setModifyOwnerRoutine(device: Devices, thisUID: number, objUser: Users) {
-        const curOwner = device.users.find (el => el.id === thisUID);
         const allOwners = await this._getOwnersListPerDevice (device)
         await this.routineService.createRoutineModifyToOwner (device,
-            curOwner,
             allOwners.filter (el => el.id !== thisUID),
             objUser)
     }

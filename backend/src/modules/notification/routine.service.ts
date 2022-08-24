@@ -35,19 +35,29 @@ export class RoutineService {
         return routine !== null
     }
 
-    async createRoutineModifyToOwner(deviceWithUsers: Devices,
-                                     ownerActor: Users,
-                                     restOwners: Users[],
-                                     objUser: Users) {
-        const routineType = ERoutineType.ACCEPT_MEMBER_BECOME_OWNER;
+    private async _removeRoutine(routine: Routines) {
+        const notificationIdList = routine.notifications.map(n => n.userNotificationFkId)
+        await routine.destroy()
+        this.socketService.dispatchNotificationMsg(notificationIdList);
+    }
+
+    private async _createRoutine(deviceWithUsers: Devices,
+                                 objUser: Users,
+                                 routineType: ERoutineType) {
         if (await this._isRoutineExist(routineType, deviceWithUsers.id, objUser.id)) {
             throw new HttpException("Request already pending", HttpStatus.CONFLICT);
         }
-        const routine = await this.routineRepository.create({
+        return await this.routineRepository.create({
             type: routineType,
             objDeviceId: deviceWithUsers.id,
             objUserId: objUser.id
         })
+    }
+
+    async createRoutineModifyToOwner(deviceWithUsers: Devices,
+                                     restOwners: Users[],
+                                     objUser: Users) {
+        const routine = await this._createRoutine(deviceWithUsers, objUser, ERoutineType.ACCEPT_MEMBER_BECOME_OWNER)
 
         for (const owner of restOwners) {
             const notification = await this.notificationService.createNotificationAcceptUpgrade(
@@ -66,15 +76,7 @@ export class RoutineService {
     async createRoutineUserGrantAccess(deviceWithUsers: Devices,
                                  owners: Users[],
                                  objUser: Users) {
-        const routineType = ERoutineType.ACCEPT_USER_GRANT_ACCESS;
-        if (await this._isRoutineExist(routineType, deviceWithUsers.id, objUser.id)) {
-            throw new HttpException("Request already pending", HttpStatus.CONFLICT);
-        }
-        const routine = await this.routineRepository.create({
-            type: routineType,
-            objDeviceId: deviceWithUsers.id,
-            objUserId: objUser.id
-        })
+        const routine = await this._createRoutine(deviceWithUsers, objUser, ERoutineType.ACCEPT_USER_GRANT_ACCESS)
 
         for (const owner of owners) {
             const notification = await this.notificationService.createNotificationAcceptAccessRequest(
@@ -90,16 +92,10 @@ export class RoutineService {
         }
     }
 
-    private async removeRoutine(routine: Routines) {
-        const notificationIdList = routine.notifications.map(n => n.userNotificationFkId)
-        await routine.destroy()
-        this.socketService.dispatchNotificationMsg(notificationIdList);
-    }
-
     async processModifyToOwner(notification: Notifications, routine: Routines, cmd: NotificationCmd) {
         if (cmd === NotificationCmd.Close) {
             // if close -> remove routine, request is ignored
-            await this.removeRoutine(routine);
+            await this._removeRoutine(routine);
         } else if (cmd === NotificationCmd.Accept) {
             // Accept -> remove notification, check routine is completed
             // await routine.$remove("notifications", notification)
@@ -109,7 +105,7 @@ export class RoutineService {
                 const objUser = await this.userRepository.findByPk(routine.objUserId);
                 await this.deviceService.setNewRole(objUser, RoleValues.Owner, device)
             }
-            await this.removeRoutine(routine)
+            await this._removeRoutine(routine)
         }
     }
 
@@ -118,7 +114,7 @@ export class RoutineService {
             // if close -> if no more user notifications -> remove routine
             const isLastNotification = routine.notifications.length === 1;
             if (isLastNotification) {
-                await this.removeRoutine(routine);
+                await this._removeRoutine(routine);
             } else {
                 await this.notificationService.removeNotificationObj(notification);
             }
