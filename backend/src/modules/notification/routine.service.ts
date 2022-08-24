@@ -11,6 +11,7 @@ import {Devices} from "../devices/device.entity";
 import {InjectModel} from "@nestjs/sequelize";
 import {SocketService} from "../../sockets/socket.service";
 import {Op} from "sequelize";
+import {PreferenceService} from "../preference/preference.service";
 
 @Injectable()
 export class RoutineService {
@@ -20,6 +21,7 @@ export class RoutineService {
                 @InjectModel (Devices) private deviceRepository: typeof Devices,
                 @Inject(forwardRef(() => DevicesService)) private deviceService: DevicesService,
                 private notificationService: NotificationFunctionService,
+                private preferenceService: PreferenceService,
                 private socketService: SocketService) {}
 
     private async _isRoutineExist(type: ERoutineType, devId: number, objUserId: number) {
@@ -76,19 +78,24 @@ export class RoutineService {
     async createRoutineUserGrantAccess(deviceWithUsers: Devices,
                                  owners: Users[],
                                  objUser: Users) {
-        const routine = await this._createRoutine(deviceWithUsers, objUser, ERoutineType.ACCEPT_USER_GRANT_ACCESS)
-
+        const notifications = [];
         for (const owner of owners) {
-            const notification = await this.notificationService.createNotificationAcceptAccessRequest(
-                owner.id,
-                deviceWithUsers.id,
-                objUser.id,
-                objUser.full_name,
-                objUser.login,
-                deviceWithUsers.hex,
-                deviceWithUsers.name
-            )
-            await routine.$add("notifications", notification)
+            if (!await this.preferenceService.isUserIdBlockedByUserId(owner.id, objUser.id)) {
+                notifications.push(await this.notificationService.createNotificationAcceptAccessRequest(
+                    owner.id,
+                    deviceWithUsers.id,
+                    objUser.id,
+                    objUser.full_name,
+                    objUser.login,
+                    deviceWithUsers.hex,
+                    deviceWithUsers.name
+                ))
+            }
+            // await routine.$add("notifications", notification)
+        }
+        if (notifications.length) {
+            const routine = await this._createRoutine(deviceWithUsers, objUser, ERoutineType.ACCEPT_USER_GRANT_ACCESS)
+            await routine.$set("notifications", notifications);
         }
     }
 
@@ -127,6 +134,10 @@ export class RoutineService {
             await routine.destroy()
             const notificationIdList = routine.notifications.map(el => el.userNotificationFkId);
             this.socketService.dispatchNotificationMsg(notificationIdList);
+        }
+
+        if (cmd === NotificationCmd.Block) {
+            await this.preferenceService.putUIdToBlackList(notification.userNotificationFkId, notification.objUserId);
         }
     }
 

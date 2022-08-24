@@ -65,6 +65,40 @@ export class PreferenceService {
         }))
     }
 
+    async isUserIdBlockedByUserId(thisUID: number, objUserId: number) {
+        const thisUser = await Users.findByPk(thisUID, {
+            include: [{
+                model: Preference,
+                include: [Blacklist]
+            }]
+        })
+        if (!thisUser) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+
+        return this.isUIdInBlackList(thisUser.preference.black_list, objUserId);
+    }
+
+    private async isUIdInBlackList(blackList: Blacklist[], objUserId: number) {
+        return blackList.find(el => el.blockUserId === objUserId) !== undefined
+    }
+
+    async putUIdToBlackList(thisUID: number, objUserId: number) {
+        const user = await this.userRepository.findByPk(thisUID, {
+            include: [{
+                model: Preference,
+                include: [Blacklist]
+            }]
+        })
+        if (!user) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+
+        if (!await this.isUIdInBlackList(user.preference.black_list, objUserId)) {
+            const blackListItem = await Blacklist.create({
+                blockUserId: objUserId,
+                prefId: user.preference.id
+            })
+            await user.preference.$add("black_list", blackListItem)
+        }
+    }
+
     async updateUserPref(userId: number, prefDto: PreferenceDto) {
         const user = await this.userRepository.findOne({
             where: {id: userId},

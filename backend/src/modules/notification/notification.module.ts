@@ -15,6 +15,7 @@ import {Notifications} from "./notification.entity";
 import {RoutineService} from "./routine.service";
 import {Devices} from "../devices/device.entity";
 import {DevicesModule} from "../devices/devices.module";
+import {PreferenceModule} from "../preference/preference.module";
 
 @Module({
   controllers: [NotificationController],
@@ -28,6 +29,7 @@ import {DevicesModule} from "../devices/devices.module";
       SequelizeModule.forFeature([Notifications, Users, Devices, Roles, Routines]),
       SocketModule,
       HistoryModule,
+      PreferenceModule
   ]
 })
 export class NotificationModule {}

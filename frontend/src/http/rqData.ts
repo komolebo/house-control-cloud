@@ -151,8 +151,8 @@ export function nestGetPreference(userId: number) {
 export function nestGetBlackList(userId: number) {
     return host.get("api/user/preference/black_list/" + userId)
 }
-export function postUnblockUser(userId: number) {
-    return host.delete("api/user/preference/black_list/" + userId)
+export function nestDeleteUnblockUser(userId: number, unblockId: number) {
+    return host.delete(`api/user/preference/black_list/${userId}/${unblockId}`)
 }
 export function nestPatchUserPref(userId: number, pref: TUPref) {
     return host.patch("api/user/preference/" + userId, pref)

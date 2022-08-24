@@ -6,10 +6,10 @@ import {
     simpleCasketRo,
     simpleCasketTr
 } from '../styles/common/pages.css'
-import {h5Font, helpText} from "../styles/common/fonts.css";
+import {helpText} from "../styles/common/fonts.css";
 import {NavSeq} from "./NavSeq";
 import {ACCOUNT_PAGE} from "../utils/consts";
-import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
+import {shorterMuiBtn, wideMuiBtn} from "../styles/common/buttons.css";
 import {Avatar, Button, Card, FormControlLabel, IconButton, Switch, TextField, Typography} from "@mui/material";
 import {cntrVContent, flexr, floatr} from "../styles/common/position.css";
 import logoEdit from "../assets/edit-device.svg";
@@ -26,12 +26,10 @@ import {
     nestGetBlackList,
     nestGetUserFullInfo,
     nestPatchUpdateUserInfo,
-    nestPostRemoveAvatar,
-    postUnblockUser,
+    nestDeleteUnblockUser,
     nestPatchUserPref
 } from "../http/rqData";
 import {MODAL_TYPE, useGlobalModalContext} from "./modals/ModalProvider";
-import {LoadingButton} from "@mui/lab";
 import PhoneInputComponent, {DEFAULT_COUNTRY_CODE} from "./elements/PhoneInputComponent";
 import {DarkModeContext} from "../globals/providers/DarkModeProvider";
 import logoAvaEdit from "../assets/ava-edit.svg";
@@ -75,7 +73,7 @@ const initialBaseInfoState: IBaseInfoState = {
 }
 
 const AccountDataElementL: FC<IPropBaseInfo> = ({user, onChange}) => {
-    const {avatarSrc, setAvatarSrc, updateUserInfo, userInfo} = useContext(UserGlobalContext);
+    const {avatarSrc, setAvatarSrc, updateUserInfo} = useContext(UserGlobalContext);
     const {showModal, hideModal} = useGlobalModalContext();
     let [state, setState] = useState<IBaseInfoState>(initialBaseInfoState)
 
@@ -364,7 +362,7 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
 
     const handleUnblockUser = (i: number) => {
         if (!user.preference || !blackList) return;
-        postUnblockUser(blackList[i].id).then(res => {
+        nestDeleteUnblockUser(user.id, blackList[i].id).then(res => {
             console.log(res.status)
             if (res.status) {
                 onChange();
@@ -403,6 +401,7 @@ const AccountDataElementR: FC<IPropExtraInfo> = ({user, onChange, blackList}) =>
         </IconButton>
         <Typography variant="h4">Block list</Typography>
         <div className={helpText}>{blackList.length} blocked users are forbidden to send you notification</div>
+        <div className={helpText}>They won't be able to get your approval</div>
         <br/>
         { unwrap ?
             <table className={[simpleCasket, boxClassName].join(' ')}>
