@@ -40,6 +40,7 @@ import {commonPage} from "../styles/common/pages.css";
 import logoLoadMore from "../assets/arrow-down-blue.svg";
 import {ReactComponent as LogoMenuDelete} from '../assets/delete-item.svg';
 import {ReactComponent as LogoMenuFilter} from '../assets/menu-item-filter.svg';
+import {LoadingButton} from "@mui/lab";
 
 enum EHistorySetting {
     delete,
@@ -75,6 +76,8 @@ interface IHistoryState {
 
     offsetStep: number;
     moreData: boolean;
+
+    loadingMore: boolean;
 }
 
 
@@ -101,6 +104,8 @@ const initialState = {
 
     offsetStep: 0,
     moreData: true,
+
+    loadingMore: false,
 };
 const initialFilterState: IFilterState = {
     // filters
@@ -147,8 +152,9 @@ export const HistoryPage: FC = () => {
                 }
 
                 state.offsetStep += 1
-                setState({...state})
             }
+        }).finally(() => {
+            setState({...state, loadingMore: false})
         })
     }
 
@@ -286,6 +292,11 @@ export const HistoryPage: FC = () => {
             filterState.filterUid = "";
         }
         clearLoadedData();
+        syncData();
+    }
+
+    const handleLoadMore = () => {
+        setState({...state, loadingMore: true})
         syncData();
     }
 
@@ -519,14 +530,16 @@ export const HistoryPage: FC = () => {
             { state.moreData
                 ? <div className={cntrContent}>
 
-                    <Button variant={"outlined"}
-                            sx={{mt: 1}}
-                            onClick={syncData}
-                            startIcon={
-                                <img src={logoLoadMore} alt={"Load more entries"}/>
-                            }
+                    <LoadingButton variant={"outlined"}
+                                   sx={{mt: 1}}
+                                   onClick={handleLoadMore}
+                                   startIcon={
+                                       <img src={logoLoadMore} alt={"Load more entries"}/>
+                                   }
+                                   loading={state.loadingMore}
+                                   loadingPosition="start"
                     > Load more ({PAGE_ENTRIES_NUM})
-                    </Button>
+                    </LoadingButton>
                 </div> : <></>
             }
 
