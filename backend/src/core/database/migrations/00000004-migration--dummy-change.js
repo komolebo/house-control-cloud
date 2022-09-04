@@ -165,6 +165,23 @@ module.exports = {
       objDeviceId: { type: Sequelize.INTEGER },
       createdAt: { type: Sequelize.DATE, allowNull: false },
     });
+    await queryInterface.createTable("releases", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      sys_version: { type: Sequelize.STRING, allowNull: false },
+      bridge: { type: Sequelize.BOOLEAN },
+      socApp: { type: Sequelize.STRING },
+      soc: { type: Sequelize.STRING },
+      hub: { type: Sequelize.STRING },
+      pir: { type: Sequelize.STRING },
+      smoke: { type: Sequelize.STRING },
+      gas: { type: Sequelize.STRING },
+      climate: { type: Sequelize.STRING },
+    });
     await queryInterface.addConstraint("roles", {
       references: { table: "users", field: "id" },
       onDelete: "CASCADE",
@@ -269,5 +286,6 @@ module.exports = {
     await queryInterface.dropTable("blacklist");
     await queryInterface.dropTable("auth");
     await queryInterface.dropTable("routines");
+    await queryInterface.dropTable("releases");
   },
 };
