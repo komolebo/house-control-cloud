@@ -42,6 +42,8 @@ const DevItem: FC<IProps> = ({dev}) => {
             })
     }
 
+    const formattedID = dev.hex.replace(/^(.{2})(.{2})(.{2})(.{2}).*/, '$1:$2:$3:$4');
+
     return <div >
         <Typography variant="h4">Name </Typography>
         {editMode
@@ -63,7 +65,7 @@ const DevItem: FC<IProps> = ({dev}) => {
         }
 
         <Typography variant="h4">ID </Typography>
-        <Typography className={devItemDelim} variant="h3">{dev.hex} </Typography>
+        <Typography className={devItemDelim} variant="h3">{formattedID}</Typography>
 
         <Typography variant="h4">IP </Typography>
         <Typography className={devItemDelim} variant="h3">{dev.ip} </Typography>
