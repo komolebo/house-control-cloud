@@ -9,12 +9,15 @@ import {NotificationService} from "../notification/notification-wrapper.service"
 import {RoutineService} from "../notification/routine.service";
 import {SocketService} from "../../sockets/socket.service";
 import {InviteUser_Dto} from "./dto/cruDto";
+import {THistoryMsgType} from "../history/dto/history_dto";
+import {HistoryService} from "../history/history.service";
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectModel(Devices) private readonly deviceRepository: typeof Devices,
                 @InjectModel(Users) private readonly  usersRepository: typeof Users,
                 private notificationService: NotificationService,
+                private historyService: HistoryService,
                 private routineService: RoutineService,
                 private socketService: SocketService) { }
 
@@ -329,7 +332,7 @@ export class DevicesService {
         return device
     }
 
-    async updateDeviceAlias(thisUID: number, devHex: string, alias: string) {
+    async updateDeviceAlias(thisUID: number, devHex: string, newAlias: string) {
         const user = await this.usersRepository.findOne({
             where: {id: thisUID},
             include: [Devices]
@@ -337,7 +340,19 @@ export class DevicesService {
         if(!user || !user.devices) throw new HttpException("No user data", HttpStatus.NOT_FOUND);
 
         const device = user.devices.find(el => el.hex === devHex);
-        await user.$add('devices', device, {through: {alias: alias}});
+        const oldAlias = device.get('Roles')["dataValues"].alias
+        const oldDeviceName = oldAlias ? oldAlias : device.name;
+
+        if (newAlias === oldDeviceName) throw new HttpException("Device already has this name", HttpStatus.AMBIGUOUS);
+
+        await user.$add('devices', device, {through: {alias: newAlias}});
+
+        const text = `Device '${oldDeviceName}' renamed to '${newAlias}'`;
+        await this.historyService.createHistoryItem(thisUID, {
+            text: text,
+            type: THistoryMsgType.Devices,
+            devId: devHex,
+        })
 
         return user
     }

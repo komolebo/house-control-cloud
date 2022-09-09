@@ -1,6 +1,5 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {devItemDelim} from "../../styles/DeviceItem.css"
-import {h4Font} from "../../styles/common/fonts.css";
 import {Button, TextField, Typography} from "@mui/material";
 import {ReactComponent as LogoStart} from "../../assets/arrow-start.svg";
 import logoEdit from "../../assets/edit-device.svg";
@@ -17,10 +16,11 @@ export interface IProps {
 
 const DevItem: FC<IProps> = ({dev}) => {
     const [editMode, setEditMode] = useState(false);
-    let [name, setName] = useState(dev.name);
     const {userInfo} = useContext(UserGlobalContext);
+    let [name, setName] = useState("");
 
     useEffect(() => {
+        setName(dev.name)
         function handleEscapeKey(event: KeyboardEvent) {
             if (event.code === 'Escape') {
                 setEditMode(false)
@@ -47,7 +47,7 @@ const DevItem: FC<IProps> = ({dev}) => {
     return <div >
         <Typography variant="h4">Name </Typography>
         {editMode
-            ? <div className={[h4Font, devItemDelim].join(' ')}>
+            ? <div className={[devItemDelim].join(' ')}>
                 <TextField
                     error={name.length === 0}
                     helperText={name.length === 0 ? "Name cannot be empty" : ""}
@@ -59,6 +59,7 @@ const DevItem: FC<IProps> = ({dev}) => {
                     onChange={e => setName(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' && handleSave()}
                 />
+                <Typography variant="h6" sx={{ml: 1, mt: 1}}>Please note: current notifications or history items will keep old device name</Typography>
             </div>
             : <Typography className={devItemDelim} variant="h3">{dev.name} </Typography>
             // <div className={[h4Font, devItemDelim].join(' ')}>{dev.name}</div>

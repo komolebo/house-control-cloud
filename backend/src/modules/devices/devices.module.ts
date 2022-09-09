@@ -11,6 +11,7 @@ import {NotificationModule} from "../notification/notification.module";
 import {AuthModule} from "../auth/auth.module";
 import {SocketModule} from "../../sockets/socket.module";
 import {UsersModule} from "../users/users.module";
+import {HistoryModule} from "../history/history.module";
 
 @Module ({
     controllers: [DevicesController],
@@ -20,6 +21,7 @@ import {UsersModule} from "../users/users.module";
         forwardRef(() => AuthModule),
         forwardRef(() => UsersModule),
         NotificationModule,
+        HistoryModule,
         PassportModule,
         DatabaseModule,
         SequelizeModule.forFeature ([Devices, Users, Roles]),
