@@ -9,13 +9,14 @@ import {
 } from "@nestjs/websockets";
 import {Server, Socket} from 'socket.io';
 import {AuthService} from "../modules/auth/auth.service";
+import {Users} from "../modules/users/user.entity";
 
 type UInfoMap = {
     [uId: number]: Array<string>
 }
 @WebSocketGateway (3002, {
     cors: {origin: '*',},
-    transports: ['polling']
+    transports: ['websocket']
 })
 @Injectable ()
 export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -31,6 +32,15 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
         this.server.emit ('msgToClient', payload);
     }
 
+    @SubscribeMessage ('authenticate')
+    handleRegistrationMessage(client: Socket, payload: string): void {
+        this.logger.log (`Client '${client.id}' asks for registration`);
+        const uInfo = this.authService.parseHeaders(payload["Authorization"]);
+        if (uInfo) {
+            this.registerUser (uInfo, client);
+        }
+    }
+
     afterInit(server: Server) {
         this.logger.log('Service initialized successfully');
     }
@@ -39,22 +49,26 @@ export class SocketService implements OnGatewayInit, OnGatewayConnection, OnGate
         this.logger.debug(`Client disconnected: ${client.id}`);
         const uInfo = this.authService.parseHeaders(client.handshake.headers.authorization);
         if(uInfo) {
-            this.logger.log(`Removing user ${uInfo.full_name} with ID: ${uInfo.id}`)
+            this.logger.log(`Removing user ${uInfo["name"]} with ID: ${uInfo.id}`)
             this.uMap[uInfo.id] = this.uMap[uInfo.id].filter(el => el !== client.id)
         }
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        this.logger.debug (`Client connected: ${client.id}`);
+        this.logger.log (`Client connected: ${client.id}`)
         const uInfo = this.authService.parseHeaders(client.handshake.headers.authorization);
         if (uInfo) {
-            if (Object.keys(this.uMap).findIndex(dId => dId === uInfo.id.toString()) < 0) {
-                this.uMap[uInfo.id] = []
-            }
-            this.uMap[uInfo.id].push(client.id);
-
-            this.logger.log(`Adding user ${uInfo.full_name} and clientId: ${client.id}, arr len now: ${this.uMap[uInfo.id].length}`)
+            this.registerUser (uInfo, client);
         }
+    }
+
+    private registerUser(uInfo: Users, client) {
+        if (Object.keys (this.uMap).findIndex (dId => dId === uInfo.id.toString ()) < 0) {
+            this.uMap[uInfo.id] = []
+        }
+        this.uMap[uInfo.id].push (client.id);
+
+        this.logger.log (`Adding user '${uInfo["name"]}' with clientId: ${client.id}, sockets opened: ${this.uMap[uInfo.id].length}`)
     }
 
     dispatchMsg(userId: number, topic: string, data: any = {}) {
