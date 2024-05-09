@@ -1,3 +1,7 @@
+# Initial steps:
+# activate emv file
+cp .env.debug .env
+
 # css loader
 npm install --save-dev typings-for-css-modules-loader
 

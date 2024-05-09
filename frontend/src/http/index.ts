@@ -1,10 +1,8 @@
 import axios from "axios";
 import {getAuthToken} from "../globals/storage";
 
-const BACKEND_API_URL = "http://192.168.0.109:3000/"
-
 export const host = axios.create({
-    baseURL: BACKEND_API_URL,
+    baseURL: process.env.BACKEND_API_URL,
     headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json', //

@@ -1,34 +1,25 @@
-# Installation
+# Initial steps
+# copy environment file
+cp .env.debug .env
 
-```bash
+# Installation
 $ npm install
-```
 
 # Running the app
-
-```bash
 # development
 $ npm run start
-
 # watch mode
 $ npm run start:dev
-
 # production mode
 $ npm run start:prod
-```
 
 # Test
-
-```bash
 # unit tests
 $ npm run test
-
 # e2e tests
 $ npm run test:e2e
-
 # test coverage
 $ npm run test:cov
-```
 
 # Migration
 1. Go to database folder and setup config/config.json 

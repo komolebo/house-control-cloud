@@ -186,6 +186,8 @@ module.exports = function (webpackEnv) {
     return loaders;
   };
 
+  const Dotenv = require('dotenv-webpack');
+
   return {
     target: ['browserslist'],
     // Webpack noise constrained to errors and warnings
@@ -623,7 +625,9 @@ module.exports = function (webpackEnv) {
       // It is absolutely essential that NODE_ENV is set to production
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
-      new webpack.DefinePlugin(env.stringified),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV' : JSON.stringify('production')
+      }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh
       isEnvDevelopment &&
@@ -761,6 +765,7 @@ module.exports = function (webpackEnv) {
             },
           },
         }),
+      new Dotenv()
     ].filter(Boolean),
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter

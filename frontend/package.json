@@ -110,6 +110,7 @@
   "devDependencies": {
     "@types/material-ui": "^0.21.12",
     "@types/react-avatar-editor": "^12.0.0",
+    "dotenv-webpack": "^8.1.0",
     "dts-css-modules-loader": "^2.0.0",
     "react-avatar-edit": "^1.2.0",
     "react-avatar-editor": "^13.0.0",

@@ -3,14 +3,14 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-    FRONT_URL = "http://192.168.0.109:3001";
+    FRONTEND_URL = process.env.FRONTEND_URL;
 
     constructor(private mailerService: MailerService) {}
 
     async sendUserAccountActivation(name: string,
                                     email: string,
                                     token: string) {
-        const url = `${this.FRONT_URL}/activate/${token}`;
+        const url = `${this.FRONTEND_URL}/activate/${token}`;
 
         await this.mailerService.sendMail({
             to: email,
@@ -28,7 +28,7 @@ export class MailService {
                                   email: string,
                                   token: string) {
         // const url = `example.com/auth/confirm?token=${token}`;
-        const url = `${this.FRONT_URL}/reset/${token}`;
+        const url = `${this.FRONTEND_URL}/reset/${token}`;
 
         await this.mailerService.sendMail({
             to: email,
