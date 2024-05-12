@@ -13,6 +13,7 @@ import {PreferenceModule} from "./modules/preference/preference.module";
 import {SocketModule} from "./sockets/socket.module";
 import {LoggerMiddleware} from "./middleware/logger.middleware";
 import {DeliveriesModule} from "./modules/deliveries/deliveries.module";
+import {ForwardModule} from "./modules/forward/forward.module";
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import {DeliveriesModule} from "./modules/deliveries/deliveries.module";
       NotificationModule,
       HistoryModule,
       SocketModule,
-      DeliveriesModule
+      DeliveriesModule,
+      ForwardModule
   ],
   controllers: [AppController],
   providers: [AppService],

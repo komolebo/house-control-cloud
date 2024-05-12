@@ -13,7 +13,7 @@ import {Op} from "sequelize";
 
 function fillActionListInNotification(notification: Notifications) {
     const notifyObj = notification["dataValues"];
-    const explainInfo = NotificationActionMap(notifyObj.msgType, notifyObj);
+    const explainInfo = NotificationActionMap(notification.msgType as MsgTypes, notifyObj);
     if (explainInfo) {
         notifyObj["actions"] = explainInfo.actions;
         // notifyObj.createdAt = moment(notifyObj.createdAt).fromNow();
