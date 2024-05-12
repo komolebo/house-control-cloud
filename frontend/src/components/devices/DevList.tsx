@@ -29,7 +29,7 @@ const DevList: FC<IPropDevList> = ({devNames, onSelect, initSelection= 0}) => {
             :
                 <Box>
                     <Tabs
-                        sx={{backgroundColor:"grey", p:0}}
+                        sx={{p:0}}
                         value={curSel}
                         onChange={handleSelect}
                         variant="scrollable"

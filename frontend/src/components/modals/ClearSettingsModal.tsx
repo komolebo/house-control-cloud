@@ -5,7 +5,7 @@ import {cntrContent} from "../../styles/common/position.css";
 import {ModalPageState, useGlobalModalContext} from "./ModalProvider";
 import logoAttention from "../../assets/modal-attention-round.svg";
 import {TDevItem} from "../../globals/DeviceData";
-import {shortMuiBtn} from "../../styles/common/buttons.css";
+import {shortMuiBtn, widerMuiBtn} from "../../styles/common/buttons.css";
 import ModalGenericDone, {IModalDoneDisplayInfo} from "./ModalGenericDone";
 import {nestPostClearDeviceUsers} from "../../http/rqData";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
@@ -59,7 +59,7 @@ const ClrSettingElement: FC<IPropClrSetElem> = ({devInfo, onClear}) => {
                         mt: 2
                     }}
                     onClick={() => onClear()}
-                    className={shortMuiBtn}
+                    className={widerMuiBtn}
             > Clear users </Button>
 
         </div>
