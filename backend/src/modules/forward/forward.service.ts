@@ -1,5 +1,5 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {AxiosHeaders, AxiosHeaderValue, AxiosResponse, AxiosResponseHeaders, RawAxiosResponseHeaders} from "axios";
+import {AxiosResponse, RawAxiosResponseHeaders} from "axios";
 import {HttpService} from '@nestjs/axios';
 
 @Injectable()
