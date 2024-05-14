@@ -7,10 +7,10 @@ export let lightTheme = createTheme ({});
 lightTheme = createTheme(lightTheme, {
     palette: {
         success: {
-            main: lightTheme.palette.success.light,
+            main: lightTheme.palette.success.main,
         },
         info: {
-            main: lightTheme.palette.info.light
+            main: lightTheme.palette.info.main
         },
         secondary: {
             main: "#2F3542"

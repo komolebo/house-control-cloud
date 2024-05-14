@@ -1,5 +1,4 @@
 import React, {FC} from "react";
-import {hFont, helpText} from "../styles/common/fonts.css";
 import {DevContainer} from "./devices/DevContainer";
 import {socket, SocketContext} from "../http/wssocket";
 import {commonPage} from "../styles/common/pages.css";

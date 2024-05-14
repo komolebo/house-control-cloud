@@ -1,0 +1,39 @@
+#tunnel-ctrl {
+    margin: 0 0;
+    padding: 0 0;
+    display: flex;
+    flex-direction: row;
+    /*background-color: #1065bb;*/
+    border: solid #dce8fd;
+    width: 1200px;
+}
+/*-----------------------------------------*/
+#tunnel-conn-stat {
+    flex: 0 0 auto;
+    border-right: solid 1px #909090;
+}
+#tunnel-base-info-records {
+    flex: 1 1 auto; /* Allow B to fill remaining space */
+    display: flex;
+    justify-content: space-between; /* Distribute elements evenly */
+}
+#tunnel-action-btn {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center; /* Vertically center inner elements */
+    justify-content: space-between; /* Distribute horizontally */
+    padding: 10px 20px;
+    margin: 0;
+    /*background-color: #5e0000;*/
+}
+/*-----------------------------------------*/
+.tunnel-common-item {
+    padding: 10px 20px;
+    flex-direction: column;
+
+    /*background-color: #5e0000;*/
+}
+
+.test{
+    background-color: #2F3542;
+}

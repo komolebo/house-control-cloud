@@ -7,6 +7,7 @@ import {TDevItem} from "../../globals/DeviceData";
 import {shorterMuiBtn, shortMuiBtn, wideMuiBtn} from "../../styles/common/buttons.css";
 import {UserGlobalContext} from "../../globals/providers/UserAuthProvider";
 import {nestPatchDeviceAlias} from "../../http/rqData";
+import TunnelContainer from "../tunnel/TunnelContainer";
 
 
 export interface IProps {
@@ -15,39 +16,41 @@ export interface IProps {
 
 
 const DevItem: FC<IProps> = ({dev}) => {
-    const [editMode, setEditMode] = useState(false);
-    const {userInfo} = useContext(UserGlobalContext);
-    let [name, setName] = useState("");
+    const [editMode, setEditMode] = useState (false);
+    const [showMode, setShowMode] = useState (false);
+    const {userInfo} = useContext (UserGlobalContext);
+    let [name, setName] = useState ("");
 
-    useEffect(() => {
-        setName(dev.name)
+    useEffect (() => {
+        setName (dev.name)
+
         function handleEscapeKey(event: KeyboardEvent) {
             if (event.code === 'Escape') {
-                setEditMode(false)
+                setEditMode (false)
             }
         }
 
-        document.addEventListener('keyup', handleEscapeKey)
-        return () => document.removeEventListener('keyup', handleEscapeKey)
+        document.addEventListener ('keyup', handleEscapeKey)
+        return () => document.removeEventListener ('keyup', handleEscapeKey)
     }, [])
 
-    useEffect(() => {
-        setEditMode(false);
+    useEffect (() => {
+        setEditMode (false);
     }, [dev])
 
     const handleSave = () => {
-        userInfo && nestPatchDeviceAlias(userInfo.id, dev.hex, name)
-            .then(() => {
-                setEditMode(false);
+        userInfo && nestPatchDeviceAlias (userInfo.id, dev.hex, name)
+            .then (() => {
+                setEditMode (false);
             })
     }
 
-    const formattedID = dev.hex.replace(/^(.{2})(.{2})(.{2})(.{2}).*/, '$1:$2:$3:$4');
+    const formattedID = dev.hex.replace (/^(.{2})(.{2})(.{2})(.{2}).*/, '$1:$2:$3:$4');
 
-    return <div >
+    return <div>
         <Typography variant="h4">Name </Typography>
         {editMode
-            ? <div className={[devItemDelim].join(' ')}>
+            ? <div className={[devItemDelim].join (' ')}>
                 <TextField
                     error={name.length === 0}
                     helperText={name.length === 0 ? "Name cannot be empty" : ""}
@@ -56,10 +59,11 @@ const DevItem: FC<IProps> = ({dev}) => {
                     defaultValue={dev.name}
                     fullWidth={true}
                     autoFocus
-                    onChange={e => setName(e.target.value)}
-                    onKeyPress={e => e.key === 'Enter' && handleSave()}
+                    onChange={e => setName (e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && handleSave ()}
                 />
-                <Typography variant="h6" sx={{ml: 1, mt: 1}}>Please note: current notifications or history items will keep old device name</Typography>
+                <Typography variant="h6" sx={{ml: 1, mt: 1}}>Please note: current notifications or history items will
+                    keep old device name</Typography>
             </div>
             : <Typography className={devItemDelim} variant="h3">{dev.name} </Typography>
             // <div className={[h4Font, devItemDelim].join(' ')}>{dev.name}</div>
@@ -88,7 +92,7 @@ const DevItem: FC<IProps> = ({dev}) => {
                       onClick={handleSave}
                       className={wideMuiBtn}
             > Save </Button>
-            : <Button variant={"contained"}
+            : !showMode && <Button variant={"contained"}
                       color={"success"}
                       sx={{
                           mt: 2
@@ -97,6 +101,7 @@ const DevItem: FC<IProps> = ({dev}) => {
                           // <img src={logoStart} alt={"Logo start"}/>
                           <LogoStart fill={dev.active ? "white" : "grey"}/>
                       }
+                      onClick={() => setShowMode (true)}
                       className={shortMuiBtn}
                       disabled={!dev.active}
             > START </Button>
@@ -105,9 +110,9 @@ const DevItem: FC<IProps> = ({dev}) => {
         {editMode
             ?
             <Button variant="text"
-                    onClick={() => setEditMode(!editMode)}
+                    onClick={() => setEditMode (!editMode)}
                     sx={{
-                        right: 0, top: 10, position:'absolute',
+                        right: 0, top: 10, position: 'absolute',
                     }}
                     className={shorterMuiBtn}
                     color="info"
@@ -115,15 +120,19 @@ const DevItem: FC<IProps> = ({dev}) => {
             </Button>
             :
             <Button variant="text"
-                onClick={() => setEditMode(!editMode)}
-                sx={{
-                    right: 0, top: 10, position:'absolute',
-                }}
-                endIcon={<img src={logoEdit} alt={"Logo edit"}/>}
-                className={shorterMuiBtn}
-                color="info"
+                    onClick={() => setEditMode (!editMode)}
+                    sx={{
+                        right: 0, top: 10, position: 'absolute',
+                    }}
+                    endIcon={<img src={logoEdit} alt={"Logo edit"}/>}
+                    className={shorterMuiBtn}
+                    color="info"
             > Edit
             </Button>
+        }
+        {!editMode && showMode &&
+        <TunnelContainer name={name} id={formattedID} hw={"1.4.1"} sw={dev.version} latest={true} connected={true}
+                         onclose={() => setShowMode (false)}/>
         }
     </div>
 }
