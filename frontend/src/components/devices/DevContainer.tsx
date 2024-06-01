@@ -138,7 +138,7 @@ export const DevContainer: FC = () => {
         </div>
         { values.ind >= 0 && values.devices.length ?
         <div>
-            <Typography variant="h4">Device information</Typography><br/>
+            <Typography variant="h4" color="text.primary">Device information</Typography><br/>
 
             <div className={leftCasket}>
                 <Card className={[casket, "blur"].join(' ')}>

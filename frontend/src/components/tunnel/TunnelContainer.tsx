@@ -1,6 +1,7 @@
 import React, {FC} from "react";
 import {Card, Modal} from "@mui/material";
 import TunnelControl from "./TunnelControl";
+import TunnelMirror from "./TunnelMirror";
 
 export interface IProps {
     name: string,
@@ -31,10 +32,11 @@ export const TunnelContainer: FC<IProps> = ({
                 sx={{
                     p: 0, m: 0, position: "absolute", left: "50%", top: "50%",
                     transform: "translate(-50%, -50%)",
+                    border: "1px solid", borderColor: "primary.light"
                 }}
                 className="blur"
             >
-                {/*<TunnelMirror/>*/}
+                <TunnelMirror/>
                 <TunnelControl name={name} id={id} hw={hw} sw={sw} latest={latest} connected={connected}
                                onclose={onclose}/>
             </Card>

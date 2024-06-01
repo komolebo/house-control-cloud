@@ -1,5 +1,6 @@
 .common-page {
     padding: 32px 68px;
+    flex: 1;
     /*background-color: #0000d4;*/
 }
 

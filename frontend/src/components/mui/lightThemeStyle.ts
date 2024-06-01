@@ -6,6 +6,9 @@ export let lightTheme = createTheme ({});
 
 lightTheme = createTheme(lightTheme, {
     palette: {
+        background: {
+            default: "white"
+        },
         success: {
             main: lightTheme.palette.success.main,
         },

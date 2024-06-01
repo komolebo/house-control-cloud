@@ -4,8 +4,6 @@
     display: flex;
     flex-direction: row;
     /*background-color: #1065bb;*/
-    border: solid #dce8fd;
-    width: 1200px;
 }
 /*-----------------------------------------*/
 #tunnel-conn-stat {

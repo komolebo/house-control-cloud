@@ -1,25 +1,25 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import {privateRoutes, publicRoutes} from "./routes";
 import {UserGlobalContext} from "./globals/providers/UserAuthProvider";
 import {HOME_PAGE, LOGIN_PAGE} from "./utils/consts";
 import {NavBar} from "./components/NavBar";
-import {CssBaseline, darkScrollbar, GlobalStyles, ThemeProvider} from "@mui/material";
+import {Box, CssBaseline, ThemeProvider} from "@mui/material";
 import {ModalProvider} from "./components/modals/ModalProvider";
 import {DarkModeContext} from "./globals/providers/DarkModeProvider";
 import {lightTheme} from "./components/mui/lightThemeStyle";
 import {darkTheme} from "./components/mui/darkThemeStyle";
 
 function AppRouter() {
-    const  {authorized} = useContext(UserGlobalContext);
+    const {authorized} = useContext (UserGlobalContext);
 
     return <BrowserRouter>
-        { authorized ? <NavBar/> : <></> }
+        {authorized ? <NavBar/> : <></>}
         <Routes>
             {authorized
-                ? privateRoutes.map(({path, Component}, i) =>
+                ? privateRoutes.map (({path, Component}, i) =>
                     <Route path={path} element={Component} key={i}/>)
-                : publicRoutes.map(({path, Component}, i) =>
+                : publicRoutes.map (({path, Component}, i) =>
                     <Route path={path} element={Component} key={i}/>)
             }
 
@@ -36,22 +36,31 @@ function AppRouter() {
 
 
 const App = () => {
-    const {globalDark} = useContext(DarkModeContext);
-    const [darkMode, setDarkMode] = useState<boolean>(globalDark);
+    const {globalDark} = useContext (DarkModeContext);
+    const [darkMode, setDarkMode] = useState<boolean> (globalDark);
 
-    useEffect(() => {
-        setDarkMode(globalDark)
+    useEffect (() => {
+        setDarkMode (globalDark)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [globalDark])
 
     return (
+        // activate theme for mui elements
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
             <CssBaseline/>
-            <GlobalStyles styles={darkMode ? { ...darkScrollbar() } : undefined} />
+
+            {/* global popover window */}
             <ModalProvider>
-                <AppRouter/>
+
+                <Box sx={{display: "flex", flexDirection: "column", height: "100vh", bgcolor: "background.default"}}>
+                    <AppRouter/>
+                </Box>
+
             </ModalProvider>
+
         </ThemeProvider>
+
+
     )
 }
 
